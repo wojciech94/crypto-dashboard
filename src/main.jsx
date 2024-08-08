@@ -2,11 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { fetchByMarketCap, fetchByTokenId, fetchFavouritesData } from './utils/apiFunctions.js'
+import { fetchByMarketCap, fetchByTokenId } from './utils/apiFunctions.js'
 import { Coin } from './screens/Coin/Coin'
 import { CoinList } from './screens/CoinList/CoinList'
-import { Dashboard } from './screens/Dashboard/Dashboard.jsx'
-import { Favourites } from './screens/Favourites/Favourites.jsx'
+import { Dashboard } from './screens/Dashboard/Dashboard'
+import { Favourites } from './screens/Favourites/Favourites'
 
 const router = createBrowserRouter([
 	{
@@ -32,7 +32,6 @@ const router = createBrowserRouter([
 			{
 				path: '/favourites',
 				element: <Favourites />,
-				loader: fetchFavouritesData
 			},
 			{
 				path: '/coin/:id',

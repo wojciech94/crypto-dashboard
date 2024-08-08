@@ -1,18 +1,9 @@
 import { useContext } from 'react'
-import { FavouritesContext } from '../../Context/FavouritesContext'
+import { Table } from '../../components/Table/Table'
+import { FavouritesContext } from '../../contexts/FavouritesContext'
 
 export function Favourites() {
-	const [favourites, handleSetFavourites] = useContext(FavouritesContext)
+	const [favourites] = useContext(FavouritesContext)
 
-	return (
-		<>
-			{favourites && (
-				<ul>
-					{favourites.map(fav => {
-						return <li key={fav.id}>{fav.name}</li>
-					})}{' '}
-				</ul>
-			)}
-		</>
-	)
+	return <div className='w-100'>{favourites && <Table data={favourites} />}</div>
 }

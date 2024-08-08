@@ -1,21 +1,28 @@
 import './App.css'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useState } from 'react'
-import { FavouritesContext } from './Context/FavouritesContext'
+import { FavouritesContext } from './contexts/FavouritesContext'
 import { fetchFavouritesData } from './utils/apiFunctions'
 
 function App() {
-	const [favourites, setFavourites] = useState([])
-	const [favouriteIds, setFavouriteIds] = useState([])
+	const [favourites, setFavourites] = useState(JSON.parse(localStorage.getItem('favourites')) || [])
+	const [favouriteIds, setFavouriteIds] = useState(JSON.parse(localStorage.getItem('favouritesIds')) || [])
 
 	const handleSetFavourites = async id => {
 		if (id) {
-			const ids = [...favouriteIds, id]
+			let ids = []
+			if (favouriteIds.includes(id)) {
+				ids = favouriteIds.filter(idk => id !== idk)
+			} else {
+				ids = [...favouriteIds, id]
+			}
+			localStorage.setItem('favouritesIds', JSON.stringify(ids))
 			setFavouriteIds(ids)
 
 			try {
 				const data = await fetchFavouritesData(ids.join(','))
 
+				localStorage.setItem('favourites', JSON.stringify(data))
 				setFavourites(data)
 			} catch (error) {
 				console.error('Error fetching favourite data:', error)
@@ -24,7 +31,7 @@ function App() {
 	}
 
 	return (
-		<FavouritesContext.Provider value={[favourites, handleSetFavourites]}>
+		<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
 			<div className='wrapper'>
 				<div className='topbar flex g8'>
 					<NavLink to={'/dashboard'}>Dashboard</NavLink>

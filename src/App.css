@@ -99,13 +99,14 @@ a.active {
 }
 
 .text-semibold {
-	font-weight: 500;
+	font-weight: '500';
 }
 
 .text-bold {
 	font-weight: bold;
 }
 
+.text-warning,
 .text-hover-warning:hover,
 .text-active-warning:active {
 	color: rgb(223, 219, 13);
