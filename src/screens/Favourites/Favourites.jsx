@@ -5,5 +5,5 @@ import { FavouritesContext } from '../../contexts/FavouritesContext'
 export function Favourites() {
 	const [favourites] = useContext(FavouritesContext)
 
-	return <div className='w-100'>{favourites && <Table data={favourites} />}</div>
+	return <div className='w-100'>{favourites && <Table data={favourites} isRemoveAction />}</div>
 }

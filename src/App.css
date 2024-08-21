@@ -40,6 +40,10 @@ body {
 	width: auto;
 }
 
+.w-100 {
+	width: 100%;
+}
+
 li {
 	list-style: none;
 }
@@ -64,7 +68,22 @@ tbody tr:hover {
 }
 
 .table-col-0 {
-	width: 0;
+	width: 40px;
+	white-space: nowrap;
+}
+
+.table-col-1 {
+	width: 80px;
+	white-space: nowrap;
+}
+
+.table-col-3 {
+	width: 125px;
+	white-space: nowrap;
+}
+
+.table-col-4 {
+	width: 200px;
 	white-space: nowrap;
 }
 
@@ -84,6 +103,10 @@ a.active {
 
 .border-bottom {
 	border-bottom: 1px solid lightgray;
+}
+
+.text-nowrap {
+	white-space: nowrap;
 }
 
 .text-muted {
@@ -266,4 +289,44 @@ a.active {
 }
 .g-10 {
 	gap: 3rem;
+}
+
+.dropdown {
+	position: relative;
+}
+
+.dropdown-menu {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 2.2rem;
+	right: 0;
+	border-radius: 0.75rem;
+	border: 1px solid lightgray;
+	background-color: white;
+	z-index: 70;
+	overflow: hidden;
+}
+
+.dropdown-label {
+	color: gray;
+	padding: 0.5rem 1rem;
+	border-bottom: 1px solid lightgray;
+}
+
+.dropdown-btn {
+	background-color: white;
+	border-radius: 0;
+	border-bottom: 1px solid lightgray;
+	min-width: 200px;
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-btn:last-child {
+	border-bottom: none;
+}
+
+.dropdown-btn:hover {
+	background-color: rgb(67, 93, 179);
+	color: white;
 }

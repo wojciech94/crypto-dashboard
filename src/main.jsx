@@ -7,6 +7,7 @@ import { Coin } from './screens/Coin/Coin'
 import { CoinList } from './screens/CoinList/CoinList'
 import { Dashboard } from './screens/Dashboard/Dashboard'
 import { Favourites } from './screens/Favourites/Favourites'
+import { Portfolio } from './screens/Portfolio/Portfolio.jsx'
 
 const router = createBrowserRouter([
 	{
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
 			{
 				path: '/favourites',
 				element: <Favourites />,
+			},
+			{
+				path: '/portfolio',
+				element: <Portfolio />,
 			},
 			{
 				path: '/coin/:id',

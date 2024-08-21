@@ -1,14 +1,22 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Star } from 'react-feather'
 import { Link } from 'react-router-dom'
+import { FavouriteActions } from '../../Constants/AppConstants'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
+import { PortfolioContext } from '../../contexts/PortfolioContext'
 import { NumberSpaceFormatter, NumberFormatter } from '../../utils/formatter'
 import { sortData } from '../../utils/sorting'
+import { Dropdown } from '../Dropdown/Dropdown'
 
 export function Table({ data, isFavouriteAction }) {
 	const [sortSetting, setSortSetting] = useState({ key: 'id', dir: 'asc' })
 	const [coinsList, setCoinsList] = useState(data)
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
+	const [, handleSetPortfolio] = useContext(PortfolioContext)
+
+	useEffect(() => {
+		setCoinsList(data)
+	}, [data])
 
 	function sortList(cat) {
 		let dir = 'asc'
@@ -20,13 +28,25 @@ export function Table({ data, isFavouriteAction }) {
 		setCoinsList(sortedByKey)
 	}
 
+	function prepareDropdownData(el) {
+		const dData = [
+			{ action: () => handleSetFavourites(el.id), label: 'Dodaj do ulubionych' },
+			{ action: () => handleSetPortfolio(el.id), label: 'Dodaj do portfolio' },
+		]
+		if (favouriteIds.includes(el.id)) {
+			dData.push({ action: () => handleSetFavourites(el.id, FavouriteActions.Remove), label: 'Usuń z ulubionych' })
+		}
+
+		return dData
+	}
+
 	return (
-		<table>
+		<table className='w-100'>
 			<thead className='border-bottom'>
 				<tr className='text-uppercase text-muted'>
-					{isFavouriteAction && <td></td>}
-					<td></td>
-					<td>
+					{isFavouriteAction && <td className='table-col-0'></td>}
+					<td className='table-col-0'></td>
+					<td className='table-col-0'>
 						<button
 							className={`btn btn-link ${sortSetting['key'] == 'id' ? 'text-primary text-bold' : ''}`}
 							onClick={() => sortList('id')}>
@@ -64,13 +84,14 @@ export function Table({ data, isFavouriteAction }) {
 							24h % change
 						</button>
 					</td>
-					<td>
+					<td className='text-nowrap'>
 						<button
 							className={`btn btn-link ${sortSetting['key'] == 'market_cap' ? 'text-primary text-bold' : ''}`}
 							onClick={() => sortList('market_cap')}>
 							Market cap
 						</button>
 					</td>
+					<td className='table-col-0'></td>
 				</tr>
 			</thead>
 			<tbody>
@@ -87,12 +108,12 @@ export function Table({ data, isFavouriteAction }) {
 									</button>
 								</td>
 							)}
-							<td className='table-col-0'>
+							<td>
 								<div className='flex align-center'>
 									<img className='rounded-25' width={32} src={el.image} alt='Coin logo' />
 								</div>
 							</td>
-							<td className='table-col-0'>{el.market_cap_rank}</td>
+							<td>{el.market_cap_rank}</td>
 							<td className='text-start'>
 								<Link to={`/coin/${el.id}`}>
 									<strong>{el.name}</strong>
@@ -107,7 +128,10 @@ export function Table({ data, isFavouriteAction }) {
 								className={`text-bold ${
 									el.price_change_24h > 0 ? 'text-success' : 'text-danger'
 								}  `}>{`${NumberFormatter(el.price_change_percentage_24h)}%`}</td>
-							<td>{NumberSpaceFormatter(el.market_cap)}</td>
+							<td className='text-nowrap'>{NumberSpaceFormatter(el.market_cap)}</td>
+							<td>
+								<Dropdown dropdownData={prepareDropdownData(el)}></Dropdown>
+							</td>
 						</tr>
 					)
 				})}

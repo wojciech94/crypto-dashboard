@@ -84,7 +84,7 @@ export const fetchByTokenId = async id => {
 	}
 }
 
-export const fetchFavouritesData = async ids => {
+export const fetchCoinsData = async ids => {
 	try {
 		if (ids) {
 			const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`)
@@ -94,7 +94,7 @@ export const fetchFavouritesData = async ids => {
 			const data = await res.json()
 			return data
 		} else {
-			throw new Error('No favourites coins')
+			throw new Error('No coins data')
 		}
 	} catch (error) {
 		throw error
