@@ -1,19 +1,25 @@
-import { useRef, useState } from 'react'
+import { useContext } from 'react'
 import { MoreVertical } from 'react-feather'
+import { DropdownContext } from '../../contexts/DropdownContext'
 
-export function Dropdown({ dropdownData }) {
-	const [isOpen, setIsOpen] = useState(false)
+export function Dropdown({ dropdownData, dropdownKey }) {
+	const [activeDropdown, setActiveDropdown] = useContext(DropdownContext)
+
+	const dropdownAction = action => {
+		action()
+		setActiveDropdown(null)
+	}
 
 	return (
 		<div className='dropdown'>
-			<button className='btn btn-secondary p-1 flex column' onClick={() => setIsOpen(prevState => !prevState)}>
+			<button className='btn btn-secondary p-1 flex column' onClick={() => setActiveDropdown(dropdownKey)}>
 				<MoreVertical />
 			</button>
-			{isOpen && (
+			{activeDropdown === dropdownKey && (
 				<div className='dropdown-menu'>
 					{dropdownData.map(item => {
 						return (
-							<DropdownBtn key={item.label} onClick={item.action}>
+							<DropdownBtn key={item.label} onClick={() => dropdownAction(item.action)}>
 								{item.label}
 							</DropdownBtn>
 						)
@@ -24,15 +30,9 @@ export function Dropdown({ dropdownData }) {
 	)
 }
 
-export function DropdownBtn({ onClick, children, handleIsOpen }) {
-	const dropdownRef = useRef(null)
-
-	const handleOnBlur = event => {
-		console.log(event.target)
-	}
-
+export function DropdownBtn({ onClick, children }) {
 	return (
-		<button className='btn dropdown-btn' onBlur={handleOnBlur} onClick={onClick}>
+		<button className='btn dropdown-btn' onClick={onClick}>
 			{children}
 		</button>
 	)

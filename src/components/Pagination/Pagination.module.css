@@ -1,0 +1,38 @@
+button {
+	border: none;
+	background-color: lightgray;
+	border-radius: 8px;
+	cursor: pointer;
+	padding: 8px;
+	min-width: 30px;
+}
+
+.pagination {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	padding: 16px 0;
+}
+
+.paginationText {
+	color: gray;
+	font-size: 0.925rem;
+}
+
+.paginationSelectContainer {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.paginationActions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+}
+
+button.active {
+	background-color: dodgerblue;
+	color: white;
+}

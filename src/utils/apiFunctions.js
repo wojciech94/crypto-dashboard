@@ -16,7 +16,7 @@ export const fetchData = async () => {
 	}
 }
 
-export const fetchByMarketCap = async ({ count = 100, dir = 'desc', page = 1 } = {}) => {
+export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1 } = {}) => {
 	let order
 	switch (dir) {
 		case 'asc':
@@ -29,7 +29,7 @@ export const fetchByMarketCap = async ({ count = 100, dir = 'desc', page = 1 } =
 	}
 	try {
 		const res = await fetch(
-			`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${order}&per_page=${count}&page=${page}`
+			`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${order}&per_page=${count}&page=${page}&x_cg_demo_api_key=${apiKey}`
 		)
 		if (!res.ok) {
 			throw new Error(`HTTP error! status: ${res.status}`)
@@ -87,7 +87,9 @@ export const fetchByTokenId = async id => {
 export const fetchCoinsData = async ids => {
 	try {
 		if (ids) {
-			const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`)
+			const res = await fetch(
+				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}?x_cg_demo_api_key=${apiKey}`
+			)
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`)
 			}

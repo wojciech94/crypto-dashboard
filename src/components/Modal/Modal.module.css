@@ -1,0 +1,20 @@
+.modalOverlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(128, 128, 128, 0.3);
+	backdrop-filter: blur(2px);
+}
+
+.modalContent {
+	padding: 16px;
+	border-radius: 16px;
+	border: 1px solid gray;
+	background-color: white;
+	max-width: 90%;
+}

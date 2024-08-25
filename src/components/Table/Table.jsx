@@ -2,17 +2,21 @@ import { useContext, useEffect, useState } from 'react'
 import { Star } from 'react-feather'
 import { Link } from 'react-router-dom'
 import { FavouriteActions } from '../../Constants/AppConstants'
+import { DropdownContext } from '../../contexts/DropdownContext'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
+import { ModalContext } from '../../contexts/ModalContext'
 import { PortfolioContext } from '../../contexts/PortfolioContext'
 import { NumberSpaceFormatter, NumberFormatter } from '../../utils/formatter'
 import { sortData } from '../../utils/sorting'
 import { Dropdown } from '../Dropdown/Dropdown'
 
-export function Table({ data, isFavouriteAction }) {
+export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
 	const [sortSetting, setSortSetting] = useState({ key: 'id', dir: 'asc' })
 	const [coinsList, setCoinsList] = useState(data)
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
-	const [, handleSetPortfolio] = useContext(PortfolioContext)
+	const [, portfolioIds, handleSetPortfolio] = useContext(PortfolioContext)
+	const [, setActiveModal] = useContext(ModalContext)
+	const [, setActiveDropdown] = useContext(DropdownContext)
 
 	useEffect(() => {
 		setCoinsList(data)
@@ -29,12 +33,23 @@ export function Table({ data, isFavouriteAction }) {
 	}
 
 	function prepareDropdownData(el) {
-		const dData = [
-			{ action: () => handleSetFavourites(el.id), label: 'Dodaj do ulubionych' },
-			{ action: () => handleSetPortfolio(el.id), label: 'Dodaj do portfolio' },
-		]
+		let dData = []
+		if (!portfolioIds.includes(el.id)) {
+			dData = [{ action: () => handleSetPortfolio(el.id), label: 'Dodaj do portfolio' }]
+		}
+		if (isTransactionAction) {
+			dData.push({
+				action: () => {
+					setActiveDropdown(null)
+					setActiveModal('transaction')
+				},
+				label: 'Dodaj transakcje',
+			})
+		}
 		if (favouriteIds.includes(el.id)) {
 			dData.push({ action: () => handleSetFavourites(el.id, FavouriteActions.Remove), label: 'Usuń z ulubionych' })
+		} else {
+			dData.push({ action: () => handleSetFavourites(el.id), label: 'Dodaj do ulubionych' })
 		}
 
 		return dData
@@ -95,7 +110,7 @@ export function Table({ data, isFavouriteAction }) {
 				</tr>
 			</thead>
 			<tbody>
-				{coinsList.map(el => {
+				{coinsList.map((el, id) => {
 					return (
 						<tr key={el.id}>
 							{isFavouriteAction && (
@@ -130,7 +145,7 @@ export function Table({ data, isFavouriteAction }) {
 								}  `}>{`${NumberFormatter(el.price_change_percentage_24h)}%`}</td>
 							<td className='text-nowrap'>{NumberSpaceFormatter(el.market_cap)}</td>
 							<td>
-								<Dropdown dropdownData={prepareDropdownData(el)}></Dropdown>
+								<Dropdown dropdownKey={dropdownKey + id} dropdownData={prepareDropdownData(el)}></Dropdown>
 							</td>
 						</tr>
 					)
