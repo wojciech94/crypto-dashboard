@@ -40,7 +40,7 @@ export function Pagination({ totalItems, itemsPerPage, currentPage, onPageChange
 				)}
 			</div>
 			<div className={styles.paginationSelectContainer}>
-				<div className={styles.paginationText}>Pokaż na stronie</div>
+				<div className={styles.paginationText}>Show on page</div>
 				<select name='paginationSelect' id='paginationSelect' value={itemsPerPage} onChange={handleItemsPerPageChange}>
 					<option value={5}>5</option>
 					<option value={10}>10</option>

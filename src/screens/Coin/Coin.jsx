@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useLoaderData, Link } from 'react-router-dom'
 import { Card } from '../../components/Card/Card'
 import { linkify } from '../../utils/linkify'
-import { McRankToTickerMap } from '../../utils/apiFunctions'
+import { McRankToTickerMap } from '../../utils/coingeckoApi'
 import { NumberFormatter } from '../../utils/formatter'
 
 export function Coin() {

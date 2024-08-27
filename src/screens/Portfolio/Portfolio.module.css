@@ -1,0 +1,23 @@
+.tabContainer {
+	margin: 0.25rem 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.tab {
+	padding: 6px 12px;
+}
+
+.tab.active {
+	background-color: dodgerblue;
+	font-weight: '500';
+	color: white;
+}
+
+.flexRow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}

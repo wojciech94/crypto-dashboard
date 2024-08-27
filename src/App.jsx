@@ -3,15 +3,20 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
-import { fetchCoinsData } from './utils/apiFunctions'
+import { fetchCoinsData, fetchDataWithContracts } from './utils/coingeckoApi'
 import { FavouriteActions } from '../src/Constants/AppConstants'
 import { Modal } from './components/Modal/Modal'
 import { ModalContext } from './contexts/ModalContext'
 import { DropdownContext } from './contexts/DropdownContext'
+import { BalanceContext } from './contexts/BalanceContext'
+import { fetchBalanceForData } from './utils/etherscanApi'
 
 function App() {
 	const [activeModal, setActiveModal] = useState(null)
 	const [activeDropdown, setActiveDropdown] = useState(null)
+	const [walletData, setWalletData] = useState([])
+	const [address, setAddress] = useState('0x79c1e502c1e02e37ad0e40fe7758e8e66aa2a5d9')
+	const [isLoading, setIsLoading] = useState(false)
 	const [favourites, setFavourites] = useState(JSON.parse(localStorage.getItem('favourites')) || [])
 	const [favouriteIds, setFavouriteIds] = useState(JSON.parse(localStorage.getItem('favouritesIds')) || [])
 	const [potrfolio, setPortfolio] = useState(JSON.parse(localStorage.getItem('portfolio')) || [])
@@ -26,6 +31,21 @@ function App() {
 			document.removeEventListener('mousedown', handleClickOutside)
 		}
 	}, [activeDropdown])
+
+	const fetchWalletData = async () => {
+		if (!isLoading) {
+			const data = await fetchDataWithContracts()
+			setWalletData(data)
+			fetchBalance(data)
+		}
+	}
+
+	const fetchBalance = async coinsData => {
+		setIsLoading(true)
+		const data = await fetchBalanceForData(coinsData, address)
+		setWalletData(data)
+		setIsLoading(false)
+	}
 
 	const handleClickOutside = event => {
 		if (!event.target.closest('.dropdown')) {
@@ -87,7 +107,9 @@ function App() {
 							<NavLink to={'/settings'}>Settings</NavLink>
 						</div>
 						<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
-							<Outlet></Outlet>
+							<BalanceContext.Provider value={[walletData, fetchWalletData, isLoading, setAddress]}>
+								<Outlet></Outlet>
+							</BalanceContext.Provider>
 						</DropdownContext.Provider>
 					</div>
 					<Modal />

@@ -2,12 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { fetchByMarketCap, fetchByTokenId } from './utils/apiFunctions.js'
+import { fetchByMarketCap, fetchByTokenId } from './utils/coingeckoApi.js'
 import { Coin } from './screens/Coin/Coin'
 import { CoinList } from './screens/CoinList/CoinList'
 import { Dashboard } from './screens/Dashboard/Dashboard'
 import { Favourites } from './screens/Favourites/Favourites'
 import { Portfolio } from './screens/Portfolio/Portfolio.jsx'
+import { Wallets } from './screens/Wallets/Wallets.jsx'
 
 const router = createBrowserRouter([
 	{
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
 			{
 				path: '/portfolio',
 				element: <Portfolio />,
+			},
+			{
+				path: '/wallets',
+				element: <Wallets />,
 			},
 			{
 				path: '/coin/:id',
