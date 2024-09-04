@@ -19,3 +19,18 @@ export function NumberSpaceFormatter(number) {
 	}
 	return 0
 }
+
+export function ToPrecision(value, precision = 2) {
+	const val = Number(value)
+	if (val) {
+		return val.toPrecision(precision)
+	}
+	return value
+}
+
+export function ToFixed(value, fractional = 3) {
+	const val = Number(value)
+	if (val) {
+		return val.toFixed(fractional)
+	}
+}

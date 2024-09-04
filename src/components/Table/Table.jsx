@@ -1,14 +1,16 @@
 import { useContext, useEffect, useState } from 'react'
 import { Star } from 'react-feather'
 import { Link } from 'react-router-dom'
-import { FavouriteActions } from '../../Constants/AppConstants'
+import { FavouriteActions, WalletActions } from '../../constants/AppConstants'
 import { DropdownContext } from '../../contexts/DropdownContext'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
 import { ModalContext } from '../../contexts/ModalContext'
 import { PortfolioContext } from '../../contexts/PortfolioContext'
-import { NumberSpaceFormatter, NumberFormatter } from '../../utils/formatter'
+import { NumberSpaceFormatter, NumberFormatter, ToFixed } from '../../utils/formatter'
 import { sortData } from '../../utils/sorting'
 import { Dropdown } from '../Dropdown/Dropdown'
+import { Copy, Trash2, Edit, Bookmark } from 'react-feather'
+import { WalletContext } from '../../contexts/WalletContext'
 
 export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
 	const [sortSetting, setSortSetting] = useState({ key: 'id', dir: 'asc' })
@@ -41,7 +43,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 			dData.push({
 				action: () => {
 					setActiveDropdown(null)
-					setActiveModal('transaction')
+					setActiveModal({ name: 'transaction' })
 				},
 				label: 'Dodaj transakcje',
 			})
@@ -124,7 +126,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 								</td>
 							)}
 							<td>
-								<div className='flex align-center'>
+								<div className='d-flex align-center'>
 									<img className='rounded-25' width={32} src={el.image} alt='Coin logo' />
 								</div>
 							</td>
@@ -137,12 +139,12 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 							<td>{NumberFormatter(el.current_price)}</td>
 							<td>{NumberFormatter(el.ath)}</td>
 							<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>
-								{NumberFormatter(el.price_change_24h)}
+								{ToFixed(el.price_change_24h, 2)}
 							</td>
-							<td
-								className={`text-bold ${
-									el.price_change_24h > 0 ? 'text-success' : 'text-danger'
-								}  `}>{`${NumberFormatter(el.price_change_percentage_24h)}%`}</td>
+							<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>{`${ToFixed(
+								el.price_change_percentage_24h,
+								2
+							)}%`}</td>
 							<td className='text-nowrap'>{NumberSpaceFormatter(el.market_cap)}</td>
 							<td>
 								<Dropdown dropdownKey={dropdownKey + id} dropdownData={prepareDropdownData(el)}></Dropdown>
@@ -150,6 +152,115 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 						</tr>
 					)
 				})}
+			</tbody>
+		</table>
+	)
+}
+
+export function WalletTable() {
+	const [, , , address, handleSetAddress, wallets, handleSetWallets] = useContext(WalletContext)
+	const [, setActiveModal] = useContext(ModalContext)
+
+	const setClipboardText = value => {
+		if (value) {
+			navigator.clipboard.writeText(value)
+		}
+	}
+
+	const handleEditWallet = wallet => {
+		setActiveModal({ name: 'wallet', data: wallet })
+	}
+
+	return (
+		<table className='w-100'>
+			<thead className='border-bottom'>
+				<tr className='text-uppercase text-muted'>
+					<td className='table-col-4 text-start'>Name</td>
+					<td className='text-start'>Address</td>
+					<td className='table-col-3 text-start'>Network</td>
+					<td className='table-col-2 text-start'>Balance</td>
+					<td className='table-col-4 text-start'>Actions</td>
+				</tr>
+			</thead>
+			<tbody>
+				{wallets &&
+					wallets.map(w => {
+						return (
+							<tr key={w.id}>
+								<td className='text-start'>{w.name}</td>
+								<td className='text-start ellipsis'>{w.address}</td>
+								<td className='text-start'>{w.chain}</td>
+								<td className='text-start'>{ToFixed(w.balance, 4) || 'N/A'}</td>
+								<td>
+									<div className='d-flex flex-row gap-2 '>
+										<button
+											title='Copy address'
+											className='d-flex column flex-center btn btn-success text-white p-2'
+											onClick={() => setClipboardText(w.address)}>
+											<Copy size={20} />
+										</button>
+
+										<button
+											title='Edit wallet'
+											className='d-flex column flex-center btn btn-primary p-2 text-white'
+											onClick={() => handleEditWallet(w)}>
+											<Edit size={20} />
+										</button>
+										<button
+											disabled={address === w.address}
+											title='Set as main'
+											className={`d-flex column flex-center btn ${
+												address === w.address ? 'btn-light-secondary cursor-auto' : 'btn-warning'
+											} p-2`}
+											onClick={() => handleSetAddress(w.address)}>
+											<Bookmark size={20} />
+										</button>
+										<button
+											title='Remove wallet'
+											className='d-flex column flex-center btn btn-danger text-white p-2'
+											onClick={() => handleSetWallets(WalletActions.Remove, w.id)}>
+											<Trash2 size={20} />
+										</button>
+									</div>
+								</td>
+							</tr>
+						)
+					})}
+			</tbody>
+		</table>
+	)
+}
+
+export function PortfolioWalletTable({ walletData, isLoading }) {
+	return (
+		<table className='w-100'>
+			<thead className='border-bottom'>
+				<tr className='text-uppercase text-muted'>
+					<td className='text-start'>Name, symbol</td>
+					<td className='table-col-4 text-start'>Price</td>
+					<td className='table-col-3 text-start'>Balance</td>
+					<td className='table-col-4 text-end'>USD value</td>
+				</tr>
+			</thead>
+			<tbody>
+				{walletData &&
+					walletData.map(token => {
+						return (
+							<tr key={token.id}>
+								<td className='text-start'>
+									<div>{token.name}</div>
+									<div className='text-muted'>{token.symbol}</div>
+								</td>
+								<td className='text-start'>{token.current_price}</td>
+								<td className='text-start'>
+									{isLoading ? <div className='loadingPlaceholder'></div> : ToFixed(token.balance, 4)}
+								</td>
+								<td className='text-end'>
+									{isLoading ? <div className='loadingPlaceholder'></div> : `${ToFixed(token.value, 2)} $`}
+								</td>
+							</tr>
+						)
+					})}
 			</tbody>
 		</table>
 	)

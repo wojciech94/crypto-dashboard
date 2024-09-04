@@ -26,11 +26,11 @@ export function Coin() {
 
 	return (
 		<>
-			<div className='flex justify-between p4 g4'>
+			<div className='d-flex justify-between p4 g4'>
 				<Link className='btn btn-secondary' to={'/coins'}>
 					Back
 				</Link>
-				<div className='flex g4'>
+				<div className='d-flex g4'>
 					{data.market_cap_rank > 1 && (
 						<Link className='btn btn-danger' to={`/coin/${McRankToTickerMap[data.market_cap_rank - 1]}`}>
 							{McRankToTickerMap[data.market_cap_rank - 1]}
@@ -44,8 +44,8 @@ export function Coin() {
 				</div>
 			</div>
 			<Card>
-				<div className='flex column g4 p4'>
-					<div className='flex align-center g8'>
+				<div className='d-flex column g4 p4'>
+					<div className='d-flex align-center g8'>
 						<img width={64} src={`${data.image.small}`} alt='Coin logo' />
 						<div>{data.name}</div>
 						<div>{data.price}</div>

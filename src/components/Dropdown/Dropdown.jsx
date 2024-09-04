@@ -12,7 +12,7 @@ export function Dropdown({ dropdownData, dropdownKey }) {
 
 	return (
 		<div className='dropdown'>
-			<button className='btn btn-secondary p-1 flex column' onClick={() => setActiveDropdown(dropdownKey)}>
+			<button className='btn btn-light-secondary p-1 d-flex column' onClick={() => setActiveDropdown(dropdownKey)}>
 				<MoreVertical />
 			</button>
 			{activeDropdown === dropdownKey && (

@@ -69,7 +69,7 @@ export const fetchDataWithContracts = async () => {
 					symbol: coin.symbol,
 					market_cap: coin.market_cap,
 					current_price: coin.current_price,
-					contract_address: contractDetails && contractDetails.platforms ? contractDetails.platforms['ethereum'] : null,
+					contract_address: contractDetails && contractDetails.platforms ? contractDetails.platforms : null,
 				}
 
 				return cDetails

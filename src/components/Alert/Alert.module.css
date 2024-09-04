@@ -1,0 +1,11 @@
+.alert {
+	display: flex;
+	padding: 1rem;
+	border-radius: 0.25rem;
+	border-left: 5px solid var(--gray);
+	box-shadow: 0px 0px 10px rgba(128, 128, 128, 0.5);
+}
+
+.primary {
+	border-color: var(--primary);
+}

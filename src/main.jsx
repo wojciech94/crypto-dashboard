@@ -9,6 +9,7 @@ import { Dashboard } from './screens/Dashboard/Dashboard'
 import { Favourites } from './screens/Favourites/Favourites'
 import { Portfolio } from './screens/Portfolio/Portfolio.jsx'
 import { Wallets } from './screens/Wallets/Wallets.jsx'
+import { Settings } from './screens/Settings/Settings.jsx'
 
 const router = createBrowserRouter([
 	{
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
 			{
 				path: '/wallets',
 				element: <Wallets />,
+			},
+			{
+				path: '/settings',
+				element: <Settings />,
 			},
 			{
 				path: '/coin/:id',

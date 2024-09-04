@@ -12,9 +12,33 @@
 }
 
 .modalContent {
-	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 2rem;
 	border-radius: 16px;
-	border: 1px solid gray;
-	background-color: white;
+	border: 1px solid var(--gray);
+	background-color: var(--background-light);
 	max-width: 90%;
+}
+
+.closeWrapper {
+	display: flex;
+	justify-content: end;
+	align-items: center;
+}
+
+.input {
+	padding: 0.55rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--gray);
+	width: 400px;
+	max-width: 100%;
+	outline: none;
+}
+
+.select {
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--gray);
 }

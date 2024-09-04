@@ -1,6 +1,12 @@
 .card {
-	background-color: #fff;
+	background-color: var(--white);
+	color: var(--text-dark);
 	border-radius: 16px;
-	border: 1px solid #e1e1e5;
+	border: 1px solid var(--light);
 	padding: 16px;
+	transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+[data-theme='dark'] .card {
+	background-color: var(--background-light);
 }

@@ -1,8 +1,7 @@
-.flexRow {
+.flexEnd {
 	display: flex;
-	gap: 0.5rem;
-	align-items: center;
-	justify-content: center;
+	justify-content: flex-end;
+	margin-bottom: 1rem;
 }
 
 .chainBadge {

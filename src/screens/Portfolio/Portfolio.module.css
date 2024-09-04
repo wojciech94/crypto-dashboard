@@ -1,12 +1,12 @@
 .tabContainer {
-	margin: 0.25rem 1rem;
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
 }
 
 .tab {
-	padding: 6px 12px;
+	padding: 8px 16px;
+	font-size: 0.9rem;
 }
 
 .tab.active {
@@ -17,7 +17,25 @@
 
 .flexRow {
 	display: flex;
-	align-items: center;
-	justify-content: center;
 	gap: 0.5rem;
+}
+
+.loading {
+	border-radius: 50%;
+	width: 25px;
+	height: 25px;
+	border: 5px solid lightcyan;
+	border-top-color: lightskyblue;
+	border-bottom-color: lightskyblue;
+	animation: loading 0.75s linear infinite;
+}
+
+@keyframes loading {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(180deg);
+	}
 }

@@ -1,7 +1,8 @@
 import { wei2Ether } from './mathFunctions'
-import { fetchCoinByTokenAddress } from './coingeckoApi'
+// import { fetchCoinByTokenAddress } from './coingeckoApi'
 
 const etherscanApiKey = process.env.REACT_APP_ETHERSCAN_API_KEY
+const arbiscanApiKey = process.env.REACT_APP_ARBISCAN_API_KEY
 
 export const fetchEtherBalance = async address => {
 	try {
@@ -15,9 +16,19 @@ export const fetchEtherBalance = async address => {
 	}
 }
 
-const fetchContractBalanceForAddress = async (contract, address) => {
+const getUrlForNetwork = (contract, address, network = 'ethereum') => {
+	switch (network) {
+		case 'arbitrum-one':
+			return `https://api.arbiscan.io/api?module=account&action=tokenbalance&contractaddress=${contract}&address=${address}&tag=latest&apikey=${arbiscanApiKey}`
+		case 'ethereum':
+		default:
+			return `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${contract}&address=${address}&tag=latest&apikey=${etherscanApiKey}`
+	}
+}
+
+const fetchContractBalanceForAddress = async (contract, address, network = 'ethereum') => {
 	try {
-		const url = `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${contract}&address=${address}&tag=latest&apikey=${etherscanApiKey}`
+		const url = getUrlForNetwork(contract, address, network)
 
 		const response = await fetch(url)
 		const data = await response.json()
@@ -27,33 +38,28 @@ const fetchContractBalanceForAddress = async (contract, address) => {
 	}
 }
 
-export const fetchBalanceForData = async (coinsData, address) => {
-	const batchSize = 5
+export const fetchBalanceForData = async (coinsData, address, network) => {
+	const batchSize = 2
 	let results = []
-
 	for (let i = 0; i < coinsData.length; i += batchSize) {
 		const batch = coinsData.slice(i, i + batchSize)
 
 		const batchResult = await Promise.all(
 			batch.map(async coin => {
 				if (coin.contract_address) {
-					const balance = await fetchContractBalanceForAddress(coin.contract_address, address)
-					let price = 0
+					const balance = await fetchContractBalanceForAddress(coin.contract_address[network], address, network)
 					let value = 0
 					if (balance > 0) {
-						const data = await fetchCoinByTokenAddress('ethereum', coin.contract_address)
-						price = data.market_data.current_price.usd || 0
-						value = price * balance
+						value = coin.current_price * balance
 					}
 
 					return {
 						...coin,
 						balance: balance,
-						price: price,
 						value: value,
 					}
 				} else {
-					console.log('No contract')
+					console.error('No contract')
 				}
 				return coin
 			})

@@ -2,7 +2,7 @@ import { Card } from '../../components/Card/Card'
 
 export function Dashboard() {
 	return (
-		<div className='flex g-10 justify-center'>
+		<div className='d-flex gap-10 justify-center'>
 			<Card>
 				<h2>Market Cap</h2>
 			</Card>
