@@ -8,3 +8,10 @@ export const WalletActions = {
 	Remove: 'remove',
 	Edit: 'edit',
 }
+
+export const CurrencySign = {
+	usd: '$',
+	eur: '€',
+	pln: 'zł',
+	btc: '₿',
+}

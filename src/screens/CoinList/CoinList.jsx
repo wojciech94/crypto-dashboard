@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import { Pagination } from '../../components/Pagination/Pagination'
 import { Table } from '../../components/Table/Table'
+import { SettingsContext } from '../../contexts/SettingsContext'
 
 export function CoinList() {
 	const { data } = useLoaderData()
+	const [settings] = useContext(SettingsContext)
 	const [currentPage, setCurrentPage] = useState(1)
-	const [itemsPerPage, setItemsPerPage] = useState(10)
+	const [itemsPerPage, setItemsPerPage] = useState(settings.tableRows || 10)
 	const totalItems = data.length
 	const lastIndex = currentPage * itemsPerPage
 	const firstIndex = lastIndex - itemsPerPage

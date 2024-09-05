@@ -1,6 +1,6 @@
 import './App.css'
 import { NavLink, Outlet } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
 import { fetchCoinsData, fetchDataWithContracts } from './utils/coingeckoApi'
@@ -9,27 +9,19 @@ import { Modal } from './components/Modal/Modal'
 import { ModalContext } from './contexts/ModalContext'
 import { DropdownContext } from './contexts/DropdownContext'
 import { WalletContext } from './contexts/WalletContext'
-import { fetchBalanceForData } from './utils/etherscanApi'
+import { fetchBalanceForData } from './utils/cryptoscanApi'
 import { SettingsContext } from './contexts/SettingsContext'
+import { TransactionsContext } from './contexts/TransactionsContext'
 
 function App() {
-	const [settings, setSettings] = useState({
-		autoSync: 'false',
-		theme: 'dark',
-		size: 'lg',
-		currency: 'usd',
-		alertsFreq: 10,
-		alertsVis: 20,
-		sortCol: 'name',
-		sortDir: 'desc',
-		rowsPerPage: 10,
-	})
+	const [settings] = useContext(SettingsContext)
 	const [activeModal, setActiveModal] = useState({})
 	const [activeDropdown, setActiveDropdown] = useState(null)
 	const [walletData, setWalletData] = useState([])
 	const [isLoading, setIsLoading] = useState(false)
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
+	const [transactions, setTransactions] = useState([])
 	const [favourites, setFavourites] = useState(JSON.parse(localStorage.getItem('favourites')) || [])
 	const [favouriteIds, setFavouriteIds] = useState(JSON.parse(localStorage.getItem('favouritesIds')) || [])
 	const [potrfolio, setPortfolio] = useState(JSON.parse(localStorage.getItem('portfolio')) || [])
@@ -149,11 +141,15 @@ function App() {
 		setWallets(updatedWallets)
 	}
 
+	const handleAddTransaction = t => {
+		setTransactions(prevT => [...prevT, t])
+	}
+
 	return (
-		<SettingsContext.Provider value={[settings, setSettings]}>
-			<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
-				<PortfolioContext.Provider value={[potrfolio, portfolioIds, handleSetPortfolio]}>
-					<ModalContext.Provider value={[activeModal, setActiveModal]}>
+		<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
+			<PortfolioContext.Provider value={[potrfolio, portfolioIds, handleSetPortfolio]}>
+				<ModalContext.Provider value={[activeModal, setActiveModal]}>
+					<TransactionsContext.Provider value={[transactions, handleAddTransaction]}>
 						<WalletContext.Provider
 							value={[walletData, fetchWalletData, isLoading, address, handleSetAddress, wallets, handleSetWallets]}>
 							<div className='wrapper'>
@@ -163,6 +159,7 @@ function App() {
 									<NavLink to={'/favourites'}>Favourites</NavLink>
 									<NavLink to={'/portfolio'}>Portfolio</NavLink>
 									<NavLink to={'/wallets'}>Wallets</NavLink>
+									<NavLink to={'/transactions'}>Transactions</NavLink>
 									<NavLink to={'/alerts'}>Alerts</NavLink>
 									<NavLink to={'/settings'}>Settings</NavLink>
 								</div>
@@ -172,10 +169,10 @@ function App() {
 							</div>
 							<Modal />
 						</WalletContext.Provider>
-					</ModalContext.Provider>
-				</PortfolioContext.Provider>
-			</FavouritesContext.Provider>
-		</SettingsContext.Provider>
+					</TransactionsContext.Provider>
+				</ModalContext.Provider>
+			</PortfolioContext.Provider>
+		</FavouritesContext.Provider>
 	)
 }
 

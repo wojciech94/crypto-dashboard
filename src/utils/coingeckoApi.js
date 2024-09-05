@@ -16,7 +16,7 @@ export const fetchData = async () => {
 	}
 }
 
-export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1 } = {}) => {
+export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, currency = 'usd' } = {}) => {
 	let order
 	switch (dir) {
 		case 'asc':
@@ -29,7 +29,7 @@ export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1 } =
 	}
 	try {
 		const res = await fetch(
-			`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&incluse_platform=true&order=${order}&per_page=${count}&page=${page}&x_cg_demo_api_key=${apiKey}`
+			`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&incluse_platform=true&order=${order}&per_page=${count}&page=${page}&x_cg_demo_api_key=${apiKey}`
 		)
 		if (!res.ok) {
 			throw new Error(`HTTP error! status: ${res.status}`)
@@ -132,12 +132,28 @@ export const fetchByTokenId = async id => {
 	}
 }
 
+export const fetchPriceByTokenId = async (id, currency = 'usd') => {
+	try {
+		const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}?x_cg_demo_api_key=${apiKey}`, fetchOptions)
+		if (!res.ok) {
+			throw new Error('Invalid token id!')
+		}
+		const data = await res.json()
+		if (data) {
+			return data.market_data.current_price[currency]
+		}
+	} catch (error) {
+		throw error
+	}
+}
+
 //Fetch selected coins data
-export const fetchCoinsData = async ids => {
+export const fetchCoinsData = async (ids, currency = 'usd') => {
+	console.log('fetch favourties')
 	try {
 		if (ids) {
 			const res = await fetch(
-				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}?x_cg_demo_api_key=${apiKey}`
+				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}?x_cg_demo_api_key=${apiKey}`
 			)
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`)

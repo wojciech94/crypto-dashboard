@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { Star } from 'react-feather'
 import { Link } from 'react-router-dom'
-import { FavouriteActions, WalletActions } from '../../constants/AppConstants'
+import { CurrencySign, FavouriteActions, WalletActions } from '../../constants/AppConstants'
 import { DropdownContext } from '../../contexts/DropdownContext'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
 import { ModalContext } from '../../contexts/ModalContext'
@@ -11,18 +11,24 @@ import { sortData } from '../../utils/sorting'
 import { Dropdown } from '../Dropdown/Dropdown'
 import { Copy, Trash2, Edit, Bookmark } from 'react-feather'
 import { WalletContext } from '../../contexts/WalletContext'
+import { SettingsContext } from '../../contexts/SettingsContext'
 
 export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
-	const [sortSetting, setSortSetting] = useState({ key: 'id', dir: 'asc' })
-	const [coinsList, setCoinsList] = useState(data)
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
 	const [, portfolioIds, handleSetPortfolio] = useContext(PortfolioContext)
 	const [, setActiveModal] = useContext(ModalContext)
 	const [, setActiveDropdown] = useContext(DropdownContext)
+	const [settings] = useContext(SettingsContext)
+	const [sortSetting, setSortSetting] = useState({ key: settings.sortCol || 'id', dir: settings.sortDir || 'desc' })
+	const [coinsList, setCoinsList] = useState(data)
 
 	useEffect(() => {
 		setCoinsList(data)
 	}, [data])
+
+	useEffect(() => {
+		sortList(settings.sortCol)
+	}, [settings])
 
 	function sortList(cat) {
 		let dir = 'asc'
@@ -70,7 +76,13 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 							#
 						</button>
 					</td>
-					<td className='text-start'>Name</td>
+					<td className='text-start'>
+						<button
+							className={`btn btn-link ${sortSetting['key'] == 'name' ? 'text-primary text-bold' : ''}`}
+							onClick={() => sortList('name')}>
+							Name
+						</button>
+					</td>
 					<td>
 						<button
 							className={`btn btn-link ${sortSetting['key'] == 'current_price' ? 'text-primary text-bold' : ''}`}
@@ -83,13 +95,6 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 							className={`btn btn-link ${sortSetting['key'] == 'ath' ? 'text-primary text-bold' : ''}`}
 							onClick={() => sortList('ath')}>
 							Ath
-						</button>
-					</td>
-					<td>
-						<button
-							className={`btn btn-link ${sortSetting['key'] == 'price_change_24h' ? 'text-primary text-bold' : ''}`}
-							onClick={() => sortList('price_change_24h')}>
-							24h change
 						</button>
 					</td>
 					<td>
@@ -133,19 +138,18 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 							<td>{el.market_cap_rank}</td>
 							<td className='text-start'>
 								<Link to={`/coin/${el.id}`}>
-									<strong>{el.name}</strong>
+									<span className='text-bold'>{el.name}</span>
 								</Link>
 							</td>
-							<td>{NumberFormatter(el.current_price)}</td>
-							<td>{NumberFormatter(el.ath)}</td>
-							<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>
-								{ToFixed(el.price_change_24h, 2)}
-							</td>
+							<td>{`${NumberFormatter(el.current_price)} ${CurrencySign[settings.currency]}`}</td>
+							<td>{`${NumberFormatter(el.ath)} ${CurrencySign[settings.currency]}`}</td>
 							<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>{`${ToFixed(
 								el.price_change_percentage_24h,
 								2
 							)}%`}</td>
-							<td className='text-nowrap'>{NumberSpaceFormatter(el.market_cap)}</td>
+							<td className='text-nowrap'>{`${NumberSpaceFormatter(el.market_cap)} ${
+								CurrencySign[settings.currency]
+							}`}</td>
 							<td>
 								<Dropdown dropdownKey={dropdownKey + id} dropdownData={prepareDropdownData(el)}></Dropdown>
 							</td>

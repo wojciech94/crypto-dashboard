@@ -3,20 +3,27 @@ import { Card } from '../../components/Card/Card'
 import { SettingsContext } from '../../contexts/SettingsContext'
 
 export function Settings() {
-	const [settings, setSettings] = useContext(SettingsContext)
+	const [settings, handleSetSettings] = useContext(SettingsContext)
+
+	const onSettingsChaned = (e, isNumber = false) => {
+		if (e?.target?.name) {
+			let val = e.target.value
+			if (isNumber) {
+				val = Number(val)
+			}
+			handleSetSettings({ ...settings, [e.target.name]: val })
+		}
+	}
 
 	return (
 		<div className='d-flex gap-10'>
 			<div className='d-flex flex-1 column gap-5 overflow-auto'>
 				<Card>
-					<div className='d-flex column p-4 mb-3'>
-						<div className='text-start mb-4 text-bold l-spacing-lg'>General</div>
-						<div className='text-start mb-4 l-spacing-sm'>Auto sync data</div>
-						<form
-							onChange={e => {
-								setSettings({ ...settings, autoSync: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+					<div className='d-flex column gap-4 p-4'>
+						<div className='col-4 text-end text-bold l-spacing-lg'>General</div>
+						<div className='d-flex align-center mb-4'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Auto sync data</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -25,6 +32,7 @@ export function Settings() {
 										id='autoSyncOn'
 										checked={settings.autoSync === 'true'}
 										value='true'
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='autoSyncOn' className='cursor-pointer'>
 										On
@@ -38,22 +46,18 @@ export function Settings() {
 										id='autoSyncOff'
 										checked={settings.autoSync === 'false'}
 										value='false'
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='autoSyncOff' className='cursor-pointer'>
 										Off
 									</label>
 								</div>
 							</div>
-						</form>
-					</div>
-					<div className='d-flex column p-4 mb-3'>
-						<div className='text-start mb-4 text-bold l-spacing-lg'>Appearence</div>
-						<div className='text-start mb-4 l-spacing-sm'>Theme</div>
-						<form
-							onChange={e => {
-								setSettings({ ...settings, theme: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='col-4 text-end text-bold l-spacing-lg'>Appearence</div>
+						<div className='d-flex align-center mb-4'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Theme</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -62,6 +66,7 @@ export function Settings() {
 										id='lightTheme'
 										value='light'
 										checked={settings.theme === 'light'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='lightTheme' className='cursor-pointer'>
 										light
@@ -75,22 +80,19 @@ export function Settings() {
 										id='darkTheme'
 										checked={settings.theme === 'dark'}
 										value='dark'
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='darkTheme' className='cursor-pointer'>
 										dark
 									</label>
 								</div>
 							</div>
-						</form>
-					</div>
-					<div className='d-flex column p-4 mb-3'>
-						<div className='text-start mb-4 text-bold l-spacing-lg'>Typography</div>
-						<div className='text-start mb-4 l-spacing-sm'>Font size</div>
-						<form
-							onChange={e => {
-								setSettings({ ...settings, size: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+
+						<div className='col-4 text-end text-bold l-spacing-lg'>Typography</div>
+						<div className='d-flex align-center mb-4'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Font size</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -99,6 +101,7 @@ export function Settings() {
 										id='sizeSm'
 										value='sm'
 										checked={settings.size === 'sm'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeSm' className='cursor-pointer'>
 										14
@@ -112,6 +115,7 @@ export function Settings() {
 										id='sizeMd'
 										value='md'
 										checked={settings.size === 'md'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeMd' className='cursor-pointer'>
 										16
@@ -125,6 +129,7 @@ export function Settings() {
 										id='sizeLg'
 										value='lg'
 										checked={settings.size === 'lg'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeLg' className='cursor-pointer'>
 										18
@@ -138,22 +143,18 @@ export function Settings() {
 										id='sizeXl'
 										value='xl'
 										checked={settings.size === 'xl'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeXl' className='cursor-pointer'>
 										20
 									</label>
 								</div>
 							</div>
-						</form>
-					</div>
-					<div className='d-flex column p-4 mb-3'>
-						<div className='text-start mb-4 text-bold l-spacing-lg'>Locales</div>
-						<div className='text-start mb-4 l-spacing-sm'>Currency</div>
-						<form
-							onChange={e => {
-								setSettings({ ...settings, currency: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='col-4 text-end text-bold l-spacing-lg'>Locales</div>
+						<div className='d-flex align-center mb-4'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Currency</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -162,6 +163,7 @@ export function Settings() {
 										id='currencyUsd'
 										value='usd'
 										checked={settings.currency === 'usd'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='currencyUsd' className='cursor-pointer'>
 										Usd
@@ -175,6 +177,7 @@ export function Settings() {
 										id='currencyPln'
 										value='pln'
 										checked={settings.currency === 'pln'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='currencyPln' className='cursor-pointer'>
 										Pln
@@ -188,6 +191,7 @@ export function Settings() {
 										id='currencyEur'
 										value='eur'
 										checked={settings.currency === 'eur'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='currencyEur' className='cursor-pointer'>
 										Euro
@@ -201,23 +205,18 @@ export function Settings() {
 										id='currencyBtc'
 										value='btc'
 										checked={settings.currency === 'btc'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='currencyBtc' className='cursor-pointer'>
 										Btc
 									</label>
 								</div>
 							</div>
-						</form>
-					</div>
-					<div className='d-flex column p-4 mb-3'>
-						<div className='text-start mb-4 text-bold l-spacing-lg'>Alerts</div>
-						<div className='text-start mb-4 l-spacing-sm'>Alerts show frequency</div>
-						<form
-							className='mb-4'
-							onChange={e => {
-								setSettings({ ...settings, alertsFreq: Number(e.target.value) })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='col-4 text-end text-bold l-spacing-lg'>Alerts</div>
+						<div className='d-flex align-center'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Alerts show frequency</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -226,6 +225,7 @@ export function Settings() {
 										id='alertsFreq5'
 										value={5}
 										checked={settings.alertsFreq === 5}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsFreq5' className='cursor-pointer'>
 										5 s
@@ -239,6 +239,7 @@ export function Settings() {
 										id='alertsFreq10'
 										value={10}
 										checked={settings.alertsFreq === 10}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsFreq10' className='cursor-pointer'>
 										10 s
@@ -252,6 +253,7 @@ export function Settings() {
 										id='alertsFreq30'
 										value={30}
 										checked={settings.alertsFreq === 30}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsFreq30' className='cursor-pointer'>
 										30 s
@@ -265,19 +267,17 @@ export function Settings() {
 										id='alertsFreq60'
 										value={60}
 										checked={settings.alertsFreq === 60}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsFreq60' className='cursor-pointer'>
 										60 s
 									</label>
 								</div>
 							</div>
-						</form>
-						<div className='text-start mb-4 l-spacing-sm'>Alerts visibility time</div>
-						<form
-							onChange={e => {
-								setSettings({ ...settings, alertsVis: Number(e.target.value) })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='d-flex align-center mb-4'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Alerts visibility time</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -286,6 +286,7 @@ export function Settings() {
 										id='alertsVis10'
 										value={10}
 										checked={settings.alertsVis === 10}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsVis10' className='cursor-pointer'>
 										10 s
@@ -299,6 +300,7 @@ export function Settings() {
 										id='alertsVis20'
 										value={20}
 										checked={settings.alertsVis === 20}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsVis20' className='cursor-pointer'>
 										20 s
@@ -312,6 +314,7 @@ export function Settings() {
 										id='alertsVis40'
 										value={40}
 										checked={settings.alertsVis === 40}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsVis40' className='cursor-pointer'>
 										40 s
@@ -325,23 +328,18 @@ export function Settings() {
 										id='alertsVis60'
 										value={60}
 										checked={settings.alertsVis === 60}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='alertsVis60' className='cursor-pointer'>
 										60 s
 									</label>
 								</div>
 							</div>
-						</form>
-					</div>
-					<div className='d-flex column p-4 mb-3'>
-						<div className='text-start mb-4 text-bold l-spacing-lg'>Table</div>
-						<div className='text-start mb-4 l-spacing-sm'>Table sort column</div>
-						<form
-							className='mb-4'
-							onChange={e => {
-								setSettings({ ...settings, sortCol: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='col-4 text-end text-bold l-spacing-lg'>Table</div>
+						<div className='d-flex align-center'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Table sort column</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -350,6 +348,7 @@ export function Settings() {
 										id='sortColId'
 										value='id'
 										checked={settings.sortCol === 'id'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sortColId' className='cursor-pointer'>
 										Id
@@ -363,6 +362,7 @@ export function Settings() {
 										id='sortColName'
 										value='name'
 										checked={settings.sortCol === 'name'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sortColName' className='cursor-pointer'>
 										Name
@@ -376,6 +376,7 @@ export function Settings() {
 										id='sortColPrice'
 										value='price'
 										checked={settings.sortCol === 'price'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sortColPrice' className='cursor-pointer'>
 										Price
@@ -389,20 +390,17 @@ export function Settings() {
 										id='sortCol24H%'
 										value='24h%'
 										checked={settings.sortCol === '24h%'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sortCol24H%' className='cursor-pointer'>
 										24h % change
 									</label>
 								</div>
 							</div>
-						</form>
-						<div className='text-start mb-4 l-spacing-sm'>Table sort direction</div>
-						<form
-							className='mb-4'
-							onChange={e => {
-								setSettings({ ...settings, sortDir: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='d-flex align-center'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Table sort direction</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -411,6 +409,7 @@ export function Settings() {
 										id='sordDirAsc'
 										value='asc'
 										checked={settings.sortDir === 'asc'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sordDirAsc' className='cursor-pointer'>
 										Ascending
@@ -424,19 +423,17 @@ export function Settings() {
 										id='sordDirDesc'
 										value='desc'
 										checked={settings.sortDir === 'desc'}
+										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sordDirDesc' className='cursor-pointer'>
 										Descending
 									</label>
 								</div>
 							</div>
-						</form>
-						<div className='text-start mb-4 l-spacing-sm'>Table rows per page</div>
-						<form
-							onChange={e => {
-								setSettings({ ...settings, rowsPerPage: e.target.value })
-							}}>
-							<div className='d-flex align-center gap-5'>
+						</div>
+						<div className='d-flex align-center'>
+							<div className='col-4 text-end l-spacing-sm text-light-dark'>Table rows per page</div>
+							<div className='col-8 d-flex align-center gap-5 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -444,7 +441,8 @@ export function Settings() {
 										name='tableRows'
 										id='tableRows5'
 										value={5}
-										checked={settings.rowsPerPage === 5}
+										checked={settings.tableRows === 5}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='tableRows5' className='cursor-pointer'>
 										5
@@ -457,7 +455,8 @@ export function Settings() {
 										name='tableRows'
 										id='tableRows10'
 										value={10}
-										checked={settings.rowsPerPage === 10}
+										checked={settings.tableRows === 10}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='tableRows10' className='cursor-pointer'>
 										10
@@ -470,7 +469,8 @@ export function Settings() {
 										name='tableRows'
 										id='tableRows20'
 										value={20}
-										checked={settings.rowsPerPage === 20}
+										checked={settings.tableRows === 20}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='tableRows20' className='cursor-pointer'>
 										20
@@ -483,7 +483,8 @@ export function Settings() {
 										name='tableRows'
 										id='tableRows50'
 										value={50}
-										checked={settings.rowsPerPage === 50}
+										checked={settings.tableRows === 50}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='tableRows50' className='cursor-pointer'>
 										50
@@ -496,14 +497,15 @@ export function Settings() {
 										name='tableRows'
 										id='tableRows100'
 										value={100}
-										checked={settings.rowsPerPage === 100}
+										checked={settings.tableRows === 100}
+										onChange={e => onSettingsChaned(e, true)}
 									/>
 									<label htmlFor='tableRows100' className='cursor-pointer'>
 										100
 									</label>
 								</div>
 							</div>
-						</form>
+						</div>
 					</div>
 				</Card>
 			</div>

@@ -7,6 +7,12 @@ export function sortData(data, key, dir) {
 				} else {
 					return a.market_cap - b.market_cap
 				}
+			case 'name':
+				if (dir === 'asc') {
+					return a[key].localeCompare(b[key])
+				} else {
+					return b[key].localeCompare(a[key])
+				}
 			default:
 				if (dir === 'asc') {
 					return a[key] - b[key]

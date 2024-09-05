@@ -4,6 +4,7 @@ import { PortfolioWalletTable, Table } from '../../components/Table/Table'
 import { WalletContext } from '../../contexts/WalletContext'
 import { PortfolioContext } from '../../contexts/PortfolioContext'
 import styles from './Portfolio.module.css'
+import { SettingsContext } from '../../contexts/SettingsContext'
 
 export function Portfolio() {
 	const [activeTab, setActiveTab] = useState('coins')
@@ -39,8 +40,9 @@ export function Portfolio() {
 
 function CoinsPortfolio() {
 	const [portfolio] = useContext(PortfolioContext)
+	const [settings] = useContext(SettingsContext)
 	const [currentPage, setCurrentPage] = useState(1)
-	const [itemsPerPage, setItemsPerPage] = useState(10)
+	const [itemsPerPage, setItemsPerPage] = useState(settings.tableRows || 10)
 	const totalItems = portfolio.length
 	const lastIndex = currentPage * itemsPerPage
 	const firstIndex = lastIndex - itemsPerPage
