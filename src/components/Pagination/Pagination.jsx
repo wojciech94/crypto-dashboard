@@ -15,7 +15,7 @@ export function Pagination({ totalItems, itemsPerPage, currentPage, onPageChange
 
 	return (
 		<div className={styles.pagination}>
-			<div className={styles.paginationText}>{`${firstIndex} - ${lastIndex} z ${totalItems}`}</div>
+			<div className={styles.paginationText}>{`${firstIndex} - ${lastIndex} of ${totalItems}`}</div>
 			<div className={styles.paginationActions}>
 				{currentPage > 3 && (
 					<button disabled={currentPage === 1} onClick={() => onPageChange(1)}>

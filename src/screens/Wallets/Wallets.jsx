@@ -16,7 +16,7 @@ export function Wallets() {
 					<div className={styles.flexEnd}>
 						<button
 							className='btn btn-primary text-white text-semibold'
-							onClick={() => setActiveModal({ name: 'wallet' })}>
+							onClick={() => setActiveModal({ name: 'wallet', title: 'Add wallet' })}>
 							Add wallet
 						</button>
 					</div>
@@ -27,7 +27,7 @@ export function Wallets() {
 					<div>
 						<span>You dont't have any wallets. </span>
 						<button
-							onClick={() => setActiveModal({ name: 'wallet' })}
+							onClick={() => setActiveModal({ name: 'wallet', title: 'Add wallet' })}
 							className='btn btn-link text-bold text-start text-underline'>
 							Add first wallet
 						</button>

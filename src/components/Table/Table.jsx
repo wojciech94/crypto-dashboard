@@ -12,6 +12,8 @@ import { Dropdown } from '../Dropdown/Dropdown'
 import { Copy, Trash2, Edit, Bookmark } from 'react-feather'
 import { WalletContext } from '../../contexts/WalletContext'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { Alert } from '../Alert/Alert'
+import { AlertContext } from '../../contexts/AlertsContext'
 
 export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
@@ -27,14 +29,15 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 	}, [data])
 
 	useEffect(() => {
-		sortList(settings.sortCol)
+		sortList(settings.sortCol, true)
 	}, [settings])
 
-	function sortList(cat) {
-		let dir = 'asc'
-		if (cat === sortSetting.key) {
-			dir = sortSetting.dir === 'asc' ? 'desc' : 'asc'
+	function sortList(cat, init = false) {
+		let dir = sortSetting.dir || 'asc'
+		if (!init && cat === sortSetting.key) {
+			dir = dir === 'asc' ? 'desc' : 'asc'
 		}
+
 		setSortSetting({ key: cat, dir })
 		const sortedByKey = sortData(coinsList, cat, dir)
 		setCoinsList(sortedByKey)
@@ -43,21 +46,21 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 	function prepareDropdownData(el) {
 		let dData = []
 		if (!portfolioIds.includes(el.id)) {
-			dData = [{ action: () => handleSetPortfolio(el.id), label: 'Dodaj do portfolio' }]
+			dData = [{ action: () => handleSetPortfolio(el.id), label: 'Add to portfolio' }]
 		}
 		if (isTransactionAction) {
 			dData.push({
 				action: () => {
 					setActiveDropdown(null)
-					setActiveModal({ name: 'transaction' })
+					setActiveModal({ name: 'transaction', title: 'Add transaction' })
 				},
-				label: 'Dodaj transakcje',
+				label: 'Add transaction',
 			})
 		}
 		if (favouriteIds.includes(el.id)) {
-			dData.push({ action: () => handleSetFavourites(el.id, FavouriteActions.Remove), label: 'Usuń z ulubionych' })
+			dData.push({ action: () => handleSetFavourites(el.id, FavouriteActions.Remove), label: 'Remove from favourites' })
 		} else {
-			dData.push({ action: () => handleSetFavourites(el.id), label: 'Dodaj do ulubionych' })
+			dData.push({ action: () => handleSetFavourites(el.id), label: 'Add to favourites' })
 		}
 
 		return dData
@@ -164,6 +167,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 export function WalletTable() {
 	const [, , , address, handleSetAddress, wallets, handleSetWallets] = useContext(WalletContext)
 	const [, setActiveModal] = useContext(ModalContext)
+	const [, setNewAlert] = useContext(AlertContext)
 
 	const setClipboardText = value => {
 		if (value) {
@@ -172,7 +176,16 @@ export function WalletTable() {
 	}
 
 	const handleEditWallet = wallet => {
-		setActiveModal({ name: 'wallet', data: wallet })
+		setActiveModal({ name: 'wallet', data: wallet, title: 'Edit wallet' })
+	}
+
+	const onAddressChange = address => {
+		handleSetAddress(address)
+		setNewAlert({
+			title: 'You changed your default wallet',
+			subTitle: 'Synchronize new wallet balance in portfolio tab',
+			id: crypto.randomUUID(),
+		})
 	}
 
 	return (
@@ -216,7 +229,7 @@ export function WalletTable() {
 											className={`d-flex column flex-center btn ${
 												address === w.address ? 'btn-light-secondary cursor-auto' : 'btn-warning'
 											} p-2`}
-											onClick={() => handleSetAddress(w.address)}>
+											onClick={() => onAddressChange(w.address)}>
 											<Bookmark size={20} />
 										</button>
 										<button
@@ -235,36 +248,124 @@ export function WalletTable() {
 	)
 }
 
-export function PortfolioWalletTable({ walletData, isLoading }) {
+export function PortfolioWalletTable() {
+	const [walletData, , isLoading, , wallets] = useContext(WalletContext)
+
+	if (!wallets || wallets.length === 0) {
+		return (
+			<Alert>
+				<div className='py-4'>
+					<Alert variant={'primary'}>
+						<div className='d-flex column gap-2 text-start'>
+							<div className='text-bold'>You don't have any wallets.</div>
+							<div>
+								Please add your first wallet{' '}
+								<Link className='text-underline' to={'/wallets'}>
+									here
+								</Link>{' '}
+								and set is as default in actions column.
+							</div>
+						</div>
+					</Alert>
+				</div>
+			</Alert>
+		)
+	}
+
+	if (!walletData || walletData.length === 0) {
+		return (
+			<div className='py-4'>
+				<Alert variant={'primary'}>
+					<div className='d-flex column gap-3 text-start'>
+						<div className='text-bold l-spacing-lg fs-lg'>You did't fetch any data.</div>
+						<div>
+							<p>
+								Please fetch your data by the sync button. You can set automatic synchronize in{' '}
+								<Link className='text-underline' to={'/settings'}>
+									settings
+								</Link>{' '}
+								panel.
+							</p>
+							<p>
+								Be patient. It can take a while because of api restrictions. During this process you can using app
+								normally and back here later.
+							</p>
+						</div>
+					</div>
+				</Alert>
+			</div>
+		)
+	}
+
 	return (
-		<table className='w-100'>
-			<thead className='border-bottom'>
-				<tr className='text-uppercase text-muted'>
-					<td className='text-start'>Name, symbol</td>
-					<td className='table-col-4 text-start'>Price</td>
-					<td className='table-col-3 text-start'>Balance</td>
-					<td className='table-col-4 text-end'>USD value</td>
+		<>
+			<table className='w-100'>
+				<thead className='border-bottom'>
+					<tr className='text-uppercase text-muted'>
+						<td className='text-start'>Name, symbol</td>
+						<td className='table-col-4 text-start'>Price</td>
+						<td className='table-col-4 text-start'>Network</td>
+						<td className='table-col-3 text-start'>Balance</td>
+						<td className='table-col-4 text-end'>USD value</td>
+					</tr>
+				</thead>
+				<tbody>
+					{walletData.length > 0 &&
+						walletData.map(token => {
+							return (
+								<tr key={token.id}>
+									<td className='text-start'>
+										<div>{token.name}</div>
+										<div className='text-muted'>{token.symbol}</div>
+									</td>
+									<td className='text-start'>{token.current_price}</td>
+									<td className='text-start'>{token.network}</td>
+									<td className='text-start'>
+										{isLoading ? <div className='loadingPlaceholder'></div> : ToFixed(token.balance, 4)}
+									</td>
+									<td className='text-end'>
+										{isLoading ? <div className='loadingPlaceholder'></div> : `${ToFixed(token.value, 2)} $`}
+									</td>
+								</tr>
+							)
+						})}
+				</tbody>
+			</table>
+		</>
+	)
+}
+
+export function TransactionsTable({ transactions }) {
+	const getTime = time => {
+		const date = new Date(time).toLocaleString()
+		return date
+	}
+
+	return (
+		<table>
+			<thead>
+				<tr>
+					<td>Asset</td>
+					<td>Type</td>
+					<td>Data</td>
+					<td>Price</td>
+					<td>Quantity</td>
+					<td>Value</td>
 				</tr>
 			</thead>
 			<tbody>
-				{walletData &&
-					walletData.map(token => {
-						return (
-							<tr key={token.id}>
-								<td className='text-start'>
-									<div>{token.name}</div>
-									<div className='text-muted'>{token.symbol}</div>
-								</td>
-								<td className='text-start'>{token.current_price}</td>
-								<td className='text-start'>
-									{isLoading ? <div className='loadingPlaceholder'></div> : ToFixed(token.balance, 4)}
-								</td>
-								<td className='text-end'>
-									{isLoading ? <div className='loadingPlaceholder'></div> : `${ToFixed(token.value, 2)} $`}
-								</td>
-							</tr>
-						)
-					})}
+				{transactions.map(t => {
+					return (
+						<tr key={t.time}>
+							<td>{t.name}</td>
+							<td>{t.type}</td>
+							<td>{getTime(t.time)}</td>
+							<td>{`${t.price} ${CurrencySign[t.currency]}`}</td>
+							<td>{t.quantity}</td>
+							<td>{`${t.value} ${CurrencySign[t.currency]}`}</td>
+						</tr>
+					)
+				})}
 			</tbody>
 		</table>
 	)

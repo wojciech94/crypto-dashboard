@@ -149,7 +149,6 @@ export const fetchPriceByTokenId = async (id, currency = 'usd') => {
 
 //Fetch selected coins data
 export const fetchCoinsData = async (ids, currency = 'usd') => {
-	console.log('fetch favourties')
 	try {
 		if (ids) {
 			const res = await fetch(

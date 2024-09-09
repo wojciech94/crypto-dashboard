@@ -112,6 +112,30 @@ select {
 	color: var(--text-dark);
 }
 
+.position-absolute {
+	position: absolute;
+}
+
+.overflow-hidden {
+	overflow: hidden;
+}
+
+.top-0 {
+	top: 0;
+}
+
+.bottom-0 {
+	bottom: 0;
+}
+
+.right-0 {
+	right: 0;
+}
+
+.left-0 {
+	left: 0;
+}
+
 .cursor-auto {
 	cursor: auto;
 }
@@ -203,7 +227,7 @@ td.ellipsis {
 	white-space: nowrap;
 }
 
-tbody tr:hover {
+tbody tr:hover:not(.no-hover) {
 	box-shadow: 0 0 10px var(--primary-lt);
 	background-color: var(--primary-lt);
 }
@@ -625,6 +649,26 @@ a:hover {
 	padding-bottom: 1rem;
 }
 
+.pl-0 {
+	padding-left: 0;
+}
+
+.pl-1 {
+	padding-left: 0.25rem;
+}
+
+.pl-2 {
+	padding-left: 0.5rem;
+}
+
+.pl-3 {
+	padding-left: 0.75rem;
+}
+
+.pl-4 {
+	padding-left: 1rem;
+}
+
 .m-0 {
 	margin: 0;
 }
@@ -748,6 +792,7 @@ a:hover {
 
 .dropdown {
 	position: relative;
+	min-width: 30px;
 }
 
 .dropdown-menu {
@@ -757,7 +802,7 @@ a:hover {
 	top: 2.2rem;
 	right: 0;
 	border-radius: 0.75rem;
-	border: 1px solid var(light);
+	border: 1px solid var(--light);
 	background-color: var(--background-color);
 	z-index: 70;
 	overflow: hidden;
@@ -773,7 +818,7 @@ a:hover {
 	background-color: var(--text-white);
 	border-radius: 0;
 	border-bottom: 1px solid var(light);
-	min-width: 200px;
+	min-width: 225px;
 	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -792,6 +837,39 @@ a:hover {
 	animation: loadingPlaceholder 2s linear infinite;
 }
 
+.animated-alert {
+	padding: 0.5rem 1rem;
+	border-left: 5px solid var(--primary);
+	border-radius: 0.5rem;
+	background-color: var(--text-white);
+	animation: alertAnim10 10s ease-in-out;
+	box-shadow: rgba(0, 0, 0, 0.24) -2px 2px 10px;
+}
+
+.animation-5 {
+	animation-duration: 5s;
+}
+
+.animation-10 {
+	animation-duration: 10s;
+}
+
+.animation-20 {
+	animation-duration: 20s;
+}
+
+.animation-30 {
+	animation-duration: 30s;
+}
+
+.animation-45 {
+	animation-duration: 45s;
+}
+
+.animation-60 {
+	animation-duration: 60s;
+}
+
 @keyframes loadingPlaceholder {
 	0% {
 		background-color: var(--gray);
@@ -803,5 +881,31 @@ a:hover {
 
 	100% {
 		background-color: var(--gray);
+	}
+}
+
+@keyframes alertAnim10 {
+	0% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	4% {
+		transform: translateX(-15px);
+	}
+
+	5% {
+		transform: translateX(0);
+	}
+
+	95% {
+		transform: translateX(0);
+	}
+
+	96% {
+		transform: translateX(-15px);
+	}
+
+	100% {
+		transform: translateX(calc(100% + 1rem));
 	}
 }

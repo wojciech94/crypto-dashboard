@@ -22,7 +22,7 @@
 	max-width: 90%;
 }
 
-.closeWrapper {
+.headerWrapper {
 	display: flex;
 	justify-content: end;
 	align-items: center;

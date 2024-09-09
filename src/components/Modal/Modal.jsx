@@ -9,6 +9,7 @@ import { PortfolioContext } from '../../contexts/PortfolioContext'
 import { fetchPriceByTokenId } from '../../utils/coingeckoApi'
 import { TransactionsContext } from '../../contexts/TransactionsContext'
 import { ToFixed, ToPrecision } from '../../utils/formatter'
+import { getValueInCurrency } from '../../utils/mathFunctions'
 
 export function Modal() {
 	const [activeModal, setActiveModal] = useContext(ModalContext)
@@ -38,9 +39,10 @@ export function Modal() {
 	return (
 		<div className={styles.modalOverlay} onClick={() => setActiveModal({})}>
 			<div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-				<div className={styles.closeWrapper}>
-					<button className='btn btn-link' onClick={() => setActiveModal({})}>
-						<X />
+				<div className={styles.headerWrapper}>
+					{activeModal && activeModal.title && <div className='flex-1 fs-xl'>{activeModal.title}</div>}
+					<button className='btn btn-link d-flex' onClick={() => setActiveModal({})}>
+						<X size={32} />
 					</button>
 				</div>
 
@@ -151,9 +153,12 @@ const TransactionModalBody = () => {
 	const [activeTab, setActiveTab] = useState('buy')
 	const [coinValue, setCoinValue] = useState(portfolio[0].id || '')
 	const [currencyValue, setCurrencyValue] = useState('usd')
+	const [currencyFeeValue, setCurrencyFeeValue] = useState('usd')
 	const [paidValue, setPaidValue] = useState('')
 	const [quantityValue, setQuantityValue] = useState('')
 	const [coinPriceValue, setCoinPriceValue] = useState('')
+	const [isTransactionFee, setIsTransactionFee] = useState(false)
+	const [feeValue, setFeeValue] = useState(0)
 
 	const fetchCoinPrice = async () => {
 		const coinId = coinValue
@@ -165,13 +170,19 @@ const TransactionModalBody = () => {
 	const onTransactionAdd = () => {
 		const coinName = portfolio.find(p => p.id === coinValue).name
 		if (quantityValue && coinPriceValue && paidValue) {
+			let feeVal = Number(feeValue) || 0
+			if (feeVal) {
+				if (currencyValue !== currencyFeeValue) {
+					feeVal = getValueInCurrency(feeVal, currencyFeeValue, currencyValue)
+				}
+			}
 			const t = {
 				type: activeTab,
 				name: coinName,
 				currency: currencyValue,
 				quantity: ToPrecision(Number(quantityValue), 4),
 				price: Number(coinPriceValue),
-				value: Number(paidValue),
+				value: Number(paidValue + feeVal),
 				time: Date.now(),
 			}
 			handleAddTransaction(t)
@@ -193,11 +204,15 @@ const TransactionModalBody = () => {
 	}
 
 	const onPayChange = value => {
-		setPaidValue(value)
+		setPaidValue(Number(value))
 		if (Number(coinPriceValue)) {
 			const quant = Number(value) / Number(coinPriceValue)
 			setQuantityValue(quant)
 		}
+	}
+
+	const onFeeChange = value => {
+		setFeeValue(value)
 	}
 
 	const onCoinPriceChange = value => {
@@ -250,7 +265,19 @@ const TransactionModalBody = () => {
 						</div>
 					</div>
 					<div className='d-flex column gap-2'>
-						<div>Paid</div>
+						<div className='d-flex justify-between'>
+							<div>Value</div>
+							<label className='d-flex gap-2 align-center' htmlFor='feeChbx'>
+								<input
+									type='checkbox'
+									name='feeChbx'
+									id='feeChbx'
+									value={isTransactionFee}
+									onChange={() => setIsTransactionFee(prevV => !prevV)}
+								/>
+								Additional fee
+							</label>
+						</div>
 						<div className='d-flex bg-light text-dark rounded-1 p-1'>
 							<input
 								className='flex-1 px-2 py-1 input-clear'
@@ -272,6 +299,31 @@ const TransactionModalBody = () => {
 							</select>
 						</div>
 					</div>
+					{isTransactionFee && (
+						<div className='d-flex column gap-2'>
+							<div>Fee</div>
+							<div className='d-flex bg-light text-dark rounded-1 p-1'>
+								<input
+									className='flex-1 px-2 py-1 input-clear'
+									type='text'
+									value={feeValue}
+									onChange={e => onFeeChange(e.target.value)}
+								/>
+								<select
+									className='w-auto select-clear px-2 py-1'
+									name='feeSelect'
+									id='feeSelectId'
+									value={currencyFeeValue}
+									onChange={e => setCurrencyFeeValue(e.target.value)}>
+									{Object.keys(CurrencySign).map(p => (
+										<option key={p} className='option-clear' value={p}>
+											{p}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+					)}
 					<div className='d-flex gap-2'>
 						<div className='d-flex column gap-2'>
 							<div>Quantity</div>

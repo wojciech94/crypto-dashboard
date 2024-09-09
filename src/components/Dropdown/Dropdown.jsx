@@ -32,7 +32,7 @@ export function Dropdown({ dropdownData, dropdownKey }) {
 
 export function DropdownBtn({ onClick, children }) {
 	return (
-		<button className='btn dropdown-btn' onClick={onClick}>
+		<button className='btn dropdown-btn text-start' onClick={onClick}>
 			{children}
 		</button>
 	)

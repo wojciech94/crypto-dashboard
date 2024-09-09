@@ -374,8 +374,8 @@ export function Settings() {
 										type='radio'
 										name='sortCol'
 										id='sortColPrice'
-										value='price'
-										checked={settings.sortCol === 'price'}
+										value='current_price'
+										checked={settings.sortCol === 'current_price'}
 										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sortColPrice' className='cursor-pointer'>
@@ -388,8 +388,8 @@ export function Settings() {
 										type='radio'
 										name='sortCol'
 										id='sortCol24H%'
-										value='24h%'
-										checked={settings.sortCol === '24h%'}
+										value='price_change_percentage_24h'
+										checked={settings.sortCol === 'price_change_percentage_24h'}
 										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sortCol24H%' className='cursor-pointer'>

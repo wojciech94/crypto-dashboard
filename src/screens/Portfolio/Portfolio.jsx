@@ -2,13 +2,13 @@ import { useContext, useState } from 'react'
 import { Pagination } from '../../components/Pagination/Pagination'
 import { PortfolioWalletTable, Table } from '../../components/Table/Table'
 import { WalletContext } from '../../contexts/WalletContext'
-import { PortfolioContext } from '../../contexts/PortfolioContext'
 import styles from './Portfolio.module.css'
 import { SettingsContext } from '../../contexts/SettingsContext'
+import { useLoaderData } from 'react-router-dom'
 
 export function Portfolio() {
 	const [activeTab, setActiveTab] = useState('coins')
-	const [, fetchWalletData, isLoading] = useContext(WalletContext)
+	const [, fetchWalletData, isLoading, address] = useContext(WalletContext) //rerender in portfolio when dropdown open
 
 	return (
 		<div>
@@ -27,7 +27,7 @@ export function Portfolio() {
 				</div>
 				<button
 					title={isLoading ? 'Loading wallet data' : 'Synchronize wallet data'}
-					disabled={isLoading}
+					disabled={isLoading || !address}
 					className={`btn btn-secondary text-bold ${isLoading && 'cursor-auto btn-light-secondary'}`}
 					onClick={fetchWalletData}>
 					{isLoading ? <div className={styles.loading}></div> : <>Sync wallet data</>}
@@ -39,20 +39,20 @@ export function Portfolio() {
 }
 
 function CoinsPortfolio() {
-	const [portfolio] = useContext(PortfolioContext)
+	const { data } = useLoaderData()
 	const [settings] = useContext(SettingsContext)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [itemsPerPage, setItemsPerPage] = useState(settings.tableRows || 10)
-	const totalItems = portfolio.length
+	const totalItems = data.length
 	const lastIndex = currentPage * itemsPerPage
 	const firstIndex = lastIndex - itemsPerPage
-	const filteredPortfolio = portfolio.slice(firstIndex, lastIndex)
+	const filteredPortfolio = data.slice(firstIndex, lastIndex)
 
 	return (
 		<div className='w-100'>
-			{portfolio && (
+			{data && (
 				<>
-					<Table data={filteredPortfolio} dropdownKey='protfolio' isFavouriteAction isTransactionAction />
+					<Table data={filteredPortfolio} dropdownKey='portfolio' isFavouriteAction isTransactionAction />
 					<Pagination
 						totalItems={totalItems}
 						itemsPerPage={itemsPerPage}
@@ -66,11 +66,9 @@ function CoinsPortfolio() {
 }
 
 function WalletPortfolio() {
-	const [walletData, , isLoading] = useContext(WalletContext)
-
 	return (
 		<>
-			<PortfolioWalletTable walletData={walletData} isLoading={isLoading} />
+			<PortfolioWalletTable />
 		</>
 	)
 }

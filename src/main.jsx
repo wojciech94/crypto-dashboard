@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { fetchByMarketCap, fetchByTokenId } from './utils/coingeckoApi.js'
+import { fetchByMarketCap, fetchByTokenId, fetchCoinsData } from './utils/coingeckoApi.js'
 import { Coin } from './screens/Coin/Coin'
 import { CoinList } from './screens/CoinList/CoinList'
 import { Dashboard } from './screens/Dashboard/Dashboard'
@@ -48,21 +48,49 @@ const Main = () => {
 					path: '/coins',
 					element: <CoinList></CoinList>,
 					loader: async () => {
+						let data = {}
+						let error = null
 						try {
-							const data = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
+							data = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
 							return { data }
-						} catch (error) {
-							return { error }
+						} catch (err) {
+							console.err(err)
+							error = err
 						}
+						return { data, error }
 					},
 				},
 				{
 					path: '/favourites',
 					element: <Favourites />,
+					loader: async () => {
+						let data = {}
+						let error = null
+						try {
+							const ids = JSON.parse(localStorage.getItem('favouritesIds'))
+							data = await fetchCoinsData(ids)
+						} catch (err) {
+							console.error(err)
+							error = err
+						}
+						return { data, error }
+					},
 				},
 				{
 					path: '/portfolio',
 					element: <Portfolio />,
+					loader: async () => {
+						let data = {}
+						let error = null
+						try {
+							const ids = JSON.parse(localStorage.getItem('portfolioIds'))
+							data = await fetchCoinsData(ids)
+						} catch (err) {
+							console.error(err)
+							error = err
+						}
+						return { data, error }
+					},
 				},
 				{
 					path: '/wallets',
@@ -94,11 +122,11 @@ const Main = () => {
 
 	return (
 		<>
-			<React.StrictMode>
-				<SettingsContext.Provider value={[settings, handleSetSettings]}>
-					<RouterProvider router={router}></RouterProvider>
-				</SettingsContext.Provider>
-			</React.StrictMode>
+			{/* <React.StrictMode> */}
+			<SettingsContext.Provider value={[settings, handleSetSettings]}>
+				<RouterProvider router={router}></RouterProvider>
+			</SettingsContext.Provider>
+			{/* </React.StrictMode> */}
 		</>
 	)
 }

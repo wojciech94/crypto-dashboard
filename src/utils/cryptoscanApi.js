@@ -55,6 +55,7 @@ export const fetchBalanceForData = async (coinsData, address, network) => {
 
 					return {
 						...coin,
+						network: network,
 						balance: balance,
 						value: value,
 					}
