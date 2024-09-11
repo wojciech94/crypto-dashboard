@@ -6,14 +6,15 @@ import { DropdownContext } from '../../contexts/DropdownContext'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
 import { ModalContext } from '../../contexts/ModalContext'
 import { PortfolioContext } from '../../contexts/PortfolioContext'
-import { NumberSpaceFormatter, NumberFormatter, ToFixed } from '../../utils/formatter'
+import { NumberSpaceFormatter, NumberFormatter, ToFixed, ToPrecision } from '../../utils/formatter'
 import { sortData } from '../../utils/sorting'
 import { Dropdown } from '../Dropdown/Dropdown'
 import { Copy, Trash2, Edit, Bookmark } from 'react-feather'
 import { WalletContext } from '../../contexts/WalletContext'
 import { SettingsContext } from '../../contexts/SettingsContext'
 import { Alert } from '../Alert/Alert'
-import { AlertContext } from '../../contexts/AlertsContext'
+import { ToastsContext } from '../../contexts/ToastsContext'
+import { capitalize } from '../../utils/stringUtils'
 
 export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
@@ -52,7 +53,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 			dData.push({
 				action: () => {
 					setActiveDropdown(null)
-					setActiveModal({ name: 'transaction', title: 'Add transaction' })
+					setActiveModal({ name: 'transaction', title: 'Add transaction', data: el.id })
 				},
 				label: 'Add transaction',
 			})
@@ -167,7 +168,8 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 export function WalletTable() {
 	const [, , , address, handleSetAddress, wallets, handleSetWallets] = useContext(WalletContext)
 	const [, setActiveModal] = useContext(ModalContext)
-	const [, setNewAlert] = useContext(AlertContext)
+	const [, handleSetToast] = useContext(ToastsContext)
+	const [settings] = useContext(SettingsContext)
 
 	const setClipboardText = value => {
 		if (value) {
@@ -181,10 +183,11 @@ export function WalletTable() {
 
 	const onAddressChange = address => {
 		handleSetAddress(address)
-		setNewAlert({
+		handleSetToast({
 			title: 'You changed your default wallet',
 			subTitle: 'Synchronize new wallet balance in portfolio tab',
 			id: crypto.randomUUID(),
+			duration: settings.alertsVis,
 		})
 	}
 
@@ -277,7 +280,7 @@ export function PortfolioWalletTable() {
 			<div className='py-4'>
 				<Alert variant={'primary'}>
 					<div className='d-flex column gap-3 text-start'>
-						<div className='text-bold l-spacing-lg fs-lg'>You did't fetch any data.</div>
+						<div className='text-bold l-spacing-lg fs-lg'>You did't fetch any data or your balance is empty.</div>
 						<div>
 							<p>
 								Please fetch your data by the sync button. You can set automatic synchronize in{' '}
@@ -342,12 +345,12 @@ export function TransactionsTable({ transactions }) {
 	}
 
 	return (
-		<table>
+		<table className='w-100'>
 			<thead>
-				<tr>
+				<tr className='text-uppercase text-muted'>
 					<td>Asset</td>
 					<td>Type</td>
-					<td>Data</td>
+					<td>Date</td>
 					<td>Price</td>
 					<td>Quantity</td>
 					<td>Value</td>
@@ -357,11 +360,11 @@ export function TransactionsTable({ transactions }) {
 				{transactions.map(t => {
 					return (
 						<tr key={t.time}>
-							<td>{t.name}</td>
-							<td>{t.type}</td>
+							<td>{capitalize(t.name)}</td>
+							<td>{capitalize(t.type)}</td>
 							<td>{getTime(t.time)}</td>
 							<td>{`${t.price} ${CurrencySign[t.currency]}`}</td>
-							<td>{t.quantity}</td>
+							<td>{ToPrecision(t.quantity, 4)}</td>
 							<td>{`${t.value} ${CurrencySign[t.currency]}`}</td>
 						</tr>
 					)

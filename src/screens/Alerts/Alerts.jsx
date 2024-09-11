@@ -1,46 +1,56 @@
-import { useRef } from 'react'
-import { useEffect, useState } from 'react'
-import { Info } from 'react-feather'
+import { useContext } from 'react'
+import { Trash2 } from 'react-feather'
+import { CurrencySign } from '../../constants/AppConstants'
+import { AlertsContext } from '../../contexts/AlertsContext'
+import { ModalContext } from '../../contexts/ModalContext'
 
-export function Alerts({ newAlert }) {
-	const [activeAlerts, setActiveAlerts] = useState([])
-	const timeoutIds = useRef([])
+export function Alerts() {
+	const [, setActiveModal] = useContext(ModalContext)
+	const [alerts, handleSetAlerts] = useContext(AlertsContext)
 
-	useEffect(() => {
-		let timeoutId
-		if (newAlert) {
-			setActiveAlerts(prevActiveAlerts => [...prevActiveAlerts, newAlert])
-
-			timeoutId = setTimeout(() => {
-				setActiveAlerts(prevActiveAlerts => prevActiveAlerts.slice(1))
-			}, 20000)
-			timeoutIds.current.push(timeoutId)
-		}
-
-		return () => {
-			if (timeoutIds && timeoutIds.length > 0) {
-				timeoutIds.current.forEach(tid => {
-					clearTimeout(tid)
-				})
-			}
-		}
-	}, [newAlert])
+	console.log(alerts)
 
 	return (
-		<div className='position-absolute overflow-hidden bottom-0 right-0 d-flex column gap-4 py-4'>
-			{activeAlerts &&
-				activeAlerts.length > 0 &&
-				activeAlerts.map(a => {
-					return (
-						<div key={a.id} className='animated-alert animation-20 mx-2 d-flex align-center gap-4'>
-							<Info color='dodgerblue' />
-							<div className='d-flex column gap-1'>
-								<div>{a.title}</div>
-								{a.subTitle && <div className='text-muted fs-sm'>{a.subTitle}</div>}
-							</div>
-						</div>
-					)
-				})}
-		</div>
+		<>
+			<div className='d-flex justify-end'>
+				<button className='btn btn-primary' onClick={() => setActiveModal({ name: 'alert', title: 'Add price alert' })}>
+					Add alert
+				</button>
+			</div>
+			<table>
+				<thead>
+					<tr className='text-uppercase text-muted'>
+						<td className='text-start'>Asset</td>
+						<td className='text-start'>Trigger action</td>
+						<td className='text-start'>Trigger price</td>
+						<td className='text-start'>Currency</td>
+						<td className='text-start'>Alert frequency</td>
+						<td className='table-col-1'></td>
+					</tr>
+				</thead>
+				{alerts && alerts.length > 0 && (
+					<tbody>
+						{alerts.map(a => {
+							return (
+								<tr key={a.id}>
+									<td className='text-start'>{a.asset}</td>
+									<td className='text-start'>{a.trigger}</td>
+									<td className='text-start'>{a.price}</td>
+									<td className='text-start'>{a.currency}</td>
+									<td className='text-start'>{a.frequency}</td>
+									<td>
+										<Trash2
+											className='cursor-pointer'
+											onClick={() => handleSetAlerts(prevAlerts => prevAlerts.filter(al => al.id !== a.id))}
+											color='red'
+										/>
+									</td>
+								</tr>
+							)
+						})}
+					</tbody>
+				)}
+			</table>
+		</>
 	)
 }

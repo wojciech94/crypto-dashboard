@@ -12,6 +12,7 @@ import { Wallets } from './screens/Wallets/Wallets.jsx'
 import { Settings } from './screens/Settings/Settings.jsx'
 import { SettingsContext } from './contexts/SettingsContext.js'
 import { Transactions } from './screens/Transactions/Transactions.jsx'
+import { Alerts } from './screens/Alerts/Alerts.jsx'
 
 const Main = () => {
 	const [settings, setSettings] = useState(
@@ -20,7 +21,6 @@ const Main = () => {
 			theme: 'dark',
 			size: 'lg',
 			currency: 'usd',
-			alertsFreq: 10,
 			alertsVis: 20,
 			sortCol: 'name',
 			sortDir: 'desc',
@@ -99,6 +99,10 @@ const Main = () => {
 				{
 					path: '/transactions',
 					element: <Transactions />,
+				},
+				{
+					path: '/alerts',
+					element: <Alerts />,
 				},
 				{
 					path: '/settings',

@@ -24,8 +24,13 @@ export function sortData(data, key, dir) {
 }
 
 export function sortByBalance(data) {
-
 	return data.sort((a, b) => {
 		return b.balance - a.balance
+	})
+}
+
+export function sortByUsdValue(data) {
+	return data.sort((a, b) => {
+		return b.value - a.value
 	})
 }

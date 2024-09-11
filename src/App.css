@@ -116,6 +116,10 @@ select {
 	position: absolute;
 }
 
+.position-fixed {
+	position: fixed;
+}
+
 .overflow-hidden {
 	overflow: hidden;
 }
@@ -400,6 +404,10 @@ a:hover {
 	justify-content: space-between;
 }
 
+.justify-end {
+	justify-content: end;
+}
+
 .align-center {
 	align-items: center;
 }
@@ -418,6 +426,10 @@ a:hover {
 
 .btn-link {
 	padding: 0;
+}
+
+.btn-icon {
+	padding: 8px;
 }
 
 .btn-link:hover,
@@ -440,6 +452,7 @@ a:hover {
 
 .btn-secondary:hover:not(:disabled) {
 	background-color: var(--secondary-drk);
+	color: var(--text-white);
 }
 
 .btn-danger {
@@ -846,8 +859,12 @@ a:hover {
 	box-shadow: rgba(0, 0, 0, 0.24) -2px 2px 10px;
 }
 
-.animation-5 {
-	animation-duration: 5s;
+.alert-danger {
+	border-left-color: var(--danger);
+}
+
+.alert-success {
+	border-left-color: var(--success);
 }
 
 .animation-10 {
@@ -856,18 +873,21 @@ a:hover {
 
 .animation-20 {
 	animation-duration: 20s;
+	animation: alertAnim20 20s ease-in-out;
 }
 
 .animation-30 {
 	animation-duration: 30s;
-}
-
-.animation-45 {
-	animation-duration: 45s;
+	animation: alertAnim30 30s ease-in-out;
 }
 
 .animation-60 {
 	animation-duration: 60s;
+	animation: alertAnim60 60s ease-in-out;
+}
+
+.animation-interrupted {
+	animation: alertAnimInter ease-in-out;
 }
 
 @keyframes loadingPlaceholder {
@@ -889,20 +909,136 @@ a:hover {
 		transform: translateX(calc(100% + 1rem));
 	}
 
-	4% {
-		transform: translateX(-15px);
+	5% {
+		transform: translateX(-16px);
 	}
 
-	5% {
+	8% {
 		transform: translateX(0);
+	}
+
+	87% {
+		transform: translateX(0);
+	}
+
+	90% {
+		transform: translateX(-16px);
 	}
 
 	95% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	100% {
+		transform: translateX(calc(100% + 1rem));
+	}
+}
+
+@keyframes alertAnim20 {
+	0% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	2.5% {
+		transform: translateX(-16px);
+	}
+
+	4% {
 		transform: translateX(0);
 	}
 
-	96% {
-		transform: translateX(-15px);
+	91% {
+		transform: translateX(0);
+	}
+
+	92.5% {
+		transform: translateX(-16px);
+	}
+
+	95% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	100% {
+		transform: translateX(calc(100% + 1rem));
+	}
+}
+
+@keyframes alertAnim30 {
+	0% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	2% {
+		transform: translateX(-16px);
+	}
+
+	3% {
+		transform: translateX(0);
+	}
+
+	92% {
+		transform: translateX(0);
+	}
+
+	93% {
+		transform: translateX(-16px);
+	}
+
+	95% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	100% {
+		transform: translateX(calc(100% + 1rem));
+	}
+}
+
+@keyframes alertAnim60 {
+	0% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	1% {
+		transform: translateX(-16px);
+	}
+
+	1.5% {
+		transform: translateX(0);
+	}
+
+	93.5% {
+		transform: translateX(0);
+	}
+
+	94% {
+		transform: translateX(-16px);
+	}
+
+	95% {
+		transform: translateX(calc(100% + 1rem));
+	}
+
+	100% {
+		transform: translateX(calc(100% + 1rem));
+	}
+}
+
+@keyframes alertAnimInter {
+	0% {
+		transform: translateX(0);
+	}
+
+	93.5% {
+		transform: translateX(0);
+	}
+
+	94% {
+		transform: translateX(-16px);
+	}
+
+	95% {
+		transform: translateX(calc(100% + 1rem));
 	}
 
 	100% {

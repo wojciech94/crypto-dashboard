@@ -4,7 +4,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
 import { fetchCoinsData, fetchDataWithContracts } from './utils/coingeckoApi'
-import { CurrencySign, FavouriteActions } from './constants/AppConstants'
+import { FavouriteActions, TransactionsType } from './constants/AppConstants'
 import { Modal } from './components/Modal/Modal'
 import { ModalContext } from './contexts/ModalContext'
 import { DropdownContext } from './contexts/DropdownContext'
@@ -12,24 +12,28 @@ import { WalletContext } from './contexts/WalletContext'
 import { fetchBalanceForData } from './utils/cryptoscanApi'
 import { SettingsContext } from './contexts/SettingsContext'
 import { TransactionsContext } from './contexts/TransactionsContext'
-import { sortByBalance } from './utils/sorting'
-import { AlertContext } from './contexts/AlertsContext'
-import { Alerts } from './screens/Alerts/Alerts'
+import { sortByUsdValue } from './utils/sorting'
+import { ToastsContext } from './contexts/ToastsContext'
+import { Toasts } from './components/Toasts/Toasts'
+import { AlertsContext } from './contexts/AlertsContext'
+import { updatePortfolioAssets } from './utils/appFunctions'
 
 function App() {
 	const [settings] = useContext(SettingsContext)
 	const [activeModal, setActiveModal] = useState({})
 	const [activeDropdown, setActiveDropdown] = useState(null)
 	const [walletData, setWalletData] = useState([])
-	const [newAlert, setNewAlert] = useState({ title: 'pierwszy', id: crypto.randomUUID() })
+	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
+	const [alerts, setAlerts] = useState([])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
-	const [transactions, setTransactions] = useState([])
+	const [transactions, setTransactions] = useState(JSON.parse(localStorage.getItem('transactions')) || [])
 	const [favourites, setFavourites] = useState(JSON.parse(localStorage.getItem('favourites')) || [])
 	const [favouriteIds, setFavouriteIds] = useState(JSON.parse(localStorage.getItem('favouritesIds')) || [])
 	const [potrfolio, setPortfolio] = useState(JSON.parse(localStorage.getItem('portfolio')) || [])
 	const [portfolioIds, setPortfolioIds] = useState(JSON.parse(localStorage.getItem('portfolioIds')) || [])
+	const [portfolioAssets, setPortfolioAssets] = useState([])
 
 	useEffect(() => {
 		const newTheme = settings.theme === 'light' ? 'light' : 'dark'
@@ -63,7 +67,7 @@ function App() {
 			setWalletData(data)
 			await fetchBalance(data)
 		}
-	}, [isLoading, walletData])
+	}, [isLoading, walletData, address])
 
 	const fetchBalance = useCallback(
 		async wData => {
@@ -73,12 +77,25 @@ function App() {
 				fetchBalanceForData(wData, address, 'arbitrum-one'),
 			])
 			const combinedData = [...dataEth, ...dataArb]
-			const filteredData = sortByBalance(combinedData.filter(d => d.balance > 0))
+			const filteredData = sortByUsdValue(combinedData.filter(d => d.balance > 0))
 			setWalletData(filteredData)
-			setNewAlert({ title: 'Your wallet balance has already been fetched.', id: crypto.randomUUID() })
+			if (combinedData.length === 0) {
+				setNewToast({
+					title: `Your wallet balance for ${address} is empty.`,
+					id: crypto.randomUUID(),
+					duration: settings.alertsVis,
+				})
+			} else {
+				setNewToast({
+					title: 'Your wallet balance has already been fetched.',
+					id: crypto.randomUUID(),
+					type: 'success',
+					duration: settings.alertsVis,
+				})
+			}
 			setIsLoading(false)
 		},
-		[isLoading, walletData]
+		[isLoading, walletData, address]
 	)
 
 	const handleClickOutside = event => {
@@ -156,20 +173,81 @@ function App() {
 	)
 
 	const handleAddTransaction = t => {
-		setTransactions(prevT => [...prevT, t])
-		setNewAlert({
+		setTransactions(prevT => {
+			const updatedTransactions = [...prevT, t]
+			localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
+			return updatedTransactions
+		})
+		const newPortfolio = updatePortfolioAssets(t, portfolioAssets)
+		setPortfolioAssets(newPortfolio)
+		setNewToast({
 			title: 'You have added a new transaction.',
-			subTitle: `Asset: ${t.name}, Transaction type: ${t.type}, Value: ${t.value} ${CurrencySign[t.currency]}`,
+			subTitle: `Asset: ${t.name}, Transaction type: ${t.type}
+			`,
+			type: 'success',
 			id: crypto.randomUUID(),
+			duration: settings.alertsVis,
 		})
 	}
 
-	const handleSetAlert = useCallback(
-		alert => {
-			setNewAlert(alert)
-		},
-		[newAlert]
-	)
+	const updatePortfolioAssetsOld = t => {
+		if (t.type === TransactionsType.Transfer || t.type === TransactionsType.Deposit) {
+			if (!portfolioAssets.find(a => a.name === t.name)) {
+				setPortfolioAssets(prevAssets => [...prevAssets, { name: t.name, balance: t.quantity }])
+			} else {
+				portfolioAssets.map(a => {
+					if (a.name === t.name) {
+						a.balance += t.quantity
+					}
+					return a
+				})
+			}
+		} else if (t.type === TransactionsType.Buy) {
+			const currencyAsset = portfolioAssets.find(a => a.name === t.currency)
+			if (currencyAsset) {
+				const newBalance = currencyAsset.balance - t.value
+				const asset = portfolioAssets.find(a => a.name === t.name)
+				if (newBalance >= 0) {
+					setPortfolioAssets(prevAssets => {
+						let updatedAssets = prevAssets.map(a => {
+							if (a.name === currencyAsset.name) {
+								return { name: a.name, balance: newBalance }
+							} else if (asset && asset.name === a.name) {
+								return { name: a.name, balance: a.balance + t.quantity }
+							}
+							return a
+						})
+						if (!asset) {
+							updatedAssets.push({ name: t.name, balance: t.quantity })
+						}
+						updatedAssets = updatedAssets.filter(a => a.balance > 0)
+						return updatedAssets
+					})
+				}
+			}
+		} else if (t.type === TransactionsType.Sell) {
+			const asset = portfolioAssets.find(a => a.name === t.name)
+			const currencyAsset = portfolioAssets.find(a => a.name === t.currency)
+			if (asset && asset.balance >= t.quantity) {
+				setPortfolioAssets(prevAssets => {
+					let updatedAssets = prevAssets.map(a => {
+						if (a.name === asset.name) {
+							return { name: a.name, balance: asset.balance - t.quantity }
+						} else if (currencyAsset && a.name === currencyAsset.name) {
+							return { name: currencyAsset.name, balance: currencyAsset.balance + t.value }
+						}
+					})
+					if (!currencyAsset) {
+						updatedAssets.push({ name: t.currency, balance: t.value })
+					}
+					updatedAssets = updatedAssets.filter(a => a.balance > 0)
+					return updatedAssets
+				})
+			}
+		}
+	}
+
+	const handleSetToast = useCallback(alert => setNewToast(alert), [newToast])
 
 	//kazda tablica w contextProviderze powoduje tworzenie nowej referencji wiec musi byc zawarta w useMemo!!!!
 	const walletContextMemo = useMemo(
@@ -179,33 +257,34 @@ function App() {
 
 	return (
 		<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
-			<PortfolioContext.Provider value={[potrfolio, portfolioIds, handleSetPortfolio]}>
-				<ModalContext.Provider value={[activeModal, setActiveModal]}>
-					<AlertContext.Provider value={[newAlert, handleSetAlert]}>
-						<TransactionsContext.Provider value={[transactions, handleAddTransaction]}>
-							<WalletContext.Provider value={walletContextMemo}>
-								<div className='wrapper'>
-									<div className='topbar d-flex g8'>
-										<NavLink to={'/dashboard'}>Dashboard</NavLink>
-										<NavLink to={'/coins'}>Cryptocurrencies</NavLink>
-										<NavLink to={'/favourites'}>Favourites</NavLink>
-										<NavLink to={'/portfolio'}>Portfolio</NavLink>
-										<NavLink to={'/wallets'}>Wallets</NavLink>
-										<NavLink to={'/transactions'}>Transactions</NavLink>
-										<NavLink to={'/alerts'}>Alerts</NavLink>
-										<NavLink to={'/settings'}>Settings</NavLink>
-										<button onClick={() => setNewAlert({ title: 'Abcd', id: crypto.randomUUID() })}>Set alert</button>
+			<PortfolioContext.Provider value={[potrfolio, portfolioIds, handleSetPortfolio, portfolioAssets]}>
+				<AlertsContext.Provider value={[alerts, setAlerts]}>
+					<ModalContext.Provider value={[activeModal, setActiveModal]}>
+						<ToastsContext.Provider value={[newToast, handleSetToast]}>
+							<TransactionsContext.Provider value={[transactions, handleAddTransaction]}>
+								<WalletContext.Provider value={walletContextMemo}>
+									<div className='wrapper'>
+										<div className='topbar d-flex g8'>
+											<NavLink to={'/dashboard'}>Dashboard</NavLink>
+											<NavLink to={'/coins'}>Cryptocurrencies</NavLink>
+											<NavLink to={'/favourites'}>Favourites</NavLink>
+											<NavLink to={'/portfolio'}>Portfolio</NavLink>
+											<NavLink to={'/wallets'}>Wallets</NavLink>
+											<NavLink to={'/transactions'}>Transactions</NavLink>
+											<NavLink to={'/alerts'}>Alerts</NavLink>
+											<NavLink to={'/settings'}>Settings</NavLink>
+										</div>
+										<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
+											<Outlet></Outlet>
+										</DropdownContext.Provider>
 									</div>
-									<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
-										<Outlet></Outlet>
-									</DropdownContext.Provider>
-								</div>
-								<Modal />
-								<Alerts newAlert={newAlert} />
-							</WalletContext.Provider>
-						</TransactionsContext.Provider>
-					</AlertContext.Provider>
-				</ModalContext.Provider>
+									<Modal />
+									<Toasts newToast={newToast} />
+								</WalletContext.Provider>
+							</TransactionsContext.Provider>
+						</ToastsContext.Provider>
+					</ModalContext.Provider>
+				</AlertsContext.Provider>
 			</PortfolioContext.Provider>
 		</FavouritesContext.Provider>
 	)

@@ -214,67 +214,6 @@ export function Settings() {
 							</div>
 						</div>
 						<div className='col-4 text-end text-bold l-spacing-lg'>Alerts</div>
-						<div className='d-flex align-center'>
-							<div className='col-4 text-end l-spacing-sm text-light-dark'>Alerts show frequency</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
-								<div className='d-flex align-center gap-2'>
-									<input
-										className='m-0'
-										type='radio'
-										name='alertsFreq'
-										id='alertsFreq5'
-										value={5}
-										checked={settings.alertsFreq === 5}
-										onChange={e => onSettingsChaned(e, true)}
-									/>
-									<label htmlFor='alertsFreq5' className='cursor-pointer'>
-										5 s
-									</label>
-								</div>
-								<div className='d-flex align-center gap-2'>
-									<input
-										className='m-0'
-										type='radio'
-										name='alertsFreq'
-										id='alertsFreq10'
-										value={10}
-										checked={settings.alertsFreq === 10}
-										onChange={e => onSettingsChaned(e, true)}
-									/>
-									<label htmlFor='alertsFreq10' className='cursor-pointer'>
-										10 s
-									</label>
-								</div>
-								<div className='d-flex align-center gap-2'>
-									<input
-										className='m-0'
-										type='radio'
-										name='alertsFreq'
-										id='alertsFreq30'
-										value={30}
-										checked={settings.alertsFreq === 30}
-										onChange={e => onSettingsChaned(e, true)}
-									/>
-									<label htmlFor='alertsFreq30' className='cursor-pointer'>
-										30 s
-									</label>
-								</div>
-								<div className='d-flex align-center gap-2'>
-									<input
-										className='m-0'
-										type='radio'
-										name='alertsFreq'
-										id='alertsFreq60'
-										value={60}
-										checked={settings.alertsFreq === 60}
-										onChange={e => onSettingsChaned(e, true)}
-									/>
-									<label htmlFor='alertsFreq60' className='cursor-pointer'>
-										60 s
-									</label>
-								</div>
-							</div>
-						</div>
 						<div className='d-flex align-center mb-4'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Alerts visibility time</div>
 							<div className='col-8 d-flex align-center gap-5 px-4'>
@@ -311,13 +250,13 @@ export function Settings() {
 										className='m-0'
 										type='radio'
 										name='alertsVis'
-										id='alertsVis40'
-										value={40}
-										checked={settings.alertsVis === 40}
+										id='alertsVis30'
+										value={30}
+										checked={settings.alertsVis === 30}
 										onChange={e => onSettingsChaned(e, true)}
 									/>
-									<label htmlFor='alertsVis40' className='cursor-pointer'>
-										40 s
+									<label htmlFor='alertsVis30' className='cursor-pointer'>
+										30 s
 									</label>
 								</div>
 								<div className='d-flex align-center gap-2'>

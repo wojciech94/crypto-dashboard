@@ -11,7 +11,13 @@ export const WalletActions = {
 
 export const CurrencySign = {
 	usd: '$',
-	eur: '€',
+	euro: '€',
 	pln: 'zł',
-	btc: '₿',
+}
+
+export const TransactionsType = {
+	Buy: 'buy',
+	Sell: 'sell',
+	Transfer: 'transfer',
+	Deposit: 'deposit',
 }
