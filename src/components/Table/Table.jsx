@@ -253,6 +253,7 @@ export function WalletTable() {
 
 export function PortfolioWalletTable() {
 	const [walletData, , isLoading, , wallets] = useContext(WalletContext)
+	const totalValue = walletData.reduce((acc, d) => acc + d.value, 0)
 
 	if (!wallets || wallets.length === 0) {
 		return (
@@ -314,9 +315,9 @@ export function PortfolioWalletTable() {
 				</thead>
 				<tbody>
 					{walletData.length > 0 &&
-						walletData.map(token => {
+						walletData.map((token, id) => {
 							return (
-								<tr key={token.id}>
+								<tr key={id}>
 									<td className='text-start'>
 										<div>{token.name}</div>
 										<div className='text-muted'>{token.symbol}</div>
@@ -334,6 +335,7 @@ export function PortfolioWalletTable() {
 						})}
 				</tbody>
 			</table>
+			{!isLoading && walletData && <div>Total value: {ToFixed(totalValue, 2)}</div>}
 		</>
 	)
 }

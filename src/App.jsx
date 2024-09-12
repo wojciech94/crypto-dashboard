@@ -4,19 +4,24 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
 import { fetchCoinsData, fetchDataWithContracts } from './utils/coingeckoApi'
-import { FavouriteActions, TransactionsType } from './constants/AppConstants'
+import { FavouriteActions } from './constants/AppConstants'
 import { Modal } from './components/Modal/Modal'
 import { ModalContext } from './contexts/ModalContext'
 import { DropdownContext } from './contexts/DropdownContext'
 import { WalletContext } from './contexts/WalletContext'
-import { fetchBalanceForData } from './utils/cryptoscanApi'
 import { SettingsContext } from './contexts/SettingsContext'
 import { TransactionsContext } from './contexts/TransactionsContext'
-import { sortByUsdValue } from './utils/sorting'
 import { ToastsContext } from './contexts/ToastsContext'
 import { Toasts } from './components/Toasts/Toasts'
 import { AlertsContext } from './contexts/AlertsContext'
-import { updatePortfolioAssets } from './utils/appFunctions'
+import {
+	addTransactionData,
+	fetchBalanceData,
+	setFavouritesCoins,
+	setPortfolioCoins,
+	setWalletsData,
+	updatePortfolioAssets,
+} from './utils/appFunctions'
 
 function App() {
 	const [settings] = useContext(SettingsContext)
@@ -38,9 +43,6 @@ function App() {
 	useEffect(() => {
 		const newTheme = settings.theme === 'light' ? 'light' : 'dark'
 		document.body.setAttribute('data-theme', newTheme)
-	}, [settings])
-
-	useEffect(() => {
 		document.documentElement.setAttribute('data-size', settings.size)
 	}, [settings])
 
@@ -61,41 +63,17 @@ function App() {
 	}, [])
 
 	const fetchWalletData = useCallback(async () => {
-		if (!isLoading) {
-			setIsLoading(true)
-			const data = await fetchDataWithContracts()
-			setWalletData(data)
-			await fetchBalance(data)
-		}
+		setIsLoading(true)
+		const data = await fetchDataWithContracts()
+		setWalletData(data)
+		await fetchBalanceHandler(data)
 	}, [isLoading, walletData, address])
 
-	const fetchBalance = useCallback(
+	const fetchBalanceHandler = useCallback(
 		async wData => {
-			setIsLoading(true)
-			const [dataEth, dataArb] = await Promise.all([
-				fetchBalanceForData(wData, address, 'ethereum'),
-				fetchBalanceForData(wData, address, 'arbitrum-one'),
-			])
-			const combinedData = [...dataEth, ...dataArb]
-			const filteredData = sortByUsdValue(combinedData.filter(d => d.balance > 0))
-			setWalletData(filteredData)
-			if (combinedData.length === 0) {
-				setNewToast({
-					title: `Your wallet balance for ${address} is empty.`,
-					id: crypto.randomUUID(),
-					duration: settings.alertsVis,
-				})
-			} else {
-				setNewToast({
-					title: 'Your wallet balance has already been fetched.',
-					id: crypto.randomUUID(),
-					type: 'success',
-					duration: settings.alertsVis,
-				})
-			}
-			setIsLoading(false)
+			await fetchBalanceData(wData, address, setIsLoading, setWalletData, setNewToast, settings.alertsVis)
 		},
-		[isLoading, walletData, address]
+		[(isLoading, walletData, address)]
 	)
 
 	const handleClickOutside = event => {
@@ -105,43 +83,23 @@ function App() {
 		}
 	}
 
-	const handleSetFavourites = async (id, action) => {
-		if (id) {
-			let ids = []
-			if ((action && FavouriteActions.Remove === action) || favouriteIds.includes(id)) {
-				ids = favouriteIds.filter(idk => id !== idk)
-			} else {
-				ids = [...favouriteIds, id]
+	const handleSetFavourites = useCallback(
+		async (id, action) => {
+			if (id) {
+				await setFavouritesCoins(id, action, favouriteIds, setFavouriteIds, setFavourites)
 			}
-			localStorage.setItem('favouritesIds', JSON.stringify(ids))
-			setFavouriteIds(ids)
+		},
+		[favouriteIds]
+	)
 
-			try {
-				const data = await fetchCoinsData(ids.join(','))
-				localStorage.setItem('favourites', JSON.stringify(data))
-				setFavourites(data)
-			} catch (error) {
-				console.error('Error fetching favourite data:', error)
+	const handleSetPortfolio = useCallback(
+		async id => {
+			if (id) {
+				await setPortfolioCoins(id, portfolioIds, setPortfolioIds, setPortfolio)
 			}
-		}
-	}
-
-	const handleSetPortfolio = async id => {
-		if (id) {
-			const ids = [...portfolioIds, id]
-			localStorage.setItem('portfolioIds', JSON.stringify(ids))
-			setPortfolioIds(ids)
-
-			try {
-				const data = await fetchCoinsData(ids)
-
-				localStorage.setItem('portfolio', JSON.stringify(data))
-				setPortfolio(data)
-			} catch (error) {
-				console.error('Error fetching portfolio data:', error)
-			}
-		}
-	}
+		},
+		[portfolioIds]
+	)
 
 	const handleSetAddress = useCallback(
 		address => {
@@ -153,99 +111,14 @@ function App() {
 
 	const handleSetWallets = useCallback(
 		async (action, data) => {
-			let updatedWallets = []
-			if (action === 'remove') {
-				updatedWallets = wallets.filter(w => w.id !== data)
-			} else if (action === 'edit') {
-				updatedWallets = wallets.map(w => {
-					if (w.id === data.id) {
-						return data
-					}
-					return w
-				})
-			} else {
-				updatedWallets = [...wallets, data]
-			}
-			localStorage.setItem('wallets', JSON.stringify(updatedWallets))
-			setWallets(updatedWallets)
+			setWalletsData(action, data, wallets, setWallets)
 		},
 		[wallets]
 	)
 
-	const handleAddTransaction = t => {
-		setTransactions(prevT => {
-			const updatedTransactions = [...prevT, t]
-			localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
-			return updatedTransactions
-		})
-		const newPortfolio = updatePortfolioAssets(t, portfolioAssets)
-		setPortfolioAssets(newPortfolio)
-		setNewToast({
-			title: 'You have added a new transaction.',
-			subTitle: `Asset: ${t.name}, Transaction type: ${t.type}
-			`,
-			type: 'success',
-			id: crypto.randomUUID(),
-			duration: settings.alertsVis,
-		})
-	}
-
-	const updatePortfolioAssetsOld = t => {
-		if (t.type === TransactionsType.Transfer || t.type === TransactionsType.Deposit) {
-			if (!portfolioAssets.find(a => a.name === t.name)) {
-				setPortfolioAssets(prevAssets => [...prevAssets, { name: t.name, balance: t.quantity }])
-			} else {
-				portfolioAssets.map(a => {
-					if (a.name === t.name) {
-						a.balance += t.quantity
-					}
-					return a
-				})
-			}
-		} else if (t.type === TransactionsType.Buy) {
-			const currencyAsset = portfolioAssets.find(a => a.name === t.currency)
-			if (currencyAsset) {
-				const newBalance = currencyAsset.balance - t.value
-				const asset = portfolioAssets.find(a => a.name === t.name)
-				if (newBalance >= 0) {
-					setPortfolioAssets(prevAssets => {
-						let updatedAssets = prevAssets.map(a => {
-							if (a.name === currencyAsset.name) {
-								return { name: a.name, balance: newBalance }
-							} else if (asset && asset.name === a.name) {
-								return { name: a.name, balance: a.balance + t.quantity }
-							}
-							return a
-						})
-						if (!asset) {
-							updatedAssets.push({ name: t.name, balance: t.quantity })
-						}
-						updatedAssets = updatedAssets.filter(a => a.balance > 0)
-						return updatedAssets
-					})
-				}
-			}
-		} else if (t.type === TransactionsType.Sell) {
-			const asset = portfolioAssets.find(a => a.name === t.name)
-			const currencyAsset = portfolioAssets.find(a => a.name === t.currency)
-			if (asset && asset.balance >= t.quantity) {
-				setPortfolioAssets(prevAssets => {
-					let updatedAssets = prevAssets.map(a => {
-						if (a.name === asset.name) {
-							return { name: a.name, balance: asset.balance - t.quantity }
-						} else if (currencyAsset && a.name === currencyAsset.name) {
-							return { name: currencyAsset.name, balance: currencyAsset.balance + t.value }
-						}
-					})
-					if (!currencyAsset) {
-						updatedAssets.push({ name: t.currency, balance: t.value })
-					}
-					updatedAssets = updatedAssets.filter(a => a.balance > 0)
-					return updatedAssets
-				})
-			}
-		}
-	}
+	const handleAddTransaction = useCallback(t => {
+		addTransactionData(t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, settings.alertsVis)
+	}, [portfolioAssets])
 
 	const handleSetToast = useCallback(alert => setNewToast(alert), [newToast])
 

@@ -152,12 +152,13 @@ export const fetchCoinsData = async (ids, currency = 'usd') => {
 	try {
 		if (ids) {
 			const res = await fetch(
-				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}?x_cg_demo_api_key=${apiKey}`
+				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}&x_cg_demo_api_key=${apiKey}`
 			)
 			if (!res.ok) {
 				throw new Error(`HTTP error! status: ${res.status}`)
 			}
 			const data = await res.json()
+			console.log(data)
 			return data
 		} else {
 			throw new Error('No coins data')

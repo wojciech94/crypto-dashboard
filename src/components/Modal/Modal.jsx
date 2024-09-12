@@ -240,7 +240,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 					quantity: Number(quantityValue),
 					currency: currencyValue,
 					price: 1,
-					value: quantityValue,
+					value: Number(quantityValue),
 					time: Date.now(),
 				}
 			case 'deposit':
@@ -250,7 +250,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 					quantity: Number(quantityValue),
 					currency: currencyValue,
 					price: 1,
-					value: quantityValue,
+					value: Number(quantityValue),
 					time: Date.now(),
 				}
 		}
@@ -268,7 +268,6 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 		if (!validateTransaction()) {
 			return
 		}
-		console.log(t)
 		handleAddTransaction(t)
 		setPaidValue('')
 		setQuantityValue('')
