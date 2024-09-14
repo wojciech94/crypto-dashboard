@@ -303,14 +303,6 @@ a:hover {
 	white-space: nowrap;
 }
 
-.text-muted {
-	color: var(--text-muted);
-}
-
-.text-light-dark {
-	color: var(--text-light-dark);
-}
-
 .text-start {
 	text-align: left;
 }
@@ -327,6 +319,10 @@ a:hover {
 	text-decoration: underline;
 }
 
+.text-normal {
+	font-weight: normal;
+}
+
 .text-semibold {
 	font-weight: '500';
 }
@@ -334,32 +330,6 @@ a:hover {
 .text-bold {
 	font-weight: bold;
 	letter-spacing: 0.75px;
-}
-
-.text-warning,
-.text-hover-warning:hover,
-.text-active-warning:active {
-	color: var(--warning);
-}
-
-.text-primary {
-	color: var(--primary);
-}
-
-.text-success {
-	color: var(--success);
-}
-
-.text-danger {
-	color: var(--danger);
-}
-
-.text-white {
-	color: var(--text-white);
-}
-
-.text-dark {
-	color: var(--text-dark);
 }
 
 .badge {
@@ -546,6 +516,40 @@ a:hover {
 
 .bg-light-success {
 	background-color: var(--success-lt);
+}
+
+.text-muted {
+	color: var(--text-muted);
+}
+
+.text-light-dark {
+	color: var(--text-light-dark);
+}
+
+.text-warning,
+.text-hover-warning:hover,
+.text-active-warning:active {
+	color: var(--warning);
+}
+
+.text-primary {
+	color: var(--primary);
+}
+
+.text-success {
+	color: var(--success);
+}
+
+.text-danger {
+	color: var(--danger);
+}
+
+.text-white {
+	color: var(--text-white);
+}
+
+.text-dark {
+	color: var(--text-dark);
 }
 
 .rounded-1 {

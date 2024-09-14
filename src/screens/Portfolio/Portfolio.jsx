@@ -1,13 +1,16 @@
 import { useContext, useState } from 'react'
-import { Pagination } from '../../components/Pagination/Pagination'
 import { PortfolioWalletTable, Table } from '../../components/Table/Table'
 import { WalletContext } from '../../contexts/WalletContext'
 import styles from './Portfolio.module.css'
-import { SettingsContext } from '../../contexts/SettingsContext'
-import { useLoaderData } from 'react-router-dom'
 import { ModalContext } from '../../contexts/ModalContext'
 import { PortfolioContext } from '../../contexts/PortfolioContext'
 import { Alert } from '../../components/Alert/Alert'
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Doughnut } from 'react-chartjs-2'
+import { Card } from '../../components/Card/Card'
+import { capitalize } from '../../utils/stringUtils'
+import { ToFixed } from '../../utils/formatter'
+Chart.register(ArcElement, Tooltip, Legend)
 
 export function Portfolio() {
 	const [activeTab, setActiveTab] = useState('coins')
@@ -70,71 +73,94 @@ export function Portfolio() {
 }
 
 function CoinsPortfolio() {
-	const { data } = useLoaderData()
-	const [settings] = useContext(SettingsContext)
-	const [currentPage, setCurrentPage] = useState(1)
-	const [itemsPerPage, setItemsPerPage] = useState(settings.tableRows || 10)
-	const totalItems = data.length
-	const lastIndex = currentPage * itemsPerPage
-	const firstIndex = lastIndex - itemsPerPage
-	const filteredPortfolio = data.slice(firstIndex, lastIndex)
+	const [portfolio] = useContext(PortfolioContext)
 
 	return (
 		<div className='w-100'>
-			{data && (
-				<>
-					<Table data={filteredPortfolio} dropdownKey='portfolio' isFavouriteAction isTransactionAction />
-					<Pagination
-						totalItems={totalItems}
-						itemsPerPage={itemsPerPage}
-						currentPage={currentPage}
-						onPageChange={setCurrentPage}
-						onItemsPerPageChange={setItemsPerPage}></Pagination>
-				</>
-			)}
+			<Table data={portfolio} dropdownKey='portfolio' isFavouriteAction isTransactionAction />
 		</div>
 	)
 }
 
 function PortfolioBalances() {
 	const [, , , portfolioAssets] = useContext(PortfolioContext)
+	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
+	const generateChartData = () => {
+		const data = portfolioAssets.slice(0, 5)
+		const labels = data.map(p => p.name)
+		const values = data.map(p => p.value)
+		if (portfolioAssets.length > 5) {
+			const dataBalance = data.reduce((acc, d) => acc + d.value, 0)
+			labels.push('other')
+			values.push(totalBalance - dataBalance)
+		}
+		const datasets = [
+			{
+				data: values,
+				backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+				hoverBackgroundColor: ['#FF4C6E', '#2A8AC0', '#F7C44C', '#3AA1A1', '#8A4EBE', '#FF7F20'],
+			},
+		]
+		return [labels, datasets]
+	}
+	const [labels, datasets] = generateChartData()
+	const chartData = {
+		labels: labels,
+		datasets: datasets,
+	}
 
 	if (!portfolioAssets || portfolioAssets.length === 0) {
 		return (
-			<>
+			<div className='py-4'>
 				<Alert variant={'primary'}>
 					<div className='d-flex column gap-1 text-start'>
 						<div className='text-bold fs-lg'>You don't have any assets in your portfolio yet.</div>
 						<div className='text-muted'>You need to add some transactions by the 'Add transaction' button.</div>
 					</div>
 				</Alert>
-			</>
+			</div>
 		)
 	}
 
 	return (
-		<table>
-			<thead>
-				<tr>
-					<td>Asset</td>
-					<td>Balance</td>
-					<td>Value</td>
-				</tr>
-			</thead>
-			<tbody>
-				{portfolioAssets &&
-					portfolioAssets.length > 0 &&
-					portfolioAssets.map(p => {
-						return (
-							<tr key={p.name}>
-								<td>{p.name}</td>
-								<td>{p.balance}</td>
-								<td>{p.value} $</td>
-							</tr>
-						)
-					})}
-			</tbody>
-		</table>
+		<div className='d-flex gap-4 align-start'>
+			<div style={{ width: '400px', height: '400px' }}>
+				<Card>
+					<Doughnut data={chartData} />
+				</Card>
+			</div>
+			<table>
+				<thead>
+					<tr className='text-uppercase text-muted'>
+						<td>Asset</td>
+						<td>Balance</td>
+						<td>Value</td>
+					</tr>
+				</thead>
+				<tbody>
+					{portfolioAssets &&
+						portfolioAssets.length > 0 &&
+						portfolioAssets.map(p => {
+							return (
+								<tr key={p.name}>
+									<td>{capitalize(p.name)}</td>
+									<td>{ToFixed(p.balance, 4)}</td>
+									<td>{p.value} $</td>
+								</tr>
+							)
+						})}
+				</tbody>
+				{portfolioAssets && portfolioAssets.length > 0 && (
+					<tfoot>
+						<tr>
+							<td className='text-uppercase text-muted'>Total value</td>
+							<td></td>
+							<td>{ToFixed(totalBalance, 2)} $</td>
+						</tr>
+					</tfoot>
+				)}
+			</table>
+		</div>
 	)
 }
 

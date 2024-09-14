@@ -3,8 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
-import { fetchCoinsData, fetchDataWithContracts } from './utils/coingeckoApi'
-import { FavouriteActions } from './constants/AppConstants'
+import { fetchDataWithContracts } from './utils/coingeckoApi'
 import { Modal } from './components/Modal/Modal'
 import { ModalContext } from './contexts/ModalContext'
 import { DropdownContext } from './contexts/DropdownContext'
@@ -16,11 +15,14 @@ import { Toasts } from './components/Toasts/Toasts'
 import { AlertsContext } from './contexts/AlertsContext'
 import {
 	addTransactionData,
+	calculatePortfolioAssets,
 	fetchBalanceData,
+	priceAlertsCheck,
 	setFavouritesCoins,
 	setPortfolioCoins,
 	setWalletsData,
-	updatePortfolioAssets,
+	updateFavourites,
+	updatePortfolio,
 } from './utils/appFunctions'
 
 function App() {
@@ -30,15 +32,15 @@ function App() {
 	const [walletData, setWalletData] = useState([])
 	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
-	const [alerts, setAlerts] = useState([])
+	const [alerts, setAlerts] = useState(JSON.parse(localStorage.getItem('priceAlerts')) || [])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
 	const [transactions, setTransactions] = useState(JSON.parse(localStorage.getItem('transactions')) || [])
 	const [favourites, setFavourites] = useState(JSON.parse(localStorage.getItem('favourites')) || [])
 	const [favouriteIds, setFavouriteIds] = useState(JSON.parse(localStorage.getItem('favouritesIds')) || [])
-	const [potrfolio, setPortfolio] = useState(JSON.parse(localStorage.getItem('portfolio')) || [])
+	const [portfolio, setPortfolio] = useState(JSON.parse(localStorage.getItem('portfolio')) || [])
 	const [portfolioIds, setPortfolioIds] = useState(JSON.parse(localStorage.getItem('portfolioIds')) || [])
-	const [portfolioAssets, setPortfolioAssets] = useState([])
+	const [portfolioAssets, setPortfolioAssets] = useState(JSON.parse(localStorage.getItem('portfolioAssets')) || [])
 
 	useEffect(() => {
 		const newTheme = settings.theme === 'light' ? 'light' : 'dark'
@@ -55,6 +57,34 @@ function App() {
 			document.removeEventListener('mousedown', handleClickOutside)
 		}
 	}, [activeDropdown])
+
+	useEffect(() => {
+		let intervalId
+		if (alerts && alerts.length > 0) {
+			const checkPriceAlerts = async () => {
+				console.log('check price alerts')
+				await priceAlertsCheck(alerts, setAlerts, setNewToast)
+			}
+			checkPriceAlerts()
+			intervalId = setInterval(checkPriceAlerts, 3 * 60 * 1000)
+		}
+		return () => clearInterval(intervalId)
+	}, [])
+
+	//Update portfolio and favourites prices
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			updateFavourites(favouriteIds, setFavourites)
+			updatePortfolio(portfolioIds, setPortfolio)
+		}, 5 * 60 * 1000)
+
+		return () => clearInterval(intervalId)
+	}, [])
+
+	//Update Portfolio transactions assets
+	useEffect(() => {
+		calculatePortfolioAssets(setPortfolioAssets)
+	}, [])
 
 	useEffect(() => {
 		if (!isLoading && settings.autoSync === 'true') {
@@ -93,9 +123,9 @@ function App() {
 	)
 
 	const handleSetPortfolio = useCallback(
-		async id => {
+		async (id, action) => {
 			if (id) {
-				await setPortfolioCoins(id, portfolioIds, setPortfolioIds, setPortfolio)
+				await setPortfolioCoins(id, action, portfolioIds, setPortfolioIds, setPortfolio)
 			}
 		},
 		[portfolioIds]
@@ -116,9 +146,12 @@ function App() {
 		[wallets]
 	)
 
-	const handleAddTransaction = useCallback(t => {
-		addTransactionData(t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, settings.alertsVis)
-	}, [portfolioAssets])
+	const handleAddTransaction = useCallback(
+		t => {
+			addTransactionData(t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, settings.alertsVis)
+		},
+		[portfolioAssets]
+	)
 
 	const handleSetToast = useCallback(alert => setNewToast(alert), [newToast])
 
@@ -130,7 +163,7 @@ function App() {
 
 	return (
 		<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
-			<PortfolioContext.Provider value={[potrfolio, portfolioIds, handleSetPortfolio, portfolioAssets]}>
+			<PortfolioContext.Provider value={[portfolio, portfolioIds, handleSetPortfolio, portfolioAssets]}>
 				<AlertsContext.Provider value={[alerts, setAlerts]}>
 					<ModalContext.Provider value={[activeModal, setActiveModal]}>
 						<ToastsContext.Provider value={[newToast, handleSetToast]}>

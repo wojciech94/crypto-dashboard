@@ -92,7 +92,7 @@ export const fetchCoinByTokenAddress = async (platform = 'ethereum', contract) =
 	return data
 }
 
-//Fetch coin data byt token id
+//Fetch coin data by token id
 export const fetchByTokenId = async id => {
 	try {
 		const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}?x_cg_demo_api_key=${apiKey}`, fetchOptions)
@@ -150,7 +150,7 @@ export const fetchPriceByTokenId = async (id, currency = 'usd') => {
 //Fetch selected coins data
 export const fetchCoinsData = async (ids, currency = 'usd') => {
 	try {
-		if (ids) {
+		if (ids && ids.length > 0) {
 			const res = await fetch(
 				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${ids}&x_cg_demo_api_key=${apiKey}`
 			)
@@ -158,12 +158,28 @@ export const fetchCoinsData = async (ids, currency = 'usd') => {
 				throw new Error(`HTTP error! status: ${res.status}`)
 			}
 			const data = await res.json()
-			console.log(data)
 			return data
 		} else {
-			throw new Error('No coins data')
+			return []
+
 		}
 	} catch (error) {
 		throw error
+	}
+}
+
+//Fetch crypto prices
+export const fetchCryptoPrices = async (ids, currencies='usd') => {
+	try {
+		const formatedCurrencies = typeof currencies === 'string' ? currencies : currencies.join(',')
+		const res = await fetch(
+			`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${formatedCurrencies}`
+		)
+		if (res.ok) {
+			const data = await res.json()
+			return data
+		}
+	} catch (error) {
+		console.log(error)
 	}
 }

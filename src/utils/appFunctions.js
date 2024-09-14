@@ -1,6 +1,7 @@
-import { FavouriteActions, TransactionsType } from '../constants/AppConstants'
-import { fetchCoinsData } from './coingeckoApi'
+import { DataActions, TransactionsType } from '../constants/AppConstants'
+import { fetchCoinsData, fetchCryptoPrices } from './coingeckoApi'
 import { fetchBalanceForData } from './cryptoscanApi'
+import { ToFixed } from './formatter'
 import { sortByUsdValue } from './sorting'
 
 export const updatePortfolioAssets = (t, portfolioAssets) => {
@@ -63,6 +64,26 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 	}
 }
 
+export const calculatePortfolioAssets = async setPortfolioAssets => {
+	const portfolioAssets = JSON.parse(localStorage.getItem('portfolioAssets'))
+	const ids = portfolioAssets
+		.reduce((acc, a) => {
+			if (acc.includes(a.name)) {
+				return acc
+			} else {
+				return acc + ',' + a.name
+			}
+		}, '')
+		.replace(',', '')
+	const cryptoPrices = await fetchCryptoPrices(ids)
+	const updatedPrices = Object.values(portfolioAssets).map(e => {
+		const price = cryptoPrices[e.name]['usd']
+		return { name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
+	})
+	localStorage.setItem('portfolioAssets', JSON.stringify(updatedPrices))
+	setPortfolioAssets(updatedPrices)
+}
+
 export const fetchBalanceData = async (data, address, setIsLoading, setWalletData, setNewToast, toastDuration) => {
 	setIsLoading(true)
 	const [dataEth, dataArb] = await Promise.all([
@@ -91,14 +112,17 @@ export const fetchBalanceData = async (data, address, setIsLoading, setWalletDat
 
 export const setFavouritesCoins = async (id, action, favouriteIds, setFavouriteIds, setFavourites) => {
 	let ids = []
-	if ((action && FavouriteActions.Remove === action) || favouriteIds.includes(id)) {
+	if ((action && DataActions.Remove === action) || favouriteIds.includes(id)) {
 		ids = favouriteIds.filter(idk => id !== idk)
 	} else {
 		ids = [...favouriteIds, id]
 	}
 	localStorage.setItem('favouritesIds', JSON.stringify(ids))
 	setFavouriteIds(ids)
+	updateFavourites(ids, setFavourites)
+}
 
+export const updateFavourites = async (ids, setFavourites) => {
 	try {
 		const data = await fetchCoinsData(ids.join(','))
 		localStorage.setItem('favourites', JSON.stringify(data))
@@ -108,18 +132,25 @@ export const setFavouritesCoins = async (id, action, favouriteIds, setFavouriteI
 	}
 }
 
-export const setPortfolioCoins = async (id, portfolioIds, setPortfolioIds, setPortfolio) => {
-	const ids = [...portfolioIds, id]
+export const setPortfolioCoins = async (id, action, portfolioIds, setPortfolioIds, setPortfolio) => {
+	let ids = []
+	if (action === DataActions.Add) {
+		ids = [...portfolioIds, id]
+	} else if (action === DataActions.Remove) {
+		ids = portfolioIds.filter(p => p !== id)
+	}
 	localStorage.setItem('portfolioIds', JSON.stringify(ids))
 	setPortfolioIds(ids)
+	updatePortfolio(ids, setPortfolio)
+}
 
+export const updatePortfolio = async (ids, setPortfolio) => {
 	try {
 		const data = await fetchCoinsData(ids.join(','))
-
 		localStorage.setItem('portfolio', JSON.stringify(data))
 		setPortfolio(data)
 	} catch (error) {
-		console.error('Error fetching portfolio data:', error)
+		console.error('Error fetching favourite data:', error)
 	}
 }
 
@@ -149,6 +180,7 @@ export const addTransactionData = (t, setTransactions, portfolioAssets, setPortf
 	})
 	const newPortfolio = updatePortfolioAssets(t, portfolioAssets)
 	setPortfolioAssets(newPortfolio)
+	localStorage.setItem('portfolioAssets', JSON.stringify(newPortfolio))
 	setNewToast({
 		title: 'You have added a new transaction.',
 		subTitle: `Asset: ${t.name}, Transaction type: ${t.type}
@@ -157,4 +189,110 @@ export const addTransactionData = (t, setTransactions, portfolioAssets, setPortf
 		id: crypto.randomUUID(),
 		duration: duration,
 	})
+}
+
+export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
+	const prepareToasts = async toasts => {
+		for (const toast of toasts) {
+			const toastObject = {
+				title: 'The criteria for your alert have been met.',
+				subTitle: `Asset: ${toast.asset}, Price: ${toast.price}, Trigger: ${toast.trigger}
+				`,
+				type: 'success',
+				id: crypto.randomUUID(),
+				duration: 20,
+			}
+			setNewToast(toastObject)
+			await new Promise(resolve => setTimeout(resolve, 5000))
+		}
+	}
+	const ids = alerts
+		.reduce((acc, a) => {
+			if (acc.includes(a.asset)) {
+				return acc
+			} else {
+				return acc + ',' + a.asset
+			}
+		}, '')
+		.replace(',', '')
+	const currencies = alerts
+		.reduce((acc, a) => {
+			if (acc.includes(a.currency)) {
+				return acc
+			} else {
+				return acc + ',' + a.currency
+			}
+		}, '')
+		.replace(',', '')
+	const data = await fetchCryptoPrices(ids, currencies)
+	if (data) {
+		let toasts = []
+		alerts.forEach(a => {
+			const asset = a.asset
+			const trigger = a.trigger
+			const assetPrice = a.price
+			const currency = a.currency
+			const freq = a.frequency
+			const currentPrice = data[asset][currency]
+			if (trigger === 'price above') {
+				if (assetPrice <= currentPrice) {
+					let shouldPush = true
+					if (freq === 'once') {
+						manageOnceAlerts(setAlerts, a)
+					} else if (freq === 'once a day') {
+						shouldPush = manageDailyAlerts(a)
+					}
+					if (shouldPush) {
+						toasts.push(a)
+					}
+				}
+			} else if (trigger === 'price below') {
+				if (assetPrice > currentPrice) {
+					let shouldPush = true
+					if (freq === 'once') {
+						manageOnceAlerts(setAlerts, a)
+					} else if (freq === 'once a day') {
+						shouldPush = manageDailyAlerts(a)
+					}
+					if (shouldPush) {
+						toasts.push(a)
+					}
+				}
+			}
+		})
+		await prepareToasts(toasts)
+	}
+	return data
+}
+
+const manageOnceAlerts = (setAlerts, alert) => {
+	setAlerts(prevAlerts => {
+		let upAlerts = prevAlerts.filter(al => al.id !== alert.id)
+		localStorage.setItem('priceAlerts', JSON.stringify(upAlerts))
+		return upAlerts
+	})
+}
+
+const manageDailyAlerts = alert => {
+	let shouldPush = true
+	const lastAlertsDay = localStorage.getItem('lastAlertsDay')
+	const today = new Date().toISOString().split('T')[0]
+	if (lastAlertsDay) {
+		const alertsDayData = JSON.parse(lastAlertsDay)
+		const currentAlertData = alertsDayData.find(al => al.id === alert.id)
+		if (currentAlertData.day === today) {
+			shouldPush = false
+		} else {
+			alertsDayData.map(lad => {
+				if (lad.id === alert.id) {
+					lad.day = today
+				}
+				return lad
+			})
+			localStorage.setItem('lastAlertsDay', JSON.stringify(alertsDayData))
+		}
+	} else {
+		localStorage.setItem('lastAlertsDay', JSON.stringify([{ id: alert.id, day: today }]))
+	}
+	return shouldPush
 }

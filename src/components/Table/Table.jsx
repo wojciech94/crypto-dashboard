@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { Star } from 'react-feather'
 import { Link } from 'react-router-dom'
-import { CurrencySign, FavouriteActions, WalletActions } from '../../constants/AppConstants'
+import { CurrencySign, DataActions, WalletActions } from '../../constants/AppConstants'
 import { DropdownContext } from '../../contexts/DropdownContext'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
 import { ModalContext } from '../../contexts/ModalContext'
@@ -15,6 +15,8 @@ import { SettingsContext } from '../../contexts/SettingsContext'
 import { Alert } from '../Alert/Alert'
 import { ToastsContext } from '../../contexts/ToastsContext'
 import { capitalize } from '../../utils/stringUtils'
+import { Pagination } from '../Pagination/Pagination'
+import { usePagination } from '../../hooks/usePagination'
 
 export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
@@ -24,6 +26,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 	const [settings] = useContext(SettingsContext)
 	const [sortSetting, setSortSetting] = useState({ key: settings.sortCol || 'id', dir: settings.sortDir || 'desc' })
 	const [coinsList, setCoinsList] = useState(data)
+	const [filteredData, currentPage, setCurrentPage, itemsPerPage, setItemsPerPage] = usePagination(coinsList)
 
 	useEffect(() => {
 		setCoinsList(data)
@@ -40,14 +43,16 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 		}
 
 		setSortSetting({ key: cat, dir })
-		const sortedByKey = sortData(coinsList, cat, dir)
+		const sortedByKey = sortData(data, cat, dir)
 		setCoinsList(sortedByKey)
 	}
 
 	function prepareDropdownData(el) {
 		let dData = []
 		if (!portfolioIds.includes(el.id)) {
-			dData = [{ action: () => handleSetPortfolio(el.id), label: 'Add to portfolio' }]
+			dData.push({ action: () => handleSetPortfolio(el.id, DataActions.Add), label: 'Add to portfolio' })
+		} else {
+			dData.push({ action: () => handleSetPortfolio(el.id, DataActions.Remove), label: 'Remove from portfolio' })
 		}
 		if (isTransactionAction) {
 			dData.push({
@@ -59,7 +64,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 			})
 		}
 		if (favouriteIds.includes(el.id)) {
-			dData.push({ action: () => handleSetFavourites(el.id, FavouriteActions.Remove), label: 'Remove from favourites' })
+			dData.push({ action: () => handleSetFavourites(el.id, DataActions.Remove), label: 'Remove from favourites' })
 		} else {
 			dData.push({ action: () => handleSetFavourites(el.id), label: 'Add to favourites' })
 		}
@@ -68,100 +73,109 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 	}
 
 	return (
-		<table className='w-100'>
-			<thead className='border-bottom'>
-				<tr className='text-uppercase text-muted'>
-					{isFavouriteAction && <td className='table-col-0'></td>}
-					<td className='table-col-0'></td>
-					<td className='table-col-0'>
-						<button
-							className={`btn btn-link ${sortSetting['key'] == 'id' ? 'text-primary text-bold' : ''}`}
-							onClick={() => sortList('id')}>
-							#
-						</button>
-					</td>
-					<td className='text-start'>
-						<button
-							className={`btn btn-link ${sortSetting['key'] == 'name' ? 'text-primary text-bold' : ''}`}
-							onClick={() => sortList('name')}>
-							Name
-						</button>
-					</td>
-					<td>
-						<button
-							className={`btn btn-link ${sortSetting['key'] == 'current_price' ? 'text-primary text-bold' : ''}`}
-							onClick={() => sortList('current_price')}>
-							Price
-						</button>
-					</td>
-					<td>
-						<button
-							className={`btn btn-link ${sortSetting['key'] == 'ath' ? 'text-primary text-bold' : ''}`}
-							onClick={() => sortList('ath')}>
-							Ath
-						</button>
-					</td>
-					<td>
-						<button
-							className={`btn btn-link ${
-								sortSetting['key'] == 'price_change_percentage_24h' ? 'text-primary text-bold' : ''
-							}`}
-							onClick={() => sortList('price_change_percentage_24h')}>
-							24h % change
-						</button>
-					</td>
-					<td className='text-nowrap'>
-						<button
-							className={`btn btn-link ${sortSetting['key'] == 'market_cap' ? 'text-primary text-bold' : ''}`}
-							onClick={() => sortList('market_cap')}>
-							Market cap
-						</button>
-					</td>
-					<td className='table-col-0'></td>
-				</tr>
-			</thead>
-			<tbody>
-				{coinsList.map((el, id) => {
-					return (
-						<tr key={el.id}>
-							{isFavouriteAction && (
+		<>
+			<table className='w-100'>
+				<thead className='border-bottom'>
+					<tr className='text-uppercase text-muted'>
+						{isFavouriteAction && <td className='table-col-0'></td>}
+						<td className='table-col-0'></td>
+						<td className='table-col-0'>
+							<button
+								className={`btn btn-link ${sortSetting['key'] == 'id' ? 'text-primary text-bold' : ''}`}
+								onClick={() => sortList('id')}>
+								#
+							</button>
+						</td>
+						<td className='text-start'>
+							<button
+								className={`btn btn-link ${sortSetting['key'] == 'name' ? 'text-primary text-bold' : ''}`}
+								onClick={() => sortList('name')}>
+								Name
+							</button>
+						</td>
+						<td>
+							<button
+								className={`btn btn-link ${sortSetting['key'] == 'current_price' ? 'text-primary text-bold' : ''}`}
+								onClick={() => sortList('current_price')}>
+								Price
+							</button>
+						</td>
+						<td>
+							<button
+								className={`btn btn-link ${sortSetting['key'] == 'ath' ? 'text-primary text-bold' : ''}`}
+								onClick={() => sortList('ath')}>
+								Ath
+							</button>
+						</td>
+						<td>
+							<button
+								className={`btn btn-link ${
+									sortSetting['key'] == 'price_change_percentage_24h' ? 'text-primary text-bold' : ''
+								}`}
+								onClick={() => sortList('price_change_percentage_24h')}>
+								24h % change
+							</button>
+						</td>
+						<td className='text-nowrap'>
+							<button
+								className={`btn btn-link ${sortSetting['key'] == 'market_cap' ? 'text-primary text-bold' : ''}`}
+								onClick={() => sortList('market_cap')}>
+								Market cap
+							</button>
+						</td>
+						<td className='table-col-0'></td>
+					</tr>
+				</thead>
+				<tbody>
+					{filteredData.map((el, id) => {
+						return (
+							<tr key={el.id}>
+								{isFavouriteAction && (
+									<td>
+										<button className='btn p-0' onClick={() => handleSetFavourites(el.id)}>
+											<Star
+												className={`${favouriteIds.includes(el.id) ? 'text-warning' : ''} text-hover-warning`}
+												width={24}
+											/>
+										</button>
+									</td>
+								)}
 								<td>
-									<button className='btn p-0' onClick={() => handleSetFavourites(el.id)}>
-										<Star
-											className={`${favouriteIds.includes(el.id) ? 'text-warning' : ''} text-hover-warning`}
-											width={24}
-										/>
-									</button>
+									<div className='d-flex align-center'>
+										<img className='rounded-25' width={32} src={el.image} alt='Coin logo' />
+									</div>
 								</td>
-							)}
-							<td>
-								<div className='d-flex align-center'>
-									<img className='rounded-25' width={32} src={el.image} alt='Coin logo' />
-								</div>
-							</td>
-							<td>{el.market_cap_rank}</td>
-							<td className='text-start'>
-								<Link to={`/coin/${el.id}`}>
-									<span className='text-bold'>{el.name}</span>
-								</Link>
-							</td>
-							<td>{`${NumberFormatter(el.current_price)} ${CurrencySign[settings.currency]}`}</td>
-							<td>{`${NumberFormatter(el.ath)} ${CurrencySign[settings.currency]}`}</td>
-							<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>{`${ToFixed(
-								el.price_change_percentage_24h,
-								2
-							)}%`}</td>
-							<td className='text-nowrap'>{`${NumberSpaceFormatter(el.market_cap)} ${
-								CurrencySign[settings.currency]
-							}`}</td>
-							<td>
-								<Dropdown dropdownKey={dropdownKey + id} dropdownData={prepareDropdownData(el)}></Dropdown>
-							</td>
-						</tr>
-					)
-				})}
-			</tbody>
-		</table>
+								<td>{el.market_cap_rank}</td>
+								<td className='text-start'>
+									<Link to={`/coin/${el.id}`}>
+										<span className='text-bold'>{el.name}</span>
+									</Link>
+								</td>
+								<td>{`${NumberFormatter(el.current_price)} ${CurrencySign[settings.currency]}`}</td>
+								<td>{`${NumberFormatter(el.ath)} ${CurrencySign[settings.currency]}`}</td>
+								<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>{`${ToFixed(
+									el.price_change_percentage_24h,
+									2
+								)}%`}</td>
+								<td className='text-nowrap'>{`${NumberSpaceFormatter(el.market_cap)} ${
+									CurrencySign[settings.currency]
+								}`}</td>
+								<td>
+									<Dropdown dropdownKey={dropdownKey + id} dropdownData={prepareDropdownData(el)}></Dropdown>
+								</td>
+							</tr>
+						)
+					})}
+				</tbody>
+			</table>
+			<Pagination
+				totalItems={data.length}
+				itemsPerPage={itemsPerPage}
+				currentPage={currentPage}
+				onPageChange={setCurrentPage}
+				onItemsPerPageChange={setItemsPerPage}
+			/>
+		</>
 	)
 }
 
@@ -257,22 +271,20 @@ export function PortfolioWalletTable() {
 
 	if (!wallets || wallets.length === 0) {
 		return (
-			<Alert>
-				<div className='py-4'>
-					<Alert variant={'primary'}>
-						<div className='d-flex column gap-2 text-start'>
-							<div className='text-bold'>You don't have any wallets.</div>
-							<div>
-								Please add your first wallet{' '}
-								<Link className='text-underline' to={'/wallets'}>
-									here
-								</Link>{' '}
-								and set is as default in actions column.
-							</div>
+			<div className='py-4'>
+				<Alert variant={'primary'}>
+					<div className='d-flex column gap-2 text-start'>
+						<div className='text-bold'>You don't have any wallets.</div>
+						<div>
+							Please add your first wallet{' '}
+							<Link className='text-underline' to={'/wallets'}>
+								here
+							</Link>{' '}
+							and set is as default in actions column.
 						</div>
-					</Alert>
-				</div>
-			</Alert>
+					</div>
+				</Alert>
+			</div>
 		)
 	}
 
@@ -282,10 +294,10 @@ export function PortfolioWalletTable() {
 				<Alert variant={'primary'}>
 					<div className='d-flex column gap-3 text-start'>
 						<div className='text-bold l-spacing-lg fs-lg'>You did't fetch any data or your balance is empty.</div>
-						<div>
+						<div className='text-muted'>
 							<p>
 								Please fetch your data by the sync button. You can set automatic synchronize in{' '}
-								<Link className='text-underline' to={'/settings'}>
+								<Link className='text-underline text-normal' to={'/settings'}>
 									settings
 								</Link>{' '}
 								panel.
@@ -334,8 +346,17 @@ export function PortfolioWalletTable() {
 							)
 						})}
 				</tbody>
+				{!isLoading && walletData && (
+					<tfoot>
+						<tr>
+							<td className='text-start text-uppercase text-muted' colSpan={4}>
+								Total value
+							</td>
+							<td className='text-end text-bold'>{ToFixed(totalValue, 2)}</td>
+						</tr>
+					</tfoot>
+				)}
 			</table>
-			{!isLoading && walletData && <div>Total value: {ToFixed(totalValue, 2)}</div>}
 		</>
 	)
 }

@@ -63,34 +63,10 @@ const Main = () => {
 				{
 					path: '/favourites',
 					element: <Favourites />,
-					loader: async () => {
-						let data = {}
-						let error = null
-						try {
-							const ids = JSON.parse(localStorage.getItem('favouritesIds'))
-							data = await fetchCoinsData(ids)
-						} catch (err) {
-							console.error(err)
-							error = err
-						}
-						return { data, error }
-					},
 				},
 				{
 					path: '/portfolio',
 					element: <Portfolio />,
-					loader: async () => {
-						let data = {}
-						let error = null
-						try {
-							const ids = JSON.parse(localStorage.getItem('portfolioIds'))
-							data = await fetchCoinsData(ids)
-						} catch (err) {
-							console.error(err)
-							error = err
-						}
-						return { data, error }
-					},
 				},
 				{
 					path: '/wallets',

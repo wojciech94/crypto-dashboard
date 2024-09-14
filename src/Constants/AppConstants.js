@@ -1,4 +1,4 @@
-export const FavouriteActions = {
+export const DataActions = {
 	Add: 'add',
 	Remove: 'remove',
 }
@@ -11,7 +11,7 @@ export const WalletActions = {
 
 export const CurrencySign = {
 	usd: '$',
-	euro: '€',
+	eur: '€',
 	pln: 'zł',
 }
 

@@ -10,12 +10,11 @@ import { fetchByMarketCap, fetchPriceByTokenId } from '../../utils/coingeckoApi'
 import { TransactionsContext } from '../../contexts/TransactionsContext'
 import { ToFixed } from '../../utils/formatter'
 import { getValueInCurrency } from '../../utils/mathFunctions'
-import { Alert } from '../Alert/Alert'
 import { ToastsContext } from '../../contexts/ToastsContext'
 import { SettingsContext } from '../../contexts/SettingsContext'
 import { AlertsContext } from '../../contexts/AlertsContext'
 import { useEffect } from 'react'
-import { capitalize, toLowerCase } from '../../utils/stringUtils'
+import { toLowerCase } from '../../utils/stringUtils'
 
 export function Modal() {
 	const [activeModal, setActiveModal] = useContext(ModalContext)
@@ -95,7 +94,7 @@ const WalletModalBody = ({ activeModal, setActiveModal }) => {
 			handleSetWallets(WalletActions.Add, walletObj)
 			setAddressInputValue('')
 			setNameInputValue('')
-			setActiveModal({})
+			setActiveModal(null)
 		} else {
 			console.error('Fill address input')
 		}
@@ -107,7 +106,7 @@ const WalletModalBody = ({ activeModal, setActiveModal }) => {
 			handleSetWallets(WalletActions.Edit, walletObj)
 			setAddressInputValue('')
 			setNameInputValue('')
-			setActiveModal({})
+			setActiveModal(null)
 		} else {
 			console.error('Fill address input')
 		}
@@ -473,19 +472,19 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 
 const AlertModalBody = ({ activeModal, setActiveModal }) => {
 	const [alerts, setAlerts] = useContext(AlertsContext)
-	const [coinValue, setCoinValue] = useState('bitcoin')
-	const [triggerValue, setTriggerValue] = useState('price-above')
-	const [priceValue, setPriceValue] = useState('')
-	const [currencyValue, setCurrencyValue] = useState('usd')
-	const [frequencyValue, setFrequencyValue] = useState('once')
+	const [coinName, setCoinName] = useState(activeModal?.data?.asset || 'bitcoin')
+	const [triggerValue, setTriggerValue] = useState(activeModal?.data?.trigger || 'price above')
+	const [priceValue, setPriceValue] = useState(activeModal?.data?.price || '')
+	const [currencyValue, setCurrencyValue] = useState(activeModal?.data?.currency || 'usd')
+	const [frequencyValue, setFrequencyValue] = useState(activeModal?.data?.frequency || 'once')
 	const [coins, setCoins] = useState([])
+	const [coinPrice, setCoinPrice] = useState(0)
 
 	useEffect(() => {
 		const fetchCoinData = async () => {
 			try {
 				const cd = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: 'usd' })
 				setCoins(cd)
-				// setCoinValue(cd[0].id)
 			} catch (error) {
 				console.error('Error fetching coin data:', error)
 			}
@@ -494,42 +493,88 @@ const AlertModalBody = ({ activeModal, setActiveModal }) => {
 		fetchCoinData()
 	}, [])
 
+	useEffect(() => {
+		const coinPrice = async () => {
+			try {
+				const res = await fetch(
+					`https://api.coingecko.com/api/v3/simple/price?ids=${coinName}&vs_currencies=usd,eur,pln`
+				)
+				if (res.ok) {
+					const data = await res.json()
+					if (data) {
+						setCoinPrice(data[coinName][currencyValue])
+					}
+				}
+			} catch (error) {
+				console.log(error)
+			}
+		}
+
+		coinPrice()
+	}, [coinName, currencyValue])
+
 	const onSaveClick = () => {
 		const newAlert = {
-			id: crypto.randomUUID(),
-			asset: coinValue,
+			id: activeModal.data?.id || crypto.randomUUID(),
+			asset: coinName,
 			trigger: triggerValue,
 			price: priceValue,
 			currency: currencyValue,
 			frequency: frequencyValue,
 		}
-		setAlerts([...alerts, newAlert])
+		if (activeModal.data) {
+			setAlerts(prevAlerts => {
+				let updatedAlerts = prevAlerts.map(a => {
+					return a.id === newAlert.id ? newAlert : a
+				})
+				localStorage.setItem('priceAlerts', JSON.stringify(updatedAlerts))
+				return updatedAlerts
+			})
+		} else {
+			setAlerts(prevAlerts => {
+				let updatedAlerts = [...prevAlerts, newAlert]
+				localStorage.setItem('priceAlerts', JSON.stringify(updatedAlerts))
+				return updatedAlerts
+			})
+		}
 		setActiveModal(null)
 	}
 
 	return (
 		<>
-			<div>Cryptocurrency</div>
-			<div className='bg-light text-dark rounded-1 p-1'>
-				<select
-					className='w-100 select-clear px-2 py-1'
-					name='coinsSelect'
-					id='coinsSelectId'
-					value={coinValue}
-					onChange={e => setCoinValue(e.target.value)}>
-					{coins &&
-						coins.map(c => {
-							return (
-								<option className='option-clear' key={c.id} value={c.id}>
-									{c.name}
-								</option>
-							)
-						})}
-				</select>
-			</div>
-			<div className='d-flex justify-between gap-3'>
+			<div className='d-flex justify-between gap-4'>
 				<div className='d-flex column gap-2'>
-					<div>Price</div>
+					<div>Cryptocurrency</div>
+					<div className='bg-light text-dark rounded-1 p-1'>
+						<select
+							className='w-100 select-clear px-2 py-1'
+							name='coinsSelect'
+							id='coinsSelectId'
+							value={coinName}
+							onChange={e => setCoinName(e.target.value)}>
+							{coins &&
+								coins.map(c => {
+									return (
+										<option className='option-clear' key={c.id} value={c.id}>
+											{c.name}
+										</option>
+									)
+								})}
+						</select>
+					</div>
+				</div>
+				<div className='d-flex column gap-2 text-end'>
+					<div>Current price</div>
+					<div className='py-1 text-bold fs-lg'>{`${coinPrice} ${CurrencySign[currencyValue]}`}</div>
+				</div>
+			</div>
+
+			<div className='d-flex justify-between gap-3'>
+				<div className='flex-2 d-flex column gap-2'>
+					<div className='d-flex justify-between gap-2'>
+						<div>Price</div>
+						<div></div>
+					</div>
 					<div className='bg-light text-dark rounded-1 p-1'>
 						<input
 							className='fs-sm px-2 py-1 input-clear'
@@ -566,10 +611,10 @@ const AlertModalBody = ({ activeModal, setActiveModal }) => {
 					id='triggerSelectId'
 					value={triggerValue}
 					onChange={e => setTriggerValue(e.target.value)}>
-					<option className='option-clear' value='price-above'>
+					<option className='option-clear' value='price above'>
 						Price above
 					</option>
-					<option className='option-clear' value='price-below'>
+					<option className='option-clear' value='price below'>
 						Price below
 					</option>
 				</select>
@@ -586,10 +631,10 @@ const AlertModalBody = ({ activeModal, setActiveModal }) => {
 					<option className='option-clear' value='once'>
 						Once
 					</option>
-					<option className='option-clear' value='once-a-day'>
+					<option className='option-clear' value='once a day'>
 						Once a day
 					</option>
-					<option className='option-clear' value='every-time'>
+					<option className='option-clear' value='every time'>
 						Every time
 					</option>
 				</select>

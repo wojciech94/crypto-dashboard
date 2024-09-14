@@ -1,5 +1,4 @@
 import { wei2Ether } from './mathFunctions'
-// import { fetchCoinByTokenAddress } from './coingeckoApi'
 
 const etherscanApiKey = process.env.REACT_APP_ETHERSCAN_API_KEY
 const arbiscanApiKey = process.env.REACT_APP_ARBISCAN_API_KEY
@@ -27,7 +26,6 @@ const getTokenBalanceForNetworkUrl = (contract, address, network = 'ethereum') =
 export const fetchEtherBalance = async (address, network = 'ethereum') => {
 	try {
 		const url = getEtherBalanceForNetworkUrl(address, network)
-		console.log(url)
 		const res = await fetch(url)
 		const data = await res.json()
 		return data.result * wei2Ether
@@ -52,7 +50,6 @@ const fetchContractBalanceForAddress = async (contract, address, network = 'ethe
 export const fetchBalanceForData = async (coinsData, address, network) => {
 	const batchSize = 2
 	let results = []
-	console.log(coinsData)
 	for (let i = 0; i < coinsData.length; i += batchSize) {
 		const batch = coinsData.slice(i, i + batchSize)
 
