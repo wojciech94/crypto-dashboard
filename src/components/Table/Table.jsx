@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { Star } from 'react-feather'
 import { Link } from 'react-router-dom'
-import { CurrencySign, DataActions, WalletActions } from '../../constants_temp/AppConstants'
+import { CurrencySign, DataActions, WalletActions } from '../../constants/AppConstants'
 import { DropdownContext } from '../../contexts/DropdownContext'
 import { FavouritesContext } from '../../contexts/FavouritesContext'
 import { ModalContext } from '../../contexts/ModalContext'

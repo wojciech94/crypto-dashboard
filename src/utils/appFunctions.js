@@ -1,4 +1,4 @@
-import { DataActions, TransactionsType } from '../constants_temp/AppConstants'
+import { DataActions, TransactionsType } from '../constants/AppConstants'
 import { fetchCoinsData, fetchCryptoPrices } from './coingeckoApi'
 import { fetchBalanceForData } from './cryptoscanApi'
 import { ToFixed } from './formatter'
