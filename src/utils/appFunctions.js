@@ -66,22 +66,26 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 
 export const calculatePortfolioAssets = async setPortfolioAssets => {
 	const portfolioAssets = JSON.parse(localStorage.getItem('portfolioAssets'))
-	const ids = portfolioAssets
-		.reduce((acc, a) => {
-			if (acc.includes(a.name)) {
-				return acc
-			} else {
-				return acc + ',' + a.name
-			}
-		}, '')
-		.replace(',', '')
-	const cryptoPrices = await fetchCryptoPrices(ids)
-	const updatedPrices = Object.values(portfolioAssets).map(e => {
-		const price = cryptoPrices[e.name]['usd']
-		return { name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
-	})
-	localStorage.setItem('portfolioAssets', JSON.stringify(updatedPrices))
-	setPortfolioAssets(updatedPrices)
+	if (portfolioAssets && portfolioAssets.length > 0) {
+		const ids = portfolioAssets
+			.reduce((acc, a) => {
+				if (acc.includes(a.name)) {
+					return acc
+				} else {
+					return acc + ',' + a.name
+				}
+			}, '')
+			.replace(',', '')
+		const cryptoPrices = await fetchCryptoPrices(ids)
+		const updatedPrices = Object.values(portfolioAssets).map(e => {
+			const price = cryptoPrices[e.name]['usd']
+			return { name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
+		})
+		localStorage.setItem('portfolioAssets', JSON.stringify(updatedPrices))
+		setPortfolioAssets(updatedPrices)
+	} else {
+		console.error('Portfolio not found')
+	}
 }
 
 export const fetchBalanceData = async (data, address, setIsLoading, setWalletData, setNewToast, toastDuration) => {
@@ -174,6 +178,7 @@ export const setWalletsData = async (action, data, wallets, setWallets) => {
 
 export const addTransactionData = (t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, duration) => {
 	setTransactions(prevT => {
+		console.log(prevT)
 		const updatedTransactions = [...prevT, t]
 		localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
 		return updatedTransactions
@@ -280,6 +285,8 @@ const manageDailyAlerts = alert => {
 	if (lastAlertsDay) {
 		const alertsDayData = JSON.parse(lastAlertsDay)
 		const currentAlertData = alertsDayData.find(al => al.id === alert.id)
+		console.log(alertsDayData)
+		console.log(currentAlertData)
 		if (currentAlertData.day === today) {
 			shouldPush = false
 		} else {

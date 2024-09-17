@@ -161,7 +161,6 @@ export const fetchCoinsData = async (ids, currency = 'usd') => {
 			return data
 		} else {
 			return []
-
 		}
 	} catch (error) {
 		throw error
@@ -169,7 +168,7 @@ export const fetchCoinsData = async (ids, currency = 'usd') => {
 }
 
 //Fetch crypto prices
-export const fetchCryptoPrices = async (ids, currencies='usd') => {
+export const fetchCryptoPrices = async (ids, currencies = 'usd') => {
 	try {
 		const formatedCurrencies = typeof currencies === 'string' ? currencies : currencies.join(',')
 		const res = await fetch(
@@ -181,5 +180,19 @@ export const fetchCryptoPrices = async (ids, currencies='usd') => {
 		}
 	} catch (error) {
 		console.log(error)
+	}
+}
+
+//Fetch trendingData
+export const fetchTrendingData = async () => {
+	const url = 'https://api.coingecko.com/api/v3/search/trending'
+	try {
+		const res = await fetch(url)
+		if (res.ok) {
+			const data = await res.json()
+			return data
+		}
+	} catch (error) {
+		console.error(error)
 	}
 }

@@ -81,6 +81,16 @@ p {
 	text-align: left;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	padding: 0;
+}
+
 .btn {
 	padding: 8px 16px;
 	border-radius: 8px;
@@ -200,6 +210,26 @@ select {
 
 .min-w-100px {
 	min-width: 100px;
+}
+
+.min-w-200px {
+	min-width: 200px;
+}
+
+.min-w-300px {
+	min-width: 300px;
+}
+
+.min-w-400px {
+	min-width: 400px;
+}
+
+.min-w-500px {
+	min-width: 500px;
+}
+
+.min-w-600px {
+	min-width: 600px;
 }
 
 li {
@@ -353,12 +383,48 @@ a:hover {
 	width: 100%;
 }
 
+.col-11 {
+	width: calc(100% * 11 / 12);
+}
+
+.col-10 {
+	width: calc(100% * 5 / 6);
+}
+
+.col-9 {
+	width: calc(100% * 3 / 4);
+}
+
 .col-8 {
 	width: calc(100% * 2 / 3);
 }
 
+.col-7 {
+	width: calc(100% * 7 / 12);
+}
+
+.col-6 {
+	width: calc(100% / 2);
+}
+
+.col-5 {
+	width: calc(100% * 5 / 12);
+}
+
 .col-4 {
 	width: calc(100% / 3);
+}
+
+.col-3 {
+	width: calc(100% / 4);
+}
+
+.col-2 {
+	width: calc(100% / 6);
+}
+
+.col-1 {
+	width: calc(100% / 12);
 }
 
 .flex-center {

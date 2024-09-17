@@ -25,11 +25,11 @@ export function Wallets() {
 			) : (
 				<Alert variant='primary'>
 					<div>
-						<span>You dont't have any wallets. </span>
+						<span>You don't have any wallets yet. </span>
 						<button
 							onClick={() => setActiveModal({ name: 'wallet', title: 'Add wallet' })}
 							className='btn btn-link text-bold text-start text-underline'>
-							Add first wallet
+							Add your first wallet.
 						</button>
 					</div>
 				</Alert>
