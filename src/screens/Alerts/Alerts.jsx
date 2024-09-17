@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { Edit, Trash2 } from 'react-feather'
 import { Alert } from '../../components/Alert/Alert'
-import { CurrencySign } from '../../constants/AppConstants'
+import { CurrencySign } from '../../constants_temp/AppConstants'
 import { AlertsContext } from '../../contexts/AlertsContext'
 import { ModalContext } from '../../contexts/ModalContext'
 import { capitalize } from '../../utils/stringUtils'
