@@ -2,6 +2,9 @@
 
 A comprehensive website showcasing cryptocurrency panels with detailed statistics and real-time data for informed trading and investment decisions.
 
+# Website
+[CryptoDashboard](https://wk-crypto-dashboard.netlify.app)
+
 # Installation Guide
 
 1. **Create an account** on [CoinGecko](https://www.coingecko.com).
