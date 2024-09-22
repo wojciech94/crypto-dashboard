@@ -9,3 +9,11 @@
 .primary {
 	border-color: var(--primary);
 }
+
+.danger {
+	border-color: var(--danger);
+}
+
+.success {
+	border-color: var(--success);
+}

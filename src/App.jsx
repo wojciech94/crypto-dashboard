@@ -1,5 +1,5 @@
 import './App.css'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
@@ -27,7 +27,7 @@ import {
 
 function App() {
 	const [settings] = useContext(SettingsContext)
-	const [activeModal, setActiveModal] = useState({})
+	const [activeModal, setActiveModal] = useState()
 	const [activeDropdown, setActiveDropdown] = useState(null)
 	const [walletData, setWalletData] = useState([])
 	const [newToast, setNewToast] = useState(null)
@@ -41,12 +41,17 @@ function App() {
 	const [portfolio, setPortfolio] = useState(JSON.parse(localStorage.getItem('portfolio')) || [])
 	const [portfolioIds, setPortfolioIds] = useState(JSON.parse(localStorage.getItem('portfolioIds')) || [])
 	const [portfolioAssets, setPortfolioAssets] = useState(JSON.parse(localStorage.getItem('portfolioAssets')) || [])
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		const newTheme = settings.theme === 'light' ? 'light' : 'dark'
 		document.body.setAttribute('data-theme', newTheme)
 		document.documentElement.setAttribute('data-size', settings.size)
 	}, [settings])
+
+	useEffect(() => {
+		navigate('/dashboard')
+	}, [])
 
 	useEffect(() => {
 		if (activeDropdown) {
@@ -128,7 +133,7 @@ function App() {
 				await setPortfolioCoins(id, action, portfolioIds, setPortfolioIds, setPortfolio)
 			}
 		},
-		[portfolioIds]
+		[portfolio, portfolioIds]
 	)
 
 	const handleSetAddress = useCallback(

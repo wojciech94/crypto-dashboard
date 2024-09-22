@@ -16,17 +16,24 @@ export function Portfolio() {
 	const [activeTab, setActiveTab] = useState('coins')
 	const [, fetchWalletData, isLoading, address] = useContext(WalletContext)
 	const [, setActiveModal] = useContext(ModalContext)
+	const [portfolio] = useContext(PortfolioContext)
 
 	const getTabContent = () => {
 		switch (activeTab) {
 			case 'coins':
-				return <CoinsPortfolio />
+				return <CoinsPortfolio portfolio={portfolio} />
 			case 'portfolio':
 				return <PortfolioBalances />
 			case 'wallet':
 				return <WalletPortfolio />
 		}
 	}
+
+	const syncTooltip = isLoading
+		? 'Loading wallet data'
+		: address
+		? 'Synchronize wallet data'
+		: 'Add any wallet address to sync balance'
 
 	return (
 		<div>
@@ -52,15 +59,20 @@ export function Portfolio() {
 					{activeTab !== 'wallet' && (
 						<button
 							onClick={() => setActiveModal({ name: 'transaction', title: 'Add transaction' })}
-							className='btn btn-success text-bold fs-sm'>
+							disabled={!portfolio || portfolio.length < 1}
+							className={`btn ${
+								portfolio && portfolio.length > 0 ? 'btn-success' : ' btn-light-secondary cursor-auto'
+							} text-bold fs-sm`}>
 							Add transaction
 						</button>
 					)}
 					{activeTab === 'wallet' && (
 						<button
-							title={isLoading ? 'Loading wallet data' : 'Synchronize wallet data'}
+							title={syncTooltip}
 							disabled={isLoading || !address}
-							className={`btn btn-secondary text-bold fs-sm ${isLoading && 'cursor-auto btn-light-secondary btn-icon'}`}
+							className={`btn btn-secondary text-bold fs-sm ${
+								(isLoading || !address) && 'cursor-auto btn-light-secondary btn-icon'
+							}`}
 							onClick={fetchWalletData}>
 							{isLoading ? <div className={styles.loading}></div> : <>Sync wallet data</>}
 						</button>
@@ -72,12 +84,21 @@ export function Portfolio() {
 	)
 }
 
-function CoinsPortfolio() {
-	const [portfolio] = useContext(PortfolioContext)
-
+function CoinsPortfolio({ portfolio }) {
 	return (
 		<div className='w-100'>
-			<Table data={portfolio} dropdownKey='portfolio' isFavouriteAction isTransactionAction />
+			{portfolio && portfolio.length > 0 ? (
+				<Table data={portfolio} dropdownKey='portfolio' isFavouriteAction isTransactionAction />
+			) : (
+				<div className='py-4'>
+					<Alert variant='primary' className={'text-start column gap-2'}>
+						<div className='text-bold fs-lg'>You don't have any coins in your portfolio.</div>
+						<div className='text-muted'>
+							Add any coins from the cryptocurrency list to enable the transaction to be carried out.
+						</div>
+					</Alert>
+				</div>
+			)}
 		</div>
 	)
 }
@@ -112,11 +133,9 @@ function PortfolioBalances() {
 	if (!portfolioAssets || portfolioAssets.length === 0) {
 		return (
 			<div className='py-4'>
-				<Alert variant={'primary'}>
-					<div className='d-flex column gap-1 text-start'>
-						<div className='text-bold fs-lg'>You don't have any assets in your portfolio yet.</div>
-						<div className='text-muted'>You need to add some transactions by the 'Add transaction' button.</div>
-					</div>
+				<Alert variant={'primary'} className='d-flex column gap-2 text-start'>
+					<div className='text-bold fs-lg'>You don't have any assets in your portfolio yet.</div>
+					<div className='text-muted'>You need to add some transactions by the 'Add transaction' button.</div>
 				</Alert>
 			</div>
 		)

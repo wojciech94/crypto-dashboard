@@ -38,7 +38,7 @@ export function Alerts() {
 							<td className='text-start'>Trigger price</td>
 							<td className='text-start'>Currency</td>
 							<td className='text-start'>Alert frequency</td>
-							<td className='table-col-2'></td>
+							<td className='table-col-3'></td>
 						</tr>
 					</thead>
 					<tbody>
@@ -55,10 +55,10 @@ export function Alerts() {
 									<td>
 										<div className='d-flex gap-2'>
 											<button className='btn btn-icon btn-primary d-flex' onClick={() => setEditAlertModal(a)}>
-												<Edit></Edit>
+												<Edit width={20}></Edit>
 											</button>
-											<button className='btn btn-icon btn-danger d-flex text-dark' onClick={() => removeAlert(a.id)}>
-												<Trash2 />
+											<button className='btn btn-icon btn-danger d-flex' onClick={() => removeAlert(a.id)}>
+												<Trash2 width={20} />
 											</button>
 										</div>
 									</td>

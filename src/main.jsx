@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { fetchByMarketCap, fetchByTokenId, fetchCoinsData } from './utils/coingeckoApi.js'
+import { fetchByMarketCap, fetchByTokenId } from './utils/coingeckoApi.js'
 import { Coin } from './screens/Coin/Coin'
 import { CoinList } from './screens/CoinList/CoinList'
 import { Dashboard } from './screens/Dashboard/Dashboard'
@@ -22,8 +22,8 @@ const Main = () => {
 			size: 'lg',
 			currency: 'usd',
 			alertsVis: 20,
-			sortCol: 'name',
-			sortDir: 'desc',
+			sortCol: 'id',
+			sortDir: 'asc',
 			tableRows: 10,
 		}
 	)
@@ -48,13 +48,13 @@ const Main = () => {
 					path: '/coins',
 					element: <CoinList></CoinList>,
 					loader: async () => {
-						let data = {}
+						let data = null
 						let error = null
 						try {
 							data = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
 							return { data }
 						} catch (err) {
-							console.err(err)
+							console.error(err)
 							error = err
 						}
 						return { data, error }

@@ -49,11 +49,6 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 
 	function prepareDropdownData(el) {
 		let dData = []
-		if (!portfolioIds.includes(el.id)) {
-			dData.push({ action: () => handleSetPortfolio(el.id, DataActions.Add), label: 'Add to portfolio' })
-		} else {
-			dData.push({ action: () => handleSetPortfolio(el.id, DataActions.Remove), label: 'Remove from portfolio' })
-		}
 		if (isTransactionAction) {
 			dData.push({
 				action: () => {
@@ -62,6 +57,11 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 				},
 				label: 'Add transaction',
 			})
+		}
+		if (!portfolioIds.includes(el.id)) {
+			dData.push({ action: () => handleSetPortfolio(el.id, DataActions.Add), label: 'Add to portfolio' })
+		} else {
+			dData.push({ action: () => handleSetPortfolio(el.id, DataActions.Remove), label: 'Remove from portfolio' })
 		}
 		if (favouriteIds.includes(el.id)) {
 			dData.push({ action: () => handleSetFavourites(el.id, DataActions.Remove), label: 'Remove from favourites' })
@@ -229,14 +229,14 @@ export function WalletTable() {
 									<div className='d-flex flex-row gap-2 '>
 										<button
 											title='Copy address'
-											className='d-flex column flex-center btn btn-success text-white p-2'
+											className='d-flex column flex-center btn btn-success p-2'
 											onClick={() => setClipboardText(w.address)}>
 											<Copy size={20} />
 										</button>
 
 										<button
 											title='Edit wallet'
-											className='d-flex column flex-center btn btn-primary p-2 text-white'
+											className='d-flex column flex-center btn btn-primary p-2'
 											onClick={() => handleEditWallet(w)}>
 											<Edit size={20} />
 										</button>
@@ -251,7 +251,7 @@ export function WalletTable() {
 										</button>
 										<button
 											title='Remove wallet'
-											className='d-flex column flex-center btn btn-danger text-white p-2'
+											className='d-flex column flex-center btn btn-danger p-2'
 											onClick={() => handleSetWallets(WalletActions.Remove, w.id)}>
 											<Trash2 size={20} />
 										</button>
@@ -292,7 +292,7 @@ export function PortfolioWalletTable() {
 		return (
 			<div className='py-4'>
 				<Alert variant={'primary'}>
-					<div className='d-flex column gap-3 text-start'>
+					<div className='d-flex column gap-2 text-start'>
 						<div className='text-bold l-spacing-lg fs-lg'>You did't fetch any data or your balance is empty.</div>
 						<div className='text-muted'>
 							<p>

@@ -6,7 +6,6 @@ import { McRankToTickerMap } from '../../utils/coingeckoApi'
 import { NumberFormatter } from '../../utils/formatter'
 
 export function Coin() {
-	const { id } = useParams()
 	const { data, error } = useLoaderData()
 	const [description, setDescription] = useState(null)
 	const [showDescription, setShowDescription] = useState(false)

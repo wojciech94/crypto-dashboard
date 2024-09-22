@@ -84,7 +84,7 @@ export const calculatePortfolioAssets = async setPortfolioAssets => {
 		localStorage.setItem('portfolioAssets', JSON.stringify(updatedPrices))
 		setPortfolioAssets(updatedPrices)
 	} else {
-		console.error('Portfolio not found')
+		console.warn('Portfolio not found')
 	}
 }
 
@@ -233,6 +233,7 @@ export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
 	if (data) {
 		let toasts = []
 		alerts.forEach(a => {
+			console.log(a)
 			const asset = a.asset
 			const trigger = a.trigger
 			const assetPrice = a.price
@@ -271,6 +272,7 @@ export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
 }
 
 const manageOnceAlerts = (setAlerts, alert) => {
+	console.log('manage once')
 	setAlerts(prevAlerts => {
 		let upAlerts = prevAlerts.filter(al => al.id !== alert.id)
 		localStorage.setItem('priceAlerts', JSON.stringify(upAlerts))
@@ -285,9 +287,7 @@ const manageDailyAlerts = alert => {
 	if (lastAlertsDay) {
 		const alertsDayData = JSON.parse(lastAlertsDay)
 		const currentAlertData = alertsDayData.find(al => al.id === alert.id)
-		console.log(alertsDayData)
-		console.log(currentAlertData)
-		if (currentAlertData.day === today) {
+		if (currentAlertData && currentAlertData.day === today) {
 			shouldPush = false
 		} else {
 			alertsDayData.map(lad => {
@@ -296,6 +296,9 @@ const manageDailyAlerts = alert => {
 				}
 				return lad
 			})
+			if (!currentAlertData) {
+				alertsDayData.push({ id: alert.id, day: today })
+			}
 			localStorage.setItem('lastAlertsDay', JSON.stringify(alertsDayData))
 		}
 	} else {

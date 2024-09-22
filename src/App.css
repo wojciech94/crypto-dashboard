@@ -1,5 +1,5 @@
 :root {
-	--background-color: hsl(0, 0%, 100%);
+	--background-color: hsl(0, 0%, 97%);
 	--background-light: hsl(0, 0%, 85%);
 	--text-dark: hsl(0, 0%, 3%);
 	--text-light-dark: hsl(0, 0%, 20%);
@@ -360,6 +360,11 @@ a:hover {
 .text-bold {
 	font-weight: bold;
 	letter-spacing: 0.75px;
+}
+
+.text-truncate {
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .badge {

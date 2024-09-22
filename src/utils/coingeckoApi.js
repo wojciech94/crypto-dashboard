@@ -1,7 +1,7 @@
 const fetchOptions = { method: 'GET', headers: { accept: 'application/json' } }
 const apiKey = process.env.REACT_APP_COINGECKO_API_KEY
 
-export let McRankToTickerMap = null
+export let McRankToTickerMap = {}
 
 export const fetchData = async () => {
 	try {
@@ -16,7 +16,7 @@ export const fetchData = async () => {
 	}
 }
 
-export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, currency = 'usd' } = {}) => {
+export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, currency = 'usd' }) => {
 	let order
 	switch (dir) {
 		case 'asc':
@@ -28,17 +28,18 @@ export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, cu
 			break
 	}
 	try {
-		const res = await fetch(
-			`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&incluse_platform=true&order=${order}&per_page=${count}&page=${page}&x_cg_demo_api_key=${apiKey}`
-		)
+		const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&include_platform=true&order=${order}&per_page=${count}&page=${page}&x_cg_demo_api_key=${apiKey}`
+		const res = await fetch(url)
 		if (!res.ok) {
 			throw new Error(`HTTP error! status: ${res.status}`)
 		}
+
 		const data = await res.json()
-		McRankToTickerMap = data.reduce((map, item) => {
-			map[item.market_cap_rank] = item.id
-			return map
-		}, {})
+		data.forEach(item => {
+			if (item.market_cap_rank !== null && item.market_cap_rank !== undefined) {
+				McRankToTickerMap[item.market_cap_rank] = item.id
+			}
+		})
 		return data
 	} catch (error) {
 		throw error
@@ -56,7 +57,7 @@ export const fetchCoinsWithContracts = async () => {
 //Fetch data after merge with ethereum contract addresses
 export const fetchDataWithContracts = async () => {
 	try {
-		const McData = await fetchByMarketCap()
+		const McData = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: 'usd' })
 		const ContractsData = await fetchCoinsWithContracts()
 
 		const coinsDataWithContracts = await Promise.all(
@@ -195,4 +196,19 @@ export const fetchTrendingData = async () => {
 	} catch (error) {
 		console.error(error)
 	}
+	return null
+}
+
+export const fetchGlobalData = async () => {
+	const url = 'https://api.coingecko.com/api/v3/global'
+	try {
+		const res = await fetch(url)
+		if (res.ok) {
+			const data = res.json()
+			return data
+		}
+	} catch (error) {
+		console.error(error)
+	}
+	return null
 }

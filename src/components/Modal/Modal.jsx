@@ -39,11 +39,11 @@ export function Modal() {
 	}
 
 	return (
-		<div className={styles.modalOverlay} onClick={() => setActiveModal({})}>
+		<div className={styles.modalOverlay} onClick={() => setActiveModal(null)}>
 			<div className={styles.modalContent} onClick={e => e.stopPropagation()}>
 				<div className={styles.headerWrapper}>
 					{activeModal && activeModal.title && <div className='flex-1 fs-xl'>{activeModal.title}</div>}
-					<button className='btn btn-link d-flex' onClick={() => setActiveModal({})}>
+					<button className='btn btn-link d-flex' onClick={() => setActiveModal(null)}>
 						<X size={32} />
 					</button>
 				</div>
@@ -58,7 +58,7 @@ const WalletModalBody = ({ activeModal, setActiveModal }) => {
 	const [selectChain, setSelectChain] = useState(activeModal.data?.chain || 'ethereum')
 	const [addressInputValue, setAddressInputValue] = useState(activeModal.data?.address || '')
 	const [nameInputValue, setNameInputValue] = useState(activeModal.data?.name || '')
-	const [, , , , , , handleSetWallets] = useContext(WalletContext)
+	const [, , , address, handleSetAddress, , handleSetWallets] = useContext(WalletContext)
 
 	if (!activeModal || !activeModal.name) {
 		return null
@@ -91,6 +91,9 @@ const WalletModalBody = ({ activeModal, setActiveModal }) => {
 	const handleAddWallet = async () => {
 		const walletObj = await prepareWalletData()
 		if (walletObj) {
+			if (!address) {
+				handleSetAddress(walletObj.address)
+			}
 			handleSetWallets(WalletActions.Add, walletObj)
 			setAddressInputValue('')
 			setNameInputValue('')
@@ -311,7 +314,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 
 	return (
 		<>
-			<div className='d-flex gap-4'>
+			<div className='d-flex gap-4 min-w-400px'>
 				<button
 					className={`btn btn-link ${activeTab === TransactionsType.Buy && 'active'}`}
 					onClick={() => setActiveTab(TransactionsType.Buy)}>
