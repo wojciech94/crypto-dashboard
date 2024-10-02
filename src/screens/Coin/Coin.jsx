@@ -1,76 +1,166 @@
-import { useEffect, useState } from 'react'
-import { useParams, useLoaderData, Link } from 'react-router-dom'
+import { useLoaderData, Link } from 'react-router-dom'
 import { Card } from '../../components/Card/Card'
-import { linkify } from '../../utils/linkify'
+import { Expandable } from '../../components/Expandable/Expandable'
 import { McRankToTickerMap } from '../../utils/coingeckoApi'
-import { NumberFormatter } from '../../utils/formatter'
+import { colorHexSample } from '../../utils/colorUtils'
+import { NumberFormatter, NumberSpaceFormatter } from '../../utils/formatter'
 
 export function Coin() {
-	const { data, error } = useLoaderData()
-	const [description, setDescription] = useState(null)
-	const [showDescription, setShowDescription] = useState(false)
-
-	useEffect(() => {
-		if (data) {
-			if (data.description != null) {
-				const linkifyData = linkify(data.description)
-				setDescription(linkifyData)
-			}
-		}
-	}, [data])
-
-	if (error) {
-		return <div>{`${error}`}</div>
-	}
+	const data = useLoaderData()
+	const supplyRatio = data ? (data.circulating_supply / data.total_supply) * 100 + '%' : 0
+	const athRatio = data ? ((data.price - data.atl) / (data.ath - data.atl)) * 100 + '%' : 0
+	const dayRatio = data ? ((data.price - data.low_24h) / (data.high_24h - data.low_24h)) * 100 + '%' : 0
 
 	return (
 		<>
-			<div className='d-flex justify-between p4 g4'>
-				<Link className='btn btn-secondary' to={'/coins'}>
-					Back
-				</Link>
-				<div className='d-flex g4'>
-					{data.market_cap_rank > 1 && (
-						<Link className='btn btn-danger' to={`/coin/${McRankToTickerMap[data.market_cap_rank - 1]}`}>
-							{McRankToTickerMap[data.market_cap_rank - 1]}
-						</Link>
-					)}
-					{data.market_cap_rank < 100 && (
-						<Link className='btn btn-success' to={`/coin/${McRankToTickerMap[data.market_cap_rank + 1]}`}>
-							{McRankToTickerMap[data.market_cap_rank + 1]}
-						</Link>
-					)}
-				</div>
-			</div>
-			<Card>
-				<div className='d-flex column g4 p4'>
-					<div className='d-flex align-center g8'>
-						<img width={64} src={`${data.image.small}`} alt='Coin logo' />
-						<div>{data.name}</div>
-						<div>{data.price}</div>
-						<div>{data.ath}</div>
-						<div>{data.market_cap_rank}</div>
-						<div>{data.symbol}</div>
-						<div>{NumberFormatter(data.day_change)}</div>
-					</div>
-					{showDescription && description && (
-						<div>
-							{description.map((desc, id) => {
-								if (desc.length === 1) {
-									return <span key={id}>{desc[0]} </span>
-								} else {
-									return (
-										<span key={id}>
-											<Link to={desc[0]}>{desc[1]}</Link>
-											<span>{desc[2]}</span>
-										</span>
-									)
-								}
-							})}
+			{data && (
+				<>
+					<div className='d-flex justify-between p4 g4 mb-4'>
+						<div className='d-flex gap-5 g4'>
+							<Link className='btn btn-secondary' to={'/coins'}>
+								Back
+							</Link>
+							{data.market_cap_rank > 1 && (
+								<Link className='btn btn-danger' to={`/coin/${McRankToTickerMap[data.market_cap_rank - 1]}`}>
+									{McRankToTickerMap[data.market_cap_rank - 1]}
+								</Link>
+							)}
 						</div>
-					)}
-				</div>
-			</Card>
+
+						{data.market_cap_rank < 100 && (
+							<Link className='btn btn-success' to={`/coin/${McRankToTickerMap[data.market_cap_rank + 1]}`}>
+								{McRankToTickerMap[data.market_cap_rank + 1]}
+							</Link>
+						)}
+					</div>
+					<Card>
+						<div className='d-flex column gap-5'>
+							{/* <div className='d-flex align-center gap-8'>
+								<div>{data.name}</div>
+								<div></div>
+								<div>{data.ath}</div>
+								<div>{data.market_cap}</div>
+								<div>{data.symbol}</div>
+								<div>{NumberFormatter(data.day_change)}</div>
+							</div> */}
+							<table>
+								<thead className='text-uppercase text-muted'>
+									<tr>
+										<td className='table-col-2'></td>
+										<td className='table-col-1'>Rank</td>
+										<td className='text-start'>Name</td>
+										<td className='text-end'>Price</td>
+										<td className=''>24h %</td>
+										<td className='text-end'>Market Cap</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr className='nohover'>
+										<td>
+											<img width={64} src={`${data.image.small}`} alt='Coin logo' />
+										</td>
+										<td>{data.market_cap_rank}</td>
+										<td className='text-start'>{data.name}</td>
+										<td className='text-end'>{data.price} $</td>
+										<td className={`${data.day_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+											{NumberFormatter(data.day_change_percentage)} %
+										</td>
+										<td className='text-end'>{NumberSpaceFormatter(data.market_cap)} $</td>
+									</tr>
+								</tbody>
+							</table>
+							<Expandable title={'Price change'} expanded={true}>
+								<table>
+									<thead className='text-uppercase text-muted'>
+										<tr>
+											<td>24h change</td>
+											<td>24h %</td>
+											<td>7d %</td>
+											<td>14d %</td>
+											<td>30d %</td>
+											<td>60d %</td>
+											<td>1y %</td>
+										</tr>
+									</thead>
+									<tbody>
+										<tr className='nohover'>
+											<td className={`${data.day_change > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.day_change)} $
+											</td>
+											<td className={`${data.day_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.day_change_percentage)}
+											</td>
+											<td className={`${data.week_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.week_change_percentage)}
+											</td>
+											<td className={`${data.week2_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.week2_change_percentage)}
+											</td>
+											<td className={`${data.month_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.month_change_percentage)}
+											</td>
+											<td className={`${data.month2_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.month2_change_percentage)}
+											</td>
+											<td className={`${data.year_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+												{NumberFormatter(data.year_change_percentage)}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</Expandable>
+							<Expandable title={'Additional data'} expanded={true}>
+								<div className='d-flex column gap-5 p-2'>
+									<div className='d-flex column gap-2 px-4'>
+										<div className='d-flex gap-4 justify-between text-muted'>
+											<div>Circulating supply</div>
+											<div>Total supply</div>
+										</div>
+										<div className='rounded-3 border h-20px'>
+											<div className='bg-secondary rounded-3 h-100' style={{ width: supplyRatio }}></div>
+										</div>
+										<div className='d-flex gap-4 justify-between'>
+											<div>{data.circulating_supply}</div>
+											<div>{data.total_supply}</div>
+										</div>
+									</div>
+									<div className='d-flex column gap-2 px-4'>
+										<div className='d-flex gap-4 justify-between text-muted'>
+											<div>All time low</div>
+											<div>All time high</div>
+										</div>
+										<div className='rounded-3 border h-20px'>
+											<div className='bg-primary rounded-3 h-100' style={{ width: athRatio }}></div>
+										</div>
+										<div className='d-flex gap-4 justify-between'>
+											<div>{data.atl} $</div>
+											<div>{data.ath} $</div>
+										</div>
+									</div>
+									<div className='d-flex column gap-2 px-4'>
+										<div className='d-flex gap-4 justify-between text-muted'>
+											<div>24h low</div>
+											<div>24h high</div>
+										</div>
+										<div className='rounded-3 border h-20px'>
+											<div
+												className='rounded-3 h-100'
+												style={{
+													width: dayRatio,
+													backgroundColor: colorHexSample('ff0000', '00ff00', parseInt(dayRatio) / 100, 'ffff00'),
+												}}></div>
+										</div>
+										<div className='d-flex gap-4 justify-between'>
+											<div>{data.low_24h} $</div>
+											<div>{data.high_24h} $</div>
+										</div>
+									</div>
+								</div>
+							</Expandable>
+						</div>
+					</Card>
+				</>
+			)}
 		</>
 	)
 }

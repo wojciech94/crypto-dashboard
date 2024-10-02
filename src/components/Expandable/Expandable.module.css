@@ -1,0 +1,26 @@
+.expandableHeader {
+	cursor: pointer;
+}
+
+.expandableHeader .arrow {
+	transform: rotate(0deg);
+	transition: transform 0.5s ease-in-out;
+}
+
+.expanded .expandableHeader .arrow {
+	transform: rotate(180deg);
+}
+
+.expandableContent {
+	overflow: hidden;
+	max-height: 0;
+	transition: max-height 0.5s ease-in-out;
+}
+
+.expanded .expandableContent {
+	max-height: 500px;
+}
+
+.arrow {
+	height: 24px;
+}

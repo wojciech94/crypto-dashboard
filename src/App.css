@@ -204,8 +204,32 @@ select {
 	width: auto;
 }
 
+.w-10 {
+	width: 10%;
+}
+
+.w-20 {
+	width: 20%;
+}
+
+.w-25 {
+	width: 25%;
+}
+
+.w-50 {
+	width: 50%;
+}
+
 .w-100 {
 	width: 100%;
+}
+
+.h-100 {
+	height: 100%;
+}
+
+.h-20px {
+	height: 20px;
 }
 
 .min-w-100px {
@@ -261,7 +285,7 @@ td.ellipsis {
 	white-space: nowrap;
 }
 
-tbody tr:hover:not(.no-hover) {
+tbody tr:hover:not(.nohover) {
 	box-shadow: 0 0 10px var(--primary-lt);
 	background-color: var(--primary-lt);
 }
@@ -323,6 +347,10 @@ a.active {
 
 a:hover {
 	color: var(--primary-drk);
+}
+
+.border {
+	border: 1px solid var(--light);
 }
 
 .border-bottom {
@@ -503,6 +531,7 @@ a:hover {
 
 .btn-danger:hover:not(:disabled) {
 	background-color: var(--danger-drk);
+	color: var(--black);
 }
 
 .btn-success {

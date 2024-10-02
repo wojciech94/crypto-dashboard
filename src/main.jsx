@@ -13,6 +13,7 @@ import { Settings } from './screens/Settings/Settings.jsx'
 import { SettingsContext } from './contexts/SettingsContext.js'
 import { Transactions } from './screens/Transactions/Transactions.jsx'
 import { Alerts } from './screens/Alerts/Alerts.jsx'
+import { Error } from './components/Error/Error.jsx'
 
 const Main = () => {
 	const [settings, setSettings] = useState(
@@ -90,11 +91,15 @@ const Main = () => {
 					loader: async ({ params }) => {
 						try {
 							const data = await fetchByTokenId(params.id)
-							return { data }
+							if (!data) {
+								throw new Response('Coin not found', { status: 404 })
+							}
+							return data
 						} catch (error) {
-							return { error }
+							throw new Response('Error fetching coin data', { status: 500 })
 						}
 					},
+					errorElement: <Error />,
 				},
 			],
 		},

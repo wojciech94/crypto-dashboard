@@ -178,7 +178,6 @@ export const setWalletsData = async (action, data, wallets, setWallets) => {
 
 export const addTransactionData = (t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, duration) => {
 	setTransactions(prevT => {
-		console.log(prevT)
 		const updatedTransactions = [...prevT, t]
 		localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
 		return updatedTransactions
@@ -233,7 +232,6 @@ export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
 	if (data) {
 		let toasts = []
 		alerts.forEach(a => {
-			console.log(a)
 			const asset = a.asset
 			const trigger = a.trigger
 			const assetPrice = a.price
@@ -272,7 +270,6 @@ export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
 }
 
 const manageOnceAlerts = (setAlerts, alert) => {
-	console.log('manage once')
 	setAlerts(prevAlerts => {
 		let upAlerts = prevAlerts.filter(al => al.id !== alert.id)
 		localStorage.setItem('priceAlerts', JSON.stringify(upAlerts))

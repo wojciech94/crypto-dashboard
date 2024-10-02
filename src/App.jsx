@@ -81,7 +81,7 @@ function App() {
 		const intervalId = setInterval(() => {
 			updateFavourites(favouriteIds, setFavourites)
 			updatePortfolio(portfolioIds, setPortfolio)
-		}, 5 * 60 * 1000)
+		}, 3 * 60 * 1000)
 
 		return () => clearInterval(intervalId)
 	}, [])

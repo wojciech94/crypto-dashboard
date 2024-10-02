@@ -35,6 +35,7 @@ export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, cu
 		}
 
 		const data = await res.json()
+		console.log(data)
 		data.forEach(item => {
 			if (item.market_cap_rank !== null && item.market_cap_rank !== undefined) {
 				McRankToTickerMap[item.market_cap_rank] = item.id
@@ -101,30 +102,59 @@ export const fetchByTokenId = async id => {
 			throw new Error('Invalid token id!')
 		}
 		const data = await res.json()
+		console.log(data)
 		if (data) {
 			const {
 				id,
 				symbol,
 				name,
-				description: { en: description },
 				image,
 				market_cap_rank,
 				market_data: {
+					market_cap: { usd: market_cap },
 					current_price: { usd: price },
 					ath: { usd: ath },
+					atl: { usd: atl },
 					price_change_24h: day_change,
+					price_change_percentage_24h: day_change_percentage,
+					price_change_percentage_1y: year_change_percentage,
+					price_change_percentage_7d: week_change_percentage,
+					price_change_percentage_14d: week2_change_percentage,
+					price_change_percentage_30d: month_change_percentage,
+					price_change_percentage_60d: month2_change_percentage,
+					circulating_supply,
+					total_supply,
+					total_volume: { usd: total_volume },
+					low_24h: {usd: low_24h},
+					high_24h: {usd: high_24h},
+					market_cap_change_percentage_24h,
+					market_cap_fdv_ratio,
 				},
 			} = data
 			const formatedData = {
 				id,
 				name,
 				symbol,
-				price,
-				ath,
-				day_change,
-				description,
-				market_cap_rank,
 				image,
+				price,
+				market_cap_rank,
+				market_cap,
+				market_cap_change_percentage_24h,
+				total_supply,
+				circulating_supply,
+				market_cap_fdv_ratio,
+				total_volume,
+				ath,
+				atl,
+				low_24h,
+				high_24h,
+				day_change,
+				day_change_percentage,
+				week_change_percentage,
+				week2_change_percentage,
+				month_change_percentage,
+				month2_change_percentage,
+				year_change_percentage,
 			}
 			return formatedData
 		}
