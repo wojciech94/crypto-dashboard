@@ -9,6 +9,7 @@ export function Dropdown({ dropdownData, dropdownKey }) {
 		action()
 		setActiveDropdown(null)
 	}
+	console.log(dropdownData)
 
 	return (
 		<div className='dropdown'>
