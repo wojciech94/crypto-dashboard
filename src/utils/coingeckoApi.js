@@ -35,7 +35,6 @@ export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, cu
 		}
 
 		const data = await res.json()
-		console.log(data)
 		data.forEach(item => {
 			if (item.market_cap_rank !== null && item.market_cap_rank !== undefined) {
 				McRankToTickerMap[item.market_cap_rank] = item.id
@@ -102,7 +101,6 @@ export const fetchByTokenId = async id => {
 			throw new Error('Invalid token id!')
 		}
 		const data = await res.json()
-		console.log(data)
 		if (data) {
 			const {
 				id,
@@ -125,8 +123,8 @@ export const fetchByTokenId = async id => {
 					circulating_supply,
 					total_supply,
 					total_volume: { usd: total_volume },
-					low_24h: {usd: low_24h},
-					high_24h: {usd: high_24h},
+					low_24h: { usd: low_24h },
+					high_24h: { usd: high_24h },
 					market_cap_change_percentage_24h,
 					market_cap_fdv_ratio,
 				},

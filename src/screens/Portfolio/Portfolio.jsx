@@ -37,7 +37,7 @@ export function Portfolio() {
 
 	return (
 		<div>
-			<div className={`${styles.flexRow} align-center justify-between my-4`}>
+			<div className={`${styles.flexRow} align-center flex-wrap justify-between my-4`}>
 				<div className={styles.tabContainer}>
 					<button
 						onClick={() => setActiveTab('coins')}

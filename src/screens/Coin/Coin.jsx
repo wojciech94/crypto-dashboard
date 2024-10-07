@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { useLoaderData, Link, useParams } from 'react-router-dom'
 import { Card } from '../../components/Card/Card'
-import { Dropdown, DropdownBtn } from '../../components/Dropdown/Dropdown'
+import { Dropdown } from '../../components/Dropdown/Dropdown'
 import { Expandable } from '../../components/Expandable/Expandable'
 import { DataActions } from '../../constants/AppConstants'
 import { DropdownContext } from '../../contexts/DropdownContext'
@@ -65,7 +65,7 @@ export function Coin() {
 							)}
 						</div>
 
-						{data.market_cap_rank < 100 && (
+						{data.market_cap_rank < 250 && (
 							<Link className='btn btn-success' to={`/coin/${McRankToTickerMap[data.market_cap_rank + 1]}`}>
 								{McRankToTickerMap[data.market_cap_rank + 1]}
 							</Link>
@@ -73,14 +73,6 @@ export function Coin() {
 					</div>
 					<Card>
 						<div className='d-flex column gap-5'>
-							{/* <div className='d-flex align-center gap-8'>
-								<div>{data.name}</div>
-								<div></div>
-								<div>{data.ath}</div>
-								<div>{data.market_cap}</div>
-								<div>{data.symbol}</div>
-								<div>{NumberFormatter(data.day_change)}</div>
-							</div> */}
 							<table>
 								<thead className='text-uppercase text-muted'>
 									<tr>

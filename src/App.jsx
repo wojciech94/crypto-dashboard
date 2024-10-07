@@ -1,9 +1,9 @@
 import './App.css'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
-import { fetchDataWithContracts } from './utils/coingeckoApi'
+import { fetchByMarketCap, fetchDataWithContracts } from './utils/coingeckoApi'
 import { Modal } from './components/Modal/Modal'
 import { ModalContext } from './contexts/ModalContext'
 import { DropdownContext } from './contexts/DropdownContext'
@@ -24,6 +24,7 @@ import {
 	updateFavourites,
 	updatePortfolio,
 } from './utils/appFunctions'
+import { Navigation } from './components/Navigation/Navigation'
 
 function App() {
 	const [settings] = useContext(SettingsContext)
@@ -32,6 +33,7 @@ function App() {
 	const [walletData, setWalletData] = useState([])
 	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
+	const [coins, setCoins] = useState(null)
 	const [alerts, setAlerts] = useState(JSON.parse(localStorage.getItem('priceAlerts')) || [])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
@@ -67,13 +69,20 @@ function App() {
 		let intervalId
 		if (alerts && alerts.length > 0) {
 			const checkPriceAlerts = async () => {
-				console.log('check price alerts')
 				await priceAlertsCheck(alerts, setAlerts, setNewToast)
 			}
 			checkPriceAlerts()
 			intervalId = setInterval(checkPriceAlerts, 3 * 60 * 1000)
 		}
 		return () => clearInterval(intervalId)
+	}, [])
+
+	useEffect(() => {
+		const fetchMarketData = async () => {
+			const data = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
+			setCoins(data)
+		}
+		fetchMarketData()
 	}, [])
 
 	//Update portfolio and favourites prices
@@ -175,18 +184,11 @@ function App() {
 							<TransactionsContext.Provider value={[transactions, handleAddTransaction]}>
 								<WalletContext.Provider value={walletContextMemo}>
 									<div className='wrapper'>
-										<div className='topbar d-flex g8'>
-											<NavLink to={'/dashboard'}>Dashboard</NavLink>
-											<NavLink to={'/coins'}>Cryptocurrencies</NavLink>
-											<NavLink to={'/favourites'}>Favourites</NavLink>
-											<NavLink to={'/portfolio'}>Portfolio</NavLink>
-											<NavLink to={'/wallets'}>Wallets</NavLink>
-											<NavLink to={'/transactions'}>Transactions</NavLink>
-											<NavLink to={'/alerts'}>Alerts</NavLink>
-											<NavLink to={'/settings'}>Settings</NavLink>
-										</div>
+										<Navigation />
 										<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
-											<Outlet></Outlet>
+											<div className='content'>
+												<Outlet></Outlet>
+											</div>
 										</DropdownContext.Provider>
 									</div>
 									<Modal />

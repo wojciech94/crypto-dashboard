@@ -55,7 +55,6 @@ const Main = () => {
 							data = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
 							return { data }
 						} catch (err) {
-							console.error(err)
 							error = err
 						}
 						return { data, error }

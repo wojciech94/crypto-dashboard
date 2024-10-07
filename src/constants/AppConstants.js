@@ -21,3 +21,8 @@ export const TransactionsType = {
 	Transfer: 'transfer',
 	Deposit: 'deposit',
 }
+
+export const NavMode = {
+	Mobile: 'mobile',
+	Desktop: 'desktop',
+}

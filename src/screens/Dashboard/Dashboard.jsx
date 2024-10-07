@@ -24,12 +24,10 @@ export function Dashboard() {
 		fetchGlobal()
 	}, [])
 
-	console.log(globalData)
-
 	return (
-		<div className='d-flex gap-6 column text-start'>
+		<div className='mx-5 d-flex gap-6 column text-start'>
 			{globalData && (
-				<div className='d-flex gap-6'>
+				<div className='d-flex gap-6 flex-wrap'>
 					<div className='min-w-400px flex-1'>
 						<Card>
 							<div className='d-flex justify-between align-center'>
@@ -46,15 +44,7 @@ export function Dashboard() {
 							</div>
 						</Card>
 					</div>
-					<div className='min-w-400px'>
-						<Card>
-							<div className='d-flex justify-between align-center'>
-								<h3 className='text-start'>Total volume</h3>
-								<div>{NumberFormatter(globalData.total_volume.usd)} $</div>
-							</div>
-						</Card>
-					</div>
-					<div className='min-w-400px'>
+					<div className='min-w-400px flex-1'>
 						<Card>
 							<div className='d-flex justify-between align-center'>
 								<h3 className='text-start'>Bitcoin dominance</h3>
@@ -62,10 +52,18 @@ export function Dashboard() {
 							</div>
 						</Card>
 					</div>
+					<div className='min-w-400px flex-1'>
+						<Card>
+							<div className='d-flex justify-between align-center'>
+								<h3 className='text-start'>Total volume</h3>
+								<div>{NumberFormatter(globalData.total_volume.usd)} $</div>
+							</div>
+						</Card>
+					</div>
 				</div>
 			)}
 			{trendingData && (
-				<div className='d-flex gap-6 justify-center'>
+				<div className='d-flex gap-6 flex-wrap justify-center'>
 					<div className='min-w-400px flex-1'>
 						<Card>
 							{trendingData.coins && (
