@@ -224,7 +224,7 @@ export function WalletTable() {
 						return (
 							<tr key={w.id}>
 								<td className='text-start'>{w.name}</td>
-								<td className='text-start ellipsis'>{w.address}</td>
+								<td className='text-start ellipsis l-spacing-nlg'>{w.address}</td>
 								<td className='text-start'>{w.chain}</td>
 								<td className='text-start'>{ToFixed(w.balance, 4) || 'N/A'}</td>
 								<td>
@@ -355,10 +355,10 @@ export function PortfolioWalletTable() {
 				{!isLoading && walletData && (
 					<tfoot>
 						<tr>
-							<td className='text-start text-uppercase text-muted' colSpan={4}>
+							<th className='text-start text-uppercase text-muted' colSpan={4}>
 								Total value
-							</td>
-							<td className='text-end text-bold'>{ToFixed(totalValue, 2)}</td>
+							</th>
+							<th className='text-end'>{ToFixed(totalValue, 2)}</th>
 						</tr>
 					</tfoot>
 				)}

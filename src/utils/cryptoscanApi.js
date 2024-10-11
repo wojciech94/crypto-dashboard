@@ -2,11 +2,14 @@ import { wei2Ether } from './mathFunctions'
 
 const etherscanApiKey = process.env.REACT_APP_ETHERSCAN_API_KEY
 const arbiscanApiKey = process.env.REACT_APP_ARBISCAN_API_KEY
+const optimismApiKey = process.env.REACT_APP_OPTIMISM_API_KEY
 
 const getEtherBalanceForNetworkUrl = (address, network = 'ethereum') => {
 	switch (network) {
 		case 'arbitrum-one':
 			return `https://api.arbiscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${arbiscanApiKey}`
+		case 'optimistic-ethereum':
+			return `https://api-optimistic.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${optimismApiKey}`
 		case 'ethereum':
 		default:
 			return `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${etherscanApiKey}`
@@ -17,6 +20,8 @@ const getTokenBalanceForNetworkUrl = (contract, address, network = 'ethereum') =
 	switch (network) {
 		case 'arbitrum-one':
 			return `https://api.arbiscan.io/api?module=account&action=tokenbalance&contractaddress=${contract}&address=${address}&tag=latest&apikey=${arbiscanApiKey}`
+		case 'optimistic-ethereum':
+			return `https://api-optimistic.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${contract}&address=${address}&tag=latest&apikey=${optimismApiKey}`
 		case 'ethereum':
 		default:
 			return `https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=${contract}&address=${address}&tag=latest&apikey=${etherscanApiKey}`
@@ -38,6 +43,7 @@ export const fetchEtherBalance = async (address, network = 'ethereum') => {
 const fetchContractBalanceForAddress = async (contract, address, network = 'ethereum') => {
 	try {
 		const url = getTokenBalanceForNetworkUrl(contract, address, network)
+		console.log(url)
 
 		const response = await fetch(url)
 		const data = await response.json()
@@ -58,6 +64,7 @@ export const fetchBalanceForData = async (coinsData, address, network) => {
 				if (coin.contract_address) {
 					const balance = await fetchContractBalanceForAddress(coin.contract_address[network], address, network)
 					let value = 0
+					console.log(network + ':' + balance)
 					if (balance > 0) {
 						value = coin.current_price * balance
 					}
@@ -75,6 +82,7 @@ export const fetchBalanceForData = async (coinsData, address, network) => {
 			})
 		)
 		results.push(...batchResult)
+		// console.log(batchResult)
 		await new Promise(resolve => setTimeout(resolve, 1000))
 	}
 	const eb = await fetchEtherBalance(address, network)

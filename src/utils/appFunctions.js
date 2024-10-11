@@ -90,11 +90,12 @@ export const calculatePortfolioAssets = async setPortfolioAssets => {
 
 export const fetchBalanceData = async (data, address, setIsLoading, setWalletData, setNewToast, toastDuration) => {
 	setIsLoading(true)
-	const [dataEth, dataArb] = await Promise.all([
+	const [dataEth, dataArb, dataOptimism] = await Promise.all([
 		fetchBalanceForData(data, address, 'ethereum'),
 		fetchBalanceForData(data, address, 'arbitrum-one'),
+		fetchBalanceForData(data, address, 'optimistic-ethereum'),
 	])
-	const combinedData = [...dataEth, ...dataArb]
+	const combinedData = [...dataEth, ...dataArb, ...dataOptimism]
 	const filteredData = sortByUsdValue(combinedData.filter(d => d.balance > 0))
 	setWalletData(filteredData)
 	if (combinedData.length === 0) {
