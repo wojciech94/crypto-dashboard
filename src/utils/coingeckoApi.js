@@ -1,7 +1,7 @@
 const fetchOptions = { method: 'GET', headers: { accept: 'application/json' } }
 const apiKey = process.env.REACT_APP_COINGECKO_API_KEY
 
-export let McRankToTickerMap = {}
+export let McRankToTickerMap = []
 
 export const fetchData = async () => {
 	try {
@@ -37,7 +37,7 @@ export const fetchByMarketCap = async ({ count = 250, dir = 'desc', page = 1, cu
 		const data = await res.json()
 		data.forEach(item => {
 			if (item.market_cap_rank !== null && item.market_cap_rank !== undefined) {
-				McRankToTickerMap[item.market_cap_rank] = item.id
+				McRankToTickerMap[item.market_cap_rank] = { id: item.id, name: item.name }
 			}
 		})
 		return data

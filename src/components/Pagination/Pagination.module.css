@@ -1,18 +1,21 @@
-button {
+.pagination {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+	padding: 16px;
+}
+
+.pagination button {
 	border: none;
 	background-color: var(--light);
 	border-radius: 8px;
 	cursor: pointer;
 	padding: 8px;
-	min-width: 30px;
+	min-width: 36px;
+	min-height: 36px;
 	color: var(--text-dark);
-}
-
-.pagination {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	padding: 16px 0;
+	font-size: 1rem;
 }
 
 .paginationText {
@@ -29,7 +32,6 @@ button {
 .paginationActions {
 	display: flex;
 	justify-content: center;
-	align-items: center;
 	gap: 8px;
 }
 

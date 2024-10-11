@@ -17,7 +17,7 @@ export function Settings() {
 
 	return (
 		<div className='d-flex gap-10'>
-			<div className='d-flex flex-1 column gap-5 overflow-auto'>
+			<div className='d-flex flex-1 column gap-5 overflow-auto m-4'>
 				<Card>
 					<div className='d-flex column gap-4 p-4'>
 						<div className='col-4 text-end text-bold l-spacing-lg'>General</div>
@@ -104,7 +104,7 @@ export function Settings() {
 										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeSm' className='cursor-pointer'>
-										14
+										sm
 									</label>
 								</div>
 								<div className='d-flex align-center gap-2'>
@@ -118,7 +118,7 @@ export function Settings() {
 										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeMd' className='cursor-pointer'>
-										16
+										md
 									</label>
 								</div>
 								<div className='d-flex align-center gap-2'>
@@ -132,7 +132,7 @@ export function Settings() {
 										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeLg' className='cursor-pointer'>
-										18
+										lg
 									</label>
 								</div>
 								<div className='d-flex align-center gap-2'>
@@ -146,7 +146,7 @@ export function Settings() {
 										onChange={onSettingsChaned}
 									/>
 									<label htmlFor='sizeXl' className='cursor-pointer'>
-										20
+										xl
 									</label>
 								</div>
 							</div>
@@ -331,8 +331,8 @@ export function Settings() {
 										checked={settings.sortCol === 'price_change_percentage_24h'}
 										onChange={onSettingsChaned}
 									/>
-									<label htmlFor='sortCol24H%' className='cursor-pointer'>
-										24h % change
+									<label htmlFor='sortCol24H%' className='cursor-pointer text-nowrap'>
+										24h %
 									</label>
 								</div>
 							</div>

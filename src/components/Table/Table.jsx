@@ -77,7 +77,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 			<table className='w-100'>
 				<thead className='border-bottom'>
 					<tr className='text-uppercase text-muted'>
-						{isFavouriteAction && <td className='table-col-0'></td>}
+						{isFavouriteAction && <td className='d-none d-md-table-cell table-col-0'></td>}
 						<td className='table-col-0'></td>
 						<td className='table-col-0'>
 							<button
@@ -100,14 +100,14 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 								Price
 							</button>
 						</td>
-						<td>
+						<td className='d-none d-lg-table-cell'>
 							<button
 								className={`btn btn-link ${sortSetting['key'] == 'ath' ? 'text-primary text-bold' : ''}`}
 								onClick={() => sortList('ath')}>
 								Ath
 							</button>
 						</td>
-						<td>
+						<td className='d-none d-sm-table-cell'>
 							<button
 								className={`btn btn-link ${
 									sortSetting['key'] == 'price_change_percentage_24h' ? 'text-primary text-bold' : ''
@@ -116,7 +116,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 								24h % change
 							</button>
 						</td>
-						<td className='text-nowrap'>
+						<td className='text-nowrap w-30 w-sm-auto'>
 							<button
 								className={`btn btn-link ${sortSetting['key'] == 'market_cap' ? 'text-primary text-bold' : ''}`}
 								onClick={() => sortList('market_cap')}>
@@ -131,7 +131,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 						return (
 							<tr key={el.id}>
 								{isFavouriteAction && (
-									<td>
+									<td className='d-none d-md-table-cell'>
 										<button className='btn p-0' onClick={() => handleSetFavourites(el.id)}>
 											<Star
 												className={`${favouriteIds.includes(el.id) ? 'text-warning' : ''} text-hover-warning`}
@@ -142,25 +142,27 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 								)}
 								<td>
 									<div className='d-flex align-center'>
-										<img className='rounded-25' width={32} src={el.image} alt='Coin logo' />
+										<img className='rounded-25 logo' width={32} src={el.image} alt='Coin logo' />
 									</div>
 								</td>
 								<td>{el.market_cap_rank}</td>
-								<td className='text-start'>
+								<td className='text-start w-20 w-lg-auto'>
 									<Link to={`/coin/${el.id}`}>
 										<span className='text-bold'>{el.name}</span>
 									</Link>
 								</td>
-								<td>{`${NumberFormatter(el.current_price)} ${CurrencySign[settings.currency]}`}</td>
-								<td>{`${NumberFormatter(el.ath)} ${CurrencySign[settings.currency]}`}</td>
-								<td className={`text-bold ${el.price_change_24h > 0 ? 'text-success' : 'text-danger'}  `}>{`${ToFixed(
-									el.price_change_percentage_24h,
-									2
-								)}%`}</td>
-								<td className='text-nowrap'>{`${NumberSpaceFormatter(el.market_cap)} ${
+								<td className='fs-sm'>{`${NumberFormatter(el.current_price)} ${CurrencySign[settings.currency]}`}</td>
+								<td className='d-none d-lg-table-cell fs-sm'>{`${NumberFormatter(el.ath)} ${
 									CurrencySign[settings.currency]
 								}`}</td>
-								<td>
+								<td
+									className={`d-none d-sm-table-cell fs-sm text-bold ${
+										el.price_change_24h > 0 ? 'text-success' : 'text-danger'
+									}  `}>{`${ToFixed(el.price_change_percentage_24h, 2)}%`}</td>
+								<td className='text-nowrap fs-sm'>{`${NumberSpaceFormatter(el.market_cap)} ${
+									CurrencySign[settings.currency]
+								}`}</td>
+								<td className='pl-1'>
 									<Dropdown dropdownKey={dropdownKey + id} dropdownData={prepareDropdownData(el)}></Dropdown>
 								</td>
 							</tr>
@@ -209,11 +211,11 @@ export function WalletTable() {
 		<table className='w-100'>
 			<thead className='border-bottom'>
 				<tr className='text-uppercase text-muted'>
-					<td className='table-col-4 text-start'>Name</td>
-					<td className='text-start'>Address</td>
-					<td className='table-col-3 text-start'>Network</td>
+					<td className='w-20 text-start'>Name</td>
+					<td className='text-start w-lg-aut'>Address</td>
+					<td className='table-col-2 table-col-md-3 text-start'>Network</td>
 					<td className='table-col-2 text-start'>Balance</td>
-					<td className='table-col-4 text-start'>Actions</td>
+					<td className='w-100px table-col-md-4 text-end'>Actions</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -226,35 +228,39 @@ export function WalletTable() {
 								<td className='text-start'>{w.chain}</td>
 								<td className='text-start'>{ToFixed(w.balance, 4) || 'N/A'}</td>
 								<td>
-									<div className='d-flex flex-row gap-2 '>
-										<button
-											title='Copy address'
-											className='d-flex column flex-center btn btn-success p-2'
-											onClick={() => setClipboardText(w.address)}>
-											<Copy size={20} />
-										</button>
+									<div className='w-100 d-flex flex-wrap justify-end gap-2'>
+										<div className='d-flex gap-2'>
+											<button
+												title='Copy address'
+												className='d-flex column flex-center btn btn-success p-2'
+												onClick={() => setClipboardText(w.address)}>
+												<Copy size={18} />
+											</button>
 
-										<button
-											title='Edit wallet'
-											className='d-flex column flex-center btn btn-primary p-2'
-											onClick={() => handleEditWallet(w)}>
-											<Edit size={20} />
-										</button>
-										<button
-											disabled={address === w.address}
-											title='Set as main'
-											className={`d-flex column flex-center btn ${
-												address === w.address ? 'btn-light-secondary cursor-auto' : 'btn-warning'
-											} p-2`}
-											onClick={() => onAddressChange(w.address)}>
-											<Bookmark size={20} />
-										</button>
-										<button
-											title='Remove wallet'
-											className='d-flex column flex-center btn btn-danger p-2'
-											onClick={() => handleSetWallets(WalletActions.Remove, w.id)}>
-											<Trash2 size={20} />
-										</button>
+											<button
+												title='Edit wallet'
+												className='d-flex column flex-center btn btn-primary p-2'
+												onClick={() => handleEditWallet(w)}>
+												<Edit size={18} />
+											</button>
+										</div>
+										<div className='d-flex gap-2'>
+											<button
+												disabled={address === w.address}
+												title='Set as main'
+												className={`d-flex column flex-center btn ${
+													address === w.address ? 'btn-light-secondary cursor-auto' : 'btn-warning'
+												} p-2`}
+												onClick={() => onAddressChange(w.address)}>
+												<Bookmark size={18} />
+											</button>
+											<button
+												title='Remove wallet'
+												className='d-flex column flex-center btn btn-danger p-2'
+												onClick={() => handleSetWallets(WalletActions.Remove, w.id)}>
+												<Trash2 size={18} />
+											</button>
+										</div>
 									</div>
 								</td>
 							</tr>
@@ -271,7 +277,7 @@ export function PortfolioWalletTable() {
 
 	if (!wallets || wallets.length === 0) {
 		return (
-			<div className='py-4'>
+			<div className='py-4 mx-4'>
 				<Alert variant={'primary'}>
 					<div className='d-flex column gap-2 text-start'>
 						<div className='text-bold'>You don't have any wallets.</div>
@@ -290,7 +296,7 @@ export function PortfolioWalletTable() {
 
 	if (!walletData || walletData.length === 0) {
 		return (
-			<div className='py-4'>
+			<div className='py-4 mx-4'>
 				<Alert variant={'primary'}>
 					<div className='d-flex column gap-2 text-start'>
 						<div className='text-bold l-spacing-lg fs-lg'>You did't fetch any data or your balance is empty.</div>
@@ -319,10 +325,10 @@ export function PortfolioWalletTable() {
 				<thead className='border-bottom'>
 					<tr className='text-uppercase text-muted'>
 						<td className='text-start'>Name, symbol</td>
-						<td className='table-col-4 text-start'>Price</td>
-						<td className='table-col-4 text-start'>Network</td>
-						<td className='table-col-3 text-start'>Balance</td>
-						<td className='table-col-4 text-end'>USD value</td>
+						<td className='text-start'>Price</td>
+						<td className='text-start'>Network</td>
+						<td className='text-start'>Balance</td>
+						<td className='text-end'>USD value</td>
 					</tr>
 				</thead>
 				<tbody>

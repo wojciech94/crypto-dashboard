@@ -18,19 +18,52 @@ export function Pagination({ totalItems, itemsPerPage, currentPage, onPageChange
 			<div className={styles.paginationText}>{`${firstIndex} - ${lastIndex} of ${totalItems}`}</div>
 			<div className={styles.paginationActions}>
 				{currentPage > 3 && (
-					<button disabled={currentPage === 1} onClick={() => onPageChange(1)}>
+					<button
+						className='d-flex flex-center btn btn-light-secondary btn-icon'
+						disabled={currentPage === 1}
+						onClick={() => onPageChange(1)}>
 						<ChevronsLeft size={14} />
 					</button>
 				)}
-				<button disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
+				<button
+					className='d-flex flex-center btn btn-light-secondary btn-icon'
+					disabled={currentPage === 1}
+					onClick={() => onPageChange(currentPage - 1)}>
 					<ChevronLeft size={14} />
 				</button>
-				{currentPage > 2 && <button onClick={() => onPageChange(currentPage - 2)}>{currentPage - 2}</button>}
-				{currentPage > 1 && <button onClick={() => onPageChange(currentPage - 1)}>{currentPage - 1}</button>}
+				{currentPage > 2 && (
+					<button
+						className='d-flex flex-center btn btn-light-secondary btn-icon'
+						onClick={() => onPageChange(currentPage - 2)}>
+						{currentPage - 2}
+					</button>
+				)}
+				{currentPage > 1 && (
+					<button
+						className='d-flex flex-center btn btn-light-secondary btn-icon'
+						onClick={() => onPageChange(currentPage - 1)}>
+						{currentPage - 1}
+					</button>
+				)}
 				<button className={styles.active}>{currentPage}</button>
-				{currentPage < maxPage && <button onClick={() => onPageChange(currentPage + 1)}>{currentPage + 1}</button>}
-				{currentPage + 1 < maxPage && <button onClick={() => onPageChange(currentPage + 2)}>{currentPage + 2}</button>}
-				<button disabled={currentPage === maxPage} onClick={() => onPageChange(currentPage + 1)}>
+				{currentPage < maxPage && (
+					<button
+						className='d-flex flex-center btn btn-light-secondary btn-icon'
+						onClick={() => onPageChange(currentPage + 1)}>
+						{currentPage + 1}
+					</button>
+				)}
+				{currentPage + 1 < maxPage && (
+					<button
+						className='d-flex flex-center btn btn-light-secondary btn-icon'
+						onClick={() => onPageChange(currentPage + 2)}>
+						{currentPage + 2}
+					</button>
+				)}
+				<button
+					className='d-flex flex-center btn btn-light-secondary btn-icon'
+					disabled={currentPage === maxPage}
+					onClick={() => onPageChange(currentPage + 1)}>
 					<ChevronRight size={14} />
 				</button>
 				{currentPage < maxPage - 3 && (

@@ -25,15 +25,15 @@ export function Dashboard() {
 	}, [])
 
 	return (
-		<div className='mx-5 d-flex gap-6 column text-start'>
+		<div className='mt-5 mx-5 d-flex gap-4 column text-start'>
 			{globalData && (
-				<div className='d-flex gap-6 flex-wrap'>
+				<div className='d-flex gap-4 flex-wrap'>
 					<div className='min-w-400px flex-1'>
 						<Card>
-							<div className='d-flex justify-between align-center'>
-								<h3 className='text-start'>Marketcap</h3>
-								<div className='d-flex gap-3'>
-									<div>{NumberFormatter(globalData.total_market_cap.usd)} $</div>
+							<div className='d-flex justify-between align-center gap-2'>
+								<h4 className='text-start'>Marketcap</h4>
+								<div className='d-flex gap-2 fs-sm text-nowrap overflow-hidden'>
+									<div>{NumberFormatter(globalData.total_market_cap.usd)}$</div>
 									<div
 										className={`${
 											globalData.market_cap_change_percentage_24h_usd > 0 ? 'text-success' : 'text-danger'
@@ -44,19 +44,19 @@ export function Dashboard() {
 							</div>
 						</Card>
 					</div>
-					<div className='min-w-400px flex-1'>
+					<div className='min-w-300px flex-1'>
 						<Card>
 							<div className='d-flex justify-between align-center'>
-								<h3 className='text-start'>Bitcoin dominance</h3>
-								<div>{NumberFormatter(globalData.market_cap_percentage.btc)} %</div>
+								<h4 className='text-start'>Bitcoin dominance</h4>
+								<div className='fs-sm'>{NumberFormatter(globalData.market_cap_percentage.btc)} %</div>
 							</div>
 						</Card>
 					</div>
 					<div className='min-w-400px flex-1'>
 						<Card>
 							<div className='d-flex justify-between align-center'>
-								<h3 className='text-start'>Total volume</h3>
-								<div>{NumberFormatter(globalData.total_volume.usd)} $</div>
+								<h4 className='text-start'>Total volume</h4>
+								<div className='fs-sm'>{NumberFormatter(globalData.total_volume.usd)} $</div>
 							</div>
 						</Card>
 					</div>
@@ -68,7 +68,7 @@ export function Dashboard() {
 						<Card>
 							{trendingData.coins && (
 								<>
-									<h3 className='text-start'>Trending coins</h3>
+									<h4 className='text-start'>Trending coins</h4>
 									<div className='d-flex column text-start gap-2 py-4'>
 										<div className='d-flex'>
 											<div className='col-5 text-uppercase text-muted'>Name</div>
@@ -78,7 +78,7 @@ export function Dashboard() {
 										{trendingData.coins.map(c => {
 											return (
 												<div key={c.item.id} className='d-flex'>
-													<div className='col-5'>
+													<div className='col-5 text-truncate'>
 														<Link to={`/coin/${c.item.slug}`}>{c.item.name}</Link>
 													</div>
 													<div className='col-4 text-end'>{NumberFormatter(c.item.data.price)} $</div>
@@ -100,7 +100,7 @@ export function Dashboard() {
 						<Card>
 							{trendingData.nfts && (
 								<>
-									<h3 className='text-start'>Trending nfts</h3>
+									<h4 className='text-start'>Trending nfts</h4>
 									<div className='d-flex column text-start gap-2 py-4'>
 										<div className='d-flex'>
 											<div className='col-5 text-uppercase text-muted'>Name</div>
@@ -111,7 +111,7 @@ export function Dashboard() {
 											return (
 												<div key={c.name} className='d-flex'>
 													<div className='col-5 text-truncate'>{c.name}</div>
-													<div className='col-4 text-end'>{c.data.floor_price} $</div>
+													<div className='col-4 text-end text-nowrap fs-sm'>{c.data.floor_price} $</div>
 													<div
 														className={`col-3 text-end ${
 															c.floor_price_24h_percentage_change > 0 ? 'text-success' : 'text-danger'
@@ -130,7 +130,7 @@ export function Dashboard() {
 						<Card>
 							{trendingData.nfts && (
 								<>
-									<h3 className='text-start'>Trending categories</h3>
+									<h4 className='text-start'>Trending categories</h4>
 									<div className='d-flex column text-start gap-2 py-4'>
 										<div className='d-flex'>
 											<div className='col-5 text-uppercase text-muted'>Name</div>
@@ -139,9 +139,9 @@ export function Dashboard() {
 										</div>
 										{trendingData.categories.map(c => {
 											return (
-												<div key={c.name} className='d-flex'>
-													<div className='col-4'>{c.name}</div>
-													<div className='col-5 text-end text-nowrap'>{NumberFormatter(c.data.market_cap)} $</div>
+												<div key={c.name} className='d-flex align-center'>
+													<div className='col-4 text-truncate'>{c.name}</div>
+													<div className='col-5 text-end text-nowrap fs-sm'>{NumberFormatter(c.data.market_cap)} $</div>
 													<div
 														className={`col-3 text-end ${
 															c.data.market_cap_change_percentage_24h.usd > 0 ? 'text-success' : 'text-danger'

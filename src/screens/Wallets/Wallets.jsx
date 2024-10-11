@@ -1,6 +1,5 @@
 import { useContext } from 'react'
 import { WalletContext } from '../../contexts/WalletContext'
-import styles from './Wallets.module.css'
 import { WalletTable } from '../../components/Table/Table'
 import { ModalContext } from '../../contexts/ModalContext'
 import { Alert } from '../../components/Alert/Alert'
@@ -13,7 +12,7 @@ export function Wallets() {
 		<div>
 			{wallets && wallets.length ? (
 				<>
-					<div className={styles.flexEnd}>
+					<div className='d-flex justify-end mb-4 mx-4'>
 						<button
 							className='btn btn-primary text-semibold'
 							onClick={() => setActiveModal({ name: 'wallet', title: 'Add wallet' })}>

@@ -23,9 +23,9 @@ export function Navigation() {
 				<NavLink to={'/settings'}>Settings</NavLink>
 			</div>
 			<button
-				className='mobile-btn btn btn-light-secondary btn-icon'
+				className='ml-4 mobile-btn btn btn-light-secondary btn-icon'
 				onClick={() => setIsOpened(prevState => !prevState)}>
-				{isOpened ? <X /> : <Menu />}
+				{isOpened ? <X size={20} /> : <Menu size={20} />}
 			</button>
 		</div>
 	)

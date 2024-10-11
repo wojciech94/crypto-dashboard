@@ -24,7 +24,7 @@ export function Alerts() {
 
 	return (
 		<>
-			<div className='d-flex justify-end mb-4'>
+			<div className='d-flex justify-end mb-4 mx-4'>
 				<button className='btn btn-primary' onClick={() => setActiveModal({ name: 'alert', title: 'Add price alert' })}>
 					Add alert
 				</button>
@@ -38,7 +38,7 @@ export function Alerts() {
 							<td className='text-start'>Trigger price</td>
 							<td className='text-start'>Currency</td>
 							<td className='text-start'>Alert frequency</td>
-							<td className='table-col-3'></td>
+							<td className='w-100px'></td>
 						</tr>
 					</thead>
 					<tbody>

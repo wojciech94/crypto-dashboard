@@ -37,21 +37,21 @@ export function Portfolio() {
 
 	return (
 		<div>
-			<div className={`${styles.flexRow} align-center flex-wrap justify-between my-4`}>
+			<div className={`${styles.flexRow} align-center flex-wrap justify-between m-4`}>
 				<div className={styles.tabContainer}>
 					<button
 						onClick={() => setActiveTab('coins')}
-						className={`${styles.tab} ${activeTab === 'coins' ? styles.active : ''}`}>
+						className={`btn ${styles.tab} ${activeTab === 'coins' ? styles.active : ''}`}>
 						Coins
 					</button>
 					<button
 						onClick={() => setActiveTab('portfolio')}
-						className={`${styles.tab} ${activeTab === 'portfolio' ? styles.active : ''}`}>
+						className={`btn ${styles.tab} ${activeTab === 'portfolio' ? styles.active : ''}`}>
 						Portfolio
 					</button>
 					<button
 						onClick={() => setActiveTab('wallet')}
-						className={`${styles.tab} ${activeTab === 'wallet' ? styles.active : ''}`}>
+						className={`btn ${styles.tab} ${activeTab === 'wallet' ? styles.active : ''}`}>
 						Wallet
 					</button>
 				</div>
@@ -142,13 +142,15 @@ function PortfolioBalances() {
 	}
 
 	return (
-		<div className='d-flex gap-4 align-start'>
-			<div style={{ width: '400px', height: '400px' }}>
+		<div className='d-flex column flex-md-row gap-4 align-md-start'>
+			<div className='order-2 order-md-1 mx-4'>
 				<Card>
-					<Doughnut data={chartData} />
+					<div className='d-flex flex-column justify-center'>
+						<Doughnut data={chartData} />
+					</div>
 				</Card>
 			</div>
-			<table>
+			<table className='order-1 order-md-2'>
 				<thead>
 					<tr className='text-uppercase text-muted'>
 						<td>Asset</td>

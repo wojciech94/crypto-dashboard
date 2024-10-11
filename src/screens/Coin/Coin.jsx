@@ -59,15 +59,15 @@ export function Coin() {
 								Back
 							</Link>
 							{data.market_cap_rank > 1 && (
-								<Link className='btn btn-danger' to={`/coin/${McRankToTickerMap[data.market_cap_rank - 1]}`}>
-									{McRankToTickerMap[data.market_cap_rank - 1]}
+								<Link className='btn btn-danger' to={`/coin/${McRankToTickerMap[data.market_cap_rank - 1].id}`}>
+									{McRankToTickerMap[data.market_cap_rank - 1].name}
 								</Link>
 							)}
 						</div>
 
 						{data.market_cap_rank < 250 && (
-							<Link className='btn btn-success' to={`/coin/${McRankToTickerMap[data.market_cap_rank + 1]}`}>
-								{McRankToTickerMap[data.market_cap_rank + 1]}
+							<Link className='btn btn-success' to={`/coin/${McRankToTickerMap[data.market_cap_rank + 1].id}`}>
+								{McRankToTickerMap[data.market_cap_rank + 1].name}
 							</Link>
 						)}
 					</div>
