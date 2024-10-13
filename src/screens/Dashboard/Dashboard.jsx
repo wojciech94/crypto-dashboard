@@ -28,7 +28,7 @@ export function Dashboard() {
 		<div className='mt-5 mx-5 d-flex gap-4 column text-start'>
 			{globalData && (
 				<div className='d-flex gap-4 flex-wrap'>
-					<div className='min-w-400px flex-1'>
+					<div className='min-w-sm-400px flex-1'>
 						<Card>
 							<div className='d-flex justify-between align-center gap-2'>
 								<h4 className='text-start'>Marketcap</h4>
@@ -44,19 +44,19 @@ export function Dashboard() {
 							</div>
 						</Card>
 					</div>
-					<div className='min-w-300px flex-1'>
+					<div className='min-w-sm-300px flex-1'>
 						<Card>
-							<div className='d-flex justify-between align-center'>
-								<h4 className='text-start'>Bitcoin dominance</h4>
-								<div className='fs-sm'>{NumberFormatter(globalData.market_cap_percentage.btc)} %</div>
+							<div className='d-flex justify-between align-center gap-2'>
+								<h4 className='text-start text-nowrap'>Bitcoin dominance</h4>
+								<div className='fs-sm text-nowrap'>{NumberFormatter(globalData.market_cap_percentage.btc)} %</div>
 							</div>
 						</Card>
 					</div>
-					<div className='min-w-400px flex-1'>
+					<div className='min-w-sm-400px flex-1'>
 						<Card>
-							<div className='d-flex justify-between align-center'>
-								<h4 className='text-start'>Total volume</h4>
-								<div className='fs-sm'>{NumberFormatter(globalData.total_volume.usd)} $</div>
+							<div className='d-flex justify-between align-center gap-2'>
+								<h4 className='text-start text-nowrap'>Total volume</h4>
+								<div className='fs-sm text-nowrap'>{NumberFormatter(globalData.total_volume.usd)} $</div>
 							</div>
 						</Card>
 					</div>
@@ -64,7 +64,7 @@ export function Dashboard() {
 			)}
 			{trendingData && (
 				<div className='d-flex gap-6 flex-wrap justify-center'>
-					<div className='min-w-400px flex-1'>
+					<div className='min-w-sm-400px flex-1'>
 						<Card>
 							{trendingData.coins && (
 								<>
@@ -96,7 +96,7 @@ export function Dashboard() {
 							)}
 						</Card>
 					</div>
-					<div className='min-w-300px flex-1'>
+					<div className='min-w-sm-300px flex-1'>
 						<Card>
 							{trendingData.nfts && (
 								<>
@@ -126,7 +126,7 @@ export function Dashboard() {
 							)}
 						</Card>
 					</div>
-					<div className='min-w-400px flex-1'>
+					<div className='min-w-sm-400px flex-1'>
 						<Card>
 							{trendingData.nfts && (
 								<>
@@ -135,7 +135,7 @@ export function Dashboard() {
 										<div className='d-flex'>
 											<div className='col-5 text-uppercase text-muted'>Name</div>
 											<div className='col-4 text-uppercase text-muted text-end'>Market cap</div>
-											<div className='col-3 text-uppercase text-muted text-end'>MC 24H %</div>
+											<div className='col-3 text-uppercase text-muted text-end'>MC 24H</div>
 										</div>
 										{trendingData.categories.map(c => {
 											return (

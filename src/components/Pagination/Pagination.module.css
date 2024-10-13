@@ -2,6 +2,8 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: 16px;
 	width: 100%;
 	padding: 16px;
 }

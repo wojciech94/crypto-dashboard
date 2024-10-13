@@ -30,15 +30,19 @@ export function Alerts() {
 				</button>
 			</div>
 			{alerts && alerts.length > 0 ? (
-				<table>
+				<table className='fs-sm'>
 					<thead>
 						<tr className='text-uppercase text-muted'>
 							<td className='text-start'>Asset</td>
-							<td className='text-start'>Trigger action</td>
-							<td className='text-start'>Trigger price</td>
-							<td className='text-start'>Currency</td>
-							<td className='text-start'>Alert frequency</td>
-							<td className='w-100px'></td>
+							<td className='text-start'>Action</td>
+							<td className='text-start'>Price</td>
+							<td className='text-start'>
+								<div className='text-truncate'>Currency</div>
+							</td>
+							<td className='text-start'>
+								<div className='text-truncate'>Frequency</div>
+							</td>
+							<td className='table-col-0 table-col-md-3'></td>
 						</tr>
 					</thead>
 					<tbody>
@@ -53,7 +57,7 @@ export function Alerts() {
 									<td className='text-start'>{a.currency}</td>
 									<td className='text-start'>{a.frequency}</td>
 									<td>
-										<div className='d-flex gap-2'>
+										<div className='d-flex flex-wrap flex-md-nowrap gap-1 gap-sm-2'>
 											<button className='btn btn-icon btn-primary d-flex' onClick={() => setEditAlertModal(a)}>
 												<Edit width={20}></Edit>
 											</button>

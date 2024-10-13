@@ -147,11 +147,15 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 								</td>
 								<td>{el.market_cap_rank}</td>
 								<td className='text-start w-20 w-lg-auto'>
-									<Link to={`/coin/${el.id}`}>
-										<span className='text-bold'>{el.name}</span>
-									</Link>
+									<div className='text-truncate'>
+										<Link to={`/coin/${el.id}`}>
+											<span className='text-bold'>{el.name}</span>
+										</Link>
+									</div>
 								</td>
-								<td className='fs-sm'>{`${NumberFormatter(el.current_price)} ${CurrencySign[settings.currency]}`}</td>
+								<td className='fs-sm text-nowrap'>{`${NumberFormatter(el.current_price)} ${
+									CurrencySign[settings.currency]
+								}`}</td>
 								<td className='d-none d-lg-table-cell fs-sm'>{`${NumberFormatter(el.ath)} ${
 									CurrencySign[settings.currency]
 								}`}</td>
@@ -211,11 +215,11 @@ export function WalletTable() {
 		<table className='w-100'>
 			<thead className='border-bottom'>
 				<tr className='text-uppercase text-muted'>
-					<td className='w-20 text-start'>Name</td>
-					<td className='text-start w-lg-aut'>Address</td>
-					<td className='table-col-2 table-col-md-3 text-start'>Network</td>
-					<td className='table-col-2 text-start'>Balance</td>
-					<td className='w-100px table-col-md-4 text-end'>Actions</td>
+					<td className='w-25 text-start'>Name</td>
+					<td className='table-col-1 w-md-auto text-start'>Address</td>
+					<td className='table-col-1 table-col-md-3 text-start'>Network</td>
+					<td className='table-col-1 table-col-md-2 text-start'>Balance</td>
+					<td className='w-90px table-col-md-4 text-end'>Actions</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -223,7 +227,9 @@ export function WalletTable() {
 					wallets.map(w => {
 						return (
 							<tr key={w.id}>
-								<td className='text-start'>{w.name}</td>
+								<td className='text-start'>
+									<div className='text-truncate'>{w.name}</div>
+								</td>
 								<td className='text-start ellipsis l-spacing-nlg'>{w.address}</td>
 								<td className='text-start'>{w.chain}</td>
 								<td className='text-start'>{ToFixed(w.balance, 4) || 'N/A'}</td>
@@ -369,16 +375,15 @@ export function PortfolioWalletTable() {
 
 export function TransactionsTable({ transactions }) {
 	const getTime = time => {
-		const date = new Date(time).toLocaleString()
+		const date = new Date(time).toLocaleString().replace(',', '')
 		return date
 	}
 
 	return (
-		<table className='w-100'>
+		<table className='w-100 fs-sm'>
 			<thead>
 				<tr className='text-uppercase text-muted'>
-					<td>Asset</td>
-					<td>Type</td>
+					<td className='w-90px w-md-auto'>Transaction</td>
 					<td>Date</td>
 					<td>Price</td>
 					<td>Quantity</td>
@@ -389,10 +394,11 @@ export function TransactionsTable({ transactions }) {
 				{transactions.map(t => {
 					return (
 						<tr key={t.time}>
-							<td>{capitalize(t.name)}</td>
-							<td>{capitalize(t.type)}</td>
+							<td>
+								<div className='text-truncate'>{`${capitalize(t.type)} ${t.name}`}</div>
+							</td>
 							<td>{getTime(t.time)}</td>
-							<td>{`${t.price} ${CurrencySign[t.currency]}`}</td>
+							<td className='text-nowrap'>{`${NumberFormatter(t.price, true)} ${CurrencySign[t.currency]}`}</td>
 							<td>{ToPrecision(t.quantity, 4)}</td>
 							<td>{`${t.value} ${CurrencySign[t.currency]}`}</td>
 						</tr>

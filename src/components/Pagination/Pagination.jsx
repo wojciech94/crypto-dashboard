@@ -15,8 +15,8 @@ export function Pagination({ totalItems, itemsPerPage, currentPage, onPageChange
 
 	return (
 		<div className={styles.pagination}>
-			<div className={styles.paginationText}>{`${firstIndex} - ${lastIndex} of ${totalItems}`}</div>
-			<div className={styles.paginationActions}>
+			<div className={`order-1 order-sm-1 ${styles.paginationText}`}>{`${firstIndex} - ${lastIndex} of ${totalItems}`}</div>
+			<div className={`w-100 w-sm-auto order-3 order-sm-2 ${styles.paginationActions}`}>
 				{currentPage > 3 && (
 					<button
 						className='d-flex flex-center btn btn-light-secondary btn-icon'
@@ -72,7 +72,7 @@ export function Pagination({ totalItems, itemsPerPage, currentPage, onPageChange
 					</button>
 				)}
 			</div>
-			<div className={styles.paginationSelectContainer}>
+			<div className={`order-2 ${styles.paginationSelectContainer}`}>
 				<div className={styles.paginationText}>Show on page</div>
 				<select name='paginationSelect' id='paginationSelect' value={itemsPerPage} onChange={handleItemsPerPageChange}>
 					<option value={5}>5</option>

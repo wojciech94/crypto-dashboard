@@ -119,29 +119,37 @@ const WalletModalBody = ({ activeModal, setActiveModal }) => {
 		<div className='d-flex column gap-4'>
 			<input
 				type='text'
-				className={styles.input}
+				className={`bg-light text-dark  input-clear ${styles.input}`}
 				value={nameInputValue}
 				placeholder='Enter wallet name'
 				onChange={e => setNameInputValue(e.target.value)}
 			/>
 			<input
 				type='text'
-				className={styles.input}
+				className={`bg-light text-dark input-clear ${styles.input}`}
 				value={addressInputValue}
 				placeholder='Enter wallet address'
 				onChange={e => setAddressInputValue(e.target.value)}
 				required
 			/>
 			<select
-				className={styles.select}
+				className={`w-100 bg-light text-dark select-clear ${styles.select}`}
 				name='chainSelect'
 				id='chainSelect'
 				value={selectChain}
 				onChange={e => setSelectChain(e.target.value)}>
-				<option value='bitcoin'>Bitcoin</option>
-				<option value='ethereum'>Ethereum</option>
-				<option value='solana'>Solana</option>
-				<option value='starknet'>Starknet</option>
+				<option className='option-clear' value='bitcoin'>
+					Bitcoin
+				</option>
+				<option className='option-clear' value='ethereum'>
+					Ethereum
+				</option>
+				<option className='option-clear' value='solana'>
+					Solana
+				</option>
+				<option className='option-clear' value='starknet'>
+					Starknet
+				</option>
 			</select>
 			<button className='btn btn-success text-white' onClick={activeModal.data ? handleEditWallet : handleAddWallet}>
 				Save
@@ -433,7 +441,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 							</div>
 						</div>
 					)}
-					<div className='d-flex gap-2'>
+					<div className='d-flex flex-wrap gap-2'>
 						<div className='d-flex flex-1 column gap-2'>
 							<div>Quantity</div>
 							<div className='bg-light text-dark rounded-1 p-1'>
@@ -446,7 +454,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 							</div>
 						</div>
 						{(activeTab === TransactionsType.Buy || activeTab === TransactionsType.Sell) && (
-							<div className='d-flex column gap-2'>
+							<div className='w-100 w-sm-auto d-flex column gap-2'>
 								<div className='d-flex justify-between gap-2'>
 									<div>Price per coin</div>
 									<button className='btn btn-link fs-sm' onClick={fetchCoinPrice}>
@@ -545,7 +553,7 @@ const AlertModalBody = ({ activeModal, setActiveModal }) => {
 
 	return (
 		<>
-			<div className='d-flex justify-between gap-4'>
+			<div className='d-flex justify-between gap-3'>
 				<div className='d-flex column gap-2'>
 					<div>Cryptocurrency</div>
 					<div className='bg-light text-dark rounded-1 p-1'>
@@ -568,7 +576,7 @@ const AlertModalBody = ({ activeModal, setActiveModal }) => {
 				</div>
 				<div className='d-flex column gap-2 text-end'>
 					<div>Current price</div>
-					<div className='py-1 text-bold fs-lg'>{`${coinPrice} ${CurrencySign[currencyValue]}`}</div>
+					<div className='py-1 text-bold fs-lg text-nowrap'>{`${coinPrice} ${CurrencySign[currencyValue]}`}</div>
 				</div>
 			</div>
 

@@ -1,6 +1,6 @@
-export function NumberFormatter(number) {
+export function NumberFormatter(number, restricted = false) {
 	const num = Number(number)
-	if (Math.abs(num) < 0.01) {
+	if (Math.abs(num) < 0.01 || (restricted && num > 1000)) {
 		return num.toExponential(2)
 	}
 	return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })

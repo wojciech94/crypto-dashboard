@@ -5,8 +5,13 @@
 }
 
 .tab {
+	background-color: var(--light);
 	padding: 8px 16px;
 	font-size: 0.9rem;
+}
+
+g[data-theme='dark'] .tab {
+	
 }
 
 .tab.active {

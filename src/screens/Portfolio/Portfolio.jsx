@@ -143,7 +143,7 @@ function PortfolioBalances() {
 
 	return (
 		<div className='d-flex column flex-md-row gap-4 align-md-start'>
-			<div className='order-2 order-md-1 mx-4'>
+			<div className='order-2 order-md-1 mx-4 mb-4'>
 				<Card>
 					<div className='d-flex flex-column justify-center'>
 						<Doughnut data={chartData} />

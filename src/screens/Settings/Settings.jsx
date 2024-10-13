@@ -23,7 +23,7 @@ export function Settings() {
 						<div className='col-4 text-end text-bold l-spacing-lg'>General</div>
 						<div className='d-flex align-center mb-4'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Auto sync data</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -57,7 +57,7 @@ export function Settings() {
 						<div className='col-4 text-end text-bold l-spacing-lg'>Appearence</div>
 						<div className='d-flex align-center mb-4'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Theme</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -92,7 +92,7 @@ export function Settings() {
 						<div className='col-4 text-end text-bold l-spacing-lg'>Typography</div>
 						<div className='d-flex align-center mb-4'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Font size</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4 flex-wrap'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -152,9 +152,9 @@ export function Settings() {
 							</div>
 						</div>
 						<div className='col-4 text-end text-bold l-spacing-lg'>Locales</div>
-						<div className='d-flex align-center mb-4'>
+						<div className='d-flex align-center mb-4 flex-wrap'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Currency</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4 flex-wrap'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -216,7 +216,7 @@ export function Settings() {
 						<div className='col-4 text-end text-bold l-spacing-lg'>Alerts</div>
 						<div className='d-flex align-center mb-4'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Alerts visibility time</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4 flex-wrap'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -278,7 +278,7 @@ export function Settings() {
 						<div className='col-4 text-end text-bold l-spacing-lg'>Table</div>
 						<div className='d-flex align-center'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Table sort column</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4 flex-wrap'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -339,7 +339,7 @@ export function Settings() {
 						</div>
 						<div className='d-flex align-center'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Table sort direction</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4 flex-wrap'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'
@@ -372,7 +372,7 @@ export function Settings() {
 						</div>
 						<div className='d-flex align-center'>
 							<div className='col-4 text-end l-spacing-sm text-light-dark'>Table rows per page</div>
-							<div className='col-8 d-flex align-center gap-5 px-4'>
+							<div className='col-8 d-flex align-center gap-3 px-4 flex-wrap'>
 								<div className='d-flex align-center gap-2'>
 									<input
 										className='m-0'

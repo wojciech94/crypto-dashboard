@@ -52,8 +52,8 @@ export function Coin() {
 	return (
 		<>
 			{data && (
-				<>
-					<div className='d-flex justify-between p4 g4 mb-4'>
+				<div className='mx-4'>
+					<div className='d-flex justify-between p4 g4 my-4'>
 						<div className='d-flex gap-5 g4'>
 							<Link className='btn btn-secondary' to={'/coins'}>
 								Back
@@ -76,27 +76,30 @@ export function Coin() {
 							<table>
 								<thead className='text-uppercase text-muted'>
 									<tr>
-										<td className='table-col-2'></td>
-										<td className='table-col-1'>Rank</td>
+										<td className='table-col-0 table-col-lg-2'></td>
+										<td className='d-none d-md-table-cell table-col-1'>Rank</td>
 										<td className='text-start'>Name</td>
 										<td className='text-end'>Price</td>
-										<td className=''>24h %</td>
+										<td className='d-none d-md-table-cell'>24h %</td>
 										<td className='text-end'>Market Cap</td>
-										<td className='table-col-1'></td>
+										<td className='table-col-0'></td>
 									</tr>
 								</thead>
 								<tbody>
 									<tr className='nohover'>
-										<td>
-											<img width={64} src={`${data.image.small}`} alt='Coin logo' />
+										<td className=''>
+											<img className='logo' src={`${data.image.small}`} alt='Coin logo' />
 										</td>
-										<td>{data.market_cap_rank}</td>
+										<td className='d-none d-md-table-cell'>{data.market_cap_rank}</td>
 										<td className='text-start'>{data.name}</td>
 										<td className='text-end'>{data.price} $</td>
-										<td className={`${data.day_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
+										<td
+											className={`d-none d-md-table-cell ${
+												data.day_change_percentage > 0 ? 'text-success' : 'text-danger'
+											}`}>
 											{NumberFormatter(data.day_change_percentage)} %
 										</td>
-										<td className='text-end'>{NumberSpaceFormatter(data.market_cap)} $</td>
+										<td className='text-end w-30 w-sm-auto'>{NumberSpaceFormatter(data.market_cap)} $</td>
 										<td>
 											<Dropdown dropdownData={prepareDropdownData()} dropdownKey='coin'></Dropdown>
 										</td>
@@ -107,7 +110,7 @@ export function Coin() {
 								<table>
 									<thead className='text-uppercase text-muted'>
 										<tr>
-											<td>24h change</td>
+											<td className='d-none d-sm-table-cell'>24h change</td>
 											<td>24h %</td>
 											<td>7d %</td>
 											<td>14d %</td>
@@ -118,7 +121,7 @@ export function Coin() {
 									</thead>
 									<tbody>
 										<tr className='nohover'>
-											<td className={`${data.day_change > 0 ? 'text-success' : 'text-danger'}`}>
+											<td className={`d-none d-sm-table-cell ${data.day_change > 0 ? 'text-success' : 'text-danger'}`}>
 												{NumberFormatter(data.day_change)} $
 											</td>
 											<td className={`${data.day_change_percentage > 0 ? 'text-success' : 'text-danger'}`}>
@@ -193,7 +196,7 @@ export function Coin() {
 							</Expandable>
 						</div>
 					</Card>
-				</>
+				</div>
 			)}
 		</>
 	)
