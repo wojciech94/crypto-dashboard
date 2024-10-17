@@ -205,6 +205,7 @@ export const fetchCryptoPrices = async (ids, currencies = 'usd') => {
 		)
 		if (res.ok) {
 			const data = await res.json()
+			console.log(data)
 			return data
 		}
 	} catch (error) {

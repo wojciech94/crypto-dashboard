@@ -235,6 +235,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 			case 'buy':
 			case 'sell':
 				return {
+					id: coinValue,
 					type: activeTab,
 					name: coinName,
 					currency: currencyValue,
@@ -245,6 +246,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 				}
 			case 'transfer':
 				return {
+					id: coinValue,
 					type: activeTab,
 					name: coinName,
 					quantity: Number(quantityValue),
@@ -255,6 +257,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 				}
 			case 'deposit':
 				return {
+					id: currencyValue,
 					type: activeTab,
 					name: currencyValue,
 					quantity: Number(quantityValue),
@@ -482,7 +485,7 @@ const TransactionModalBody = ({ activeModal, setActiveModal }) => {
 }
 
 const AlertModalBody = ({ activeModal, setActiveModal }) => {
-	const [alerts, setAlerts] = useContext(AlertsContext)
+	const [, setAlerts] = useContext(AlertsContext)
 	const [coinName, setCoinName] = useState(activeModal?.data?.asset || 'bitcoin')
 	const [triggerValue, setTriggerValue] = useState(activeModal?.data?.trigger || 'price above')
 	const [priceValue, setPriceValue] = useState(activeModal?.data?.price || '')

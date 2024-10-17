@@ -33,7 +33,7 @@ function App() {
 	const [walletData, setWalletData] = useState([])
 	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
-	const [coins, setCoins] = useState(null)
+	const [portfolioSnapshot, setPortfolioSnapshot] = useState(null)
 	const [alerts, setAlerts] = useState(JSON.parse(localStorage.getItem('priceAlerts')) || [])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
@@ -65,6 +65,7 @@ function App() {
 		}
 	}, [activeDropdown])
 
+	//check alerts 
 	useEffect(() => {
 		let intervalId
 		if (alerts && alerts.length > 0) {
@@ -79,8 +80,7 @@ function App() {
 
 	useEffect(() => {
 		const fetchMarketData = async () => {
-			const data = await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
-			setCoins(data)
+			await fetchByMarketCap({ count: 250, dir: 'desc', page: 1, currency: settings.currency })
 		}
 		fetchMarketData()
 	}, [])
@@ -97,8 +97,8 @@ function App() {
 
 	//Update Portfolio transactions assets
 	useEffect(() => {
-		calculatePortfolioAssets(setPortfolioAssets)
-	}, [])
+		calculatePortfolioAssets(setPortfolioAssets, setPortfolioSnapshot)
+	}, [transactions])
 
 	useEffect(() => {
 		if (!isLoading && settings.autoSync === 'true') {
@@ -162,6 +162,7 @@ function App() {
 
 	const handleAddTransaction = useCallback(
 		t => {
+			console.log(t)
 			addTransactionData(t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, settings.alertsVis)
 		},
 		[portfolioAssets]
@@ -177,7 +178,7 @@ function App() {
 
 	return (
 		<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
-			<PortfolioContext.Provider value={[portfolio, portfolioIds, handleSetPortfolio, portfolioAssets]}>
+			<PortfolioContext.Provider value={[portfolio, portfolioIds, handleSetPortfolio, portfolioAssets, portfolioSnapshot]}>
 				<AlertsContext.Provider value={[alerts, setAlerts]}>
 					<ModalContext.Provider value={[activeModal, setActiveModal]}>
 						<ToastsContext.Provider value={[newToast, handleSetToast]}>

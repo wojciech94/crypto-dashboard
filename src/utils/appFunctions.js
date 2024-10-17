@@ -7,7 +7,7 @@ import { sortByUsdValue } from './sorting'
 export const updatePortfolioAssets = (t, portfolioAssets) => {
 	if (t.type === TransactionsType.Transfer || t.type === TransactionsType.Deposit) {
 		if (!portfolioAssets.find(a => a.name === t.name)) {
-			return [...portfolioAssets, { name: t.name, balance: t.quantity, value: t.value }]
+			return [...portfolioAssets, { id: t.id, name: t.name, balance: t.quantity, value: t.value }]
 		} else {
 			portfolioAssets.map(a => {
 				if (a.name === t.name) {
@@ -26,14 +26,14 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 			if (newBalance >= 0) {
 				let updatedAssets = portfolioAssets.map(a => {
 					if (a.name === currencyAsset.name) {
-						return { name: a.name, balance: newBalance, value: newBalance }
+						return { id: t.id, name: a.name, balance: newBalance, value: newBalance }
 					} else if (asset && asset.name === a.name) {
-						return { name: a.name, balance: a.balance + t.quantity, value: asset.value + t.value }
+						return { id: t.id, name: a.name, balance: a.balance + t.quantity, value: asset.value + t.value }
 					}
 					return a
 				})
 				if (!asset) {
-					updatedAssets.push({ name: t.name, balance: t.quantity, value: t.value })
+					updatedAssets.push({ id: t.id, name: t.name, balance: t.quantity, value: t.value })
 				}
 				updatedAssets = updatedAssets.filter(a => a.balance > 0)
 				return updatedAssets
@@ -45,9 +45,10 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 		if (asset && asset.balance >= t.quantity) {
 			let updatedAssets = portfolioAssets.map(a => {
 				if (a.name === asset.name) {
-					return { name: a.name, balance: asset.balance - t.quantity, value: a.value - t.value }
+					return { id: t.id, name: a.name, balance: asset.balance - t.quantity, value: a.value - t.value }
 				} else if (currencyAsset && a.name === currencyAsset.name) {
 					return {
+						id: t.id,
 						name: currencyAsset.name,
 						balance: currencyAsset.balance + t.value,
 						value: currencyAsset.balance + t.value,
@@ -56,7 +57,7 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 				return a
 			})
 			if (!currencyAsset) {
-				updatedAssets.push({ name: t.currency, balance: t.value, value: t.value })
+				updatedAssets.push({ id: t.id, name: t.currency, balance: t.value, value: t.value })
 			}
 			updatedAssets = updatedAssets.filter(a => a.balance > 0)
 			return updatedAssets
@@ -64,28 +65,54 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 	}
 }
 
-export const calculatePortfolioAssets = async setPortfolioAssets => {
+export const calculatePortfolioAssets = async (setPortfolioAssets, setPortfolioSnapshot) => {
 	const portfolioAssets = JSON.parse(localStorage.getItem('portfolioAssets'))
 	if (portfolioAssets && portfolioAssets.length > 0) {
 		const ids = portfolioAssets
 			.reduce((acc, a) => {
-				if (acc.includes(a.name)) {
+				if (acc.includes(a.id)) {
 					return acc
 				} else {
-					return acc + ',' + a.name
+					return acc + ',' + a.id
 				}
 			}, '')
 			.replace(',', '')
 		const cryptoPrices = await fetchCryptoPrices(ids)
-		const updatedPrices = Object.values(portfolioAssets).map(e => {
-			const price = cryptoPrices[e.name]['usd']
-			return { name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
-		})
+
+		const updatedPrices = Object.values(portfolioAssets)
+			.filter(e => cryptoPrices.hasOwnProperty(e.id))
+			.map(e => {
+				const price = cryptoPrices[e.name]['usd']
+				return { name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
+			})
 		localStorage.setItem('portfolioAssets', JSON.stringify(updatedPrices))
 		setPortfolioAssets(updatedPrices)
+		updatePortfolioSnapshot(updatedPrices, setPortfolioSnapshot)
 	} else {
 		console.warn('Portfolio not found')
 	}
+}
+
+const updatePortfolioSnapshot = (portfolioAssets, setPortfolioSnapshot) => {
+	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
+	const portfolioTimeline = JSON.parse(localStorage.getItem('portfolioTimeline')) || []
+	const date = new Date().toLocaleDateString('en-GB', {
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+	})
+	if (portfolioTimeline && portfolioTimeline.length > 0) {
+		const lastUpdate = portfolioTimeline[portfolioTimeline.length - 1]['day']
+		if (date === lastUpdate) {
+			portfolioTimeline[portfolioTimeline.length - 1]['value'] = totalBalance
+		} else {
+			portfolioTimeline.push({ day: date, value: totalBalance })
+		}
+	} else {
+		portfolioTimeline.push({ day: date, value: totalBalance })
+	}
+	localStorage.setItem('portfolioTimeline', JSON.stringify(portfolioTimeline))
+	setPortfolioSnapshot(portfolioTimeline)
 }
 
 export const fetchBalanceData = async (data, address, setIsLoading, setWalletData, setNewToast, toastDuration) => {
@@ -183,9 +210,13 @@ export const addTransactionData = (t, setTransactions, portfolioAssets, setPortf
 		localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
 		return updatedTransactions
 	})
-	const newPortfolio = updatePortfolioAssets(t, portfolioAssets)
-	setPortfolioAssets(newPortfolio)
-	localStorage.setItem('portfolioAssets', JSON.stringify(newPortfolio))
+
+	setPortfolioAssets(prevPortfolio => {
+		const newPortfolio = updatePortfolioAssets(t, prevPortfolio)
+		localStorage.setItem('portfolioAssets', JSON.stringify(newPortfolio))
+		return newPortfolio
+	})
+
 	setNewToast({
 		title: 'You have added a new transaction.',
 		subTitle: `Asset: ${t.name}, Transaction type: ${t.type}

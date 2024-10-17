@@ -910,6 +910,11 @@ button:hover:disabled {
 	margin: 1rem;
 }
 
+.mx-auto {
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .mx-0 {
 	margin-left: 0;
 	margin-right: 0;
@@ -1409,6 +1414,18 @@ button:hover:disabled {
 
 	.mobile-btn {
 		display: none;
+	}
+
+	.order-sm-1 {
+		order: 1;
+	}
+
+	.order-sm-2 {
+		order: 2;
+	}
+
+	.order-sm-3 {
+		order: 3;
 	}
 
 	.min-w-sm-100px {

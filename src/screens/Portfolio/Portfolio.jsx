@@ -5,12 +5,12 @@ import styles from './Portfolio.module.css'
 import { ModalContext } from '../../contexts/ModalContext'
 import { PortfolioContext } from '../../contexts/PortfolioContext'
 import { Alert } from '../../components/Alert/Alert'
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Doughnut } from 'react-chartjs-2'
+import { Chart, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js'
+import { Doughnut, Line } from 'react-chartjs-2'
 import { Card } from '../../components/Card/Card'
 import { capitalize } from '../../utils/stringUtils'
 import { ToFixed } from '../../utils/formatter'
-Chart.register(ArcElement, Tooltip, Legend)
+Chart.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement)
 
 export function Portfolio() {
 	const [activeTab, setActiveTab] = useState('coins')
@@ -104,7 +104,29 @@ function CoinsPortfolio({ portfolio }) {
 }
 
 function PortfolioBalances() {
-	const [, , , portfolioAssets] = useContext(PortfolioContext)
+	const tempData = [
+		{ day: '15/10/2024', value: 1048 },
+		{ day: '16/10/2024', value: 941 },
+		{ day: '17/10/2024', value: 1175 },
+		{ day: '18/10/2024', value: 845 },
+		{ day: '19/10/2024', value: 1135 },
+		{ day: '20/10/2024', value: 1181 },
+		{ day: '21/10/2024', value: 858 },
+		{ day: '22/10/2024', value: 900 },
+		{ day: '23/10/2024', value: 1192 },
+		{ day: '24/10/2024', value: 953 },
+		{ day: '25/10/2024', value: 1000 },
+		{ day: '26/10/2024', value: 1147 },
+		{ day: '27/10/2024', value: 1200 },
+		{ day: '28/10/2024', value: 1083 },
+		{ day: '29/10/2024', value: 1144 },
+		{ day: '30/10/2024', value: 1146 },
+		{ day: '31/10/2024', value: 1024 },
+		{ day: '01/11/2024', value: 895 },
+		{ day: '02/11/2024', value: 940 },
+		{ day: '03/11/2024', value: 969 },
+	]
+	const [, , , portfolioAssets, portfolioSnapshot] = useContext(PortfolioContext)
 	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
 	const generateChartData = () => {
 		const data = portfolioAssets.slice(0, 5)
@@ -122,13 +144,29 @@ function PortfolioBalances() {
 				hoverBackgroundColor: ['#FF4C6E', '#2A8AC0', '#F7C44C', '#3AA1A1', '#8A4EBE', '#FF7F20'],
 			},
 		]
-		return [labels, datasets]
+		return { labels, datasets }
 	}
-	const [labels, datasets] = generateChartData()
-	const chartData = {
-		labels: labels,
-		datasets: datasets,
+	const generateTimelineData = () => {
+		const labels = tempData.map(d => d.day)
+		const values = tempData.map(d => d.value)
+		const datasets = [
+			{
+				data: values,
+				label: 'Portfolio Timeline',
+				fill: false,
+				borderColor: 'rgb(75,192,192)',
+				tension: 0.4,
+			},
+		]
+
+		return { labels, datasets }
 	}
+	const options = {
+		responsive: true,
+		maintainAspectRatio: false,
+	}
+	const donutChartData = generateChartData()
+	const timelineChartData = generateTimelineData()
 
 	if (!portfolioAssets || portfolioAssets.length === 0) {
 		return (
@@ -142,46 +180,57 @@ function PortfolioBalances() {
 	}
 
 	return (
-		<div className='d-flex column flex-md-row gap-4 align-md-start'>
-			<div className='order-2 order-md-1 mx-4 mb-4'>
-				<Card>
-					<div className='d-flex flex-column justify-center'>
-						<Doughnut data={chartData} />
-					</div>
-				</Card>
-			</div>
-			<table className='order-1 order-md-2'>
-				<thead>
-					<tr className='text-uppercase text-muted'>
-						<td>Asset</td>
-						<td>Balance</td>
-						<td>Value</td>
-					</tr>
-				</thead>
-				<tbody>
-					{portfolioAssets &&
-						portfolioAssets.length > 0 &&
-						portfolioAssets.map(p => {
-							return (
-								<tr key={p.name}>
-									<td>{capitalize(p.name)}</td>
-									<td>{ToFixed(p.balance, 4)}</td>
-									<td>{p.value} $</td>
-								</tr>
-							)
-						})}
-				</tbody>
-				{portfolioAssets && portfolioAssets.length > 0 && (
-					<tfoot>
-						<tr>
-							<td className='text-uppercase text-muted'>Total value</td>
-							<td></td>
-							<td>{ToFixed(totalBalance, 2)} $</td>
+		<>
+			<div className='d-flex column flex-md-row justify-between gap-4 align-md-start mb-4'>
+				<table>
+					<thead>
+						<tr className='text-uppercase text-muted'>
+							<td>Asset</td>
+							<td>Balance</td>
+							<td>Value</td>
 						</tr>
-					</tfoot>
-				)}
-			</table>
-		</div>
+					</thead>
+					<tbody>
+						{portfolioAssets &&
+							portfolioAssets.length > 0 &&
+							portfolioAssets.map(p => {
+								return (
+									<tr key={p.name}>
+										<td>{capitalize(p.name)}</td>
+										<td>{ToFixed(p.balance, 4)}</td>
+										<td>{p.value} $</td>
+									</tr>
+								)
+							})}
+					</tbody>
+					{portfolioAssets && portfolioAssets.length > 0 && (
+						<tfoot>
+							<tr>
+								<td className='text-uppercase text-muted'>Total value</td>
+								<td></td>
+								<td>{ToFixed(totalBalance, 2)} $</td>
+							</tr>
+						</tfoot>
+					)}
+				</table>
+				<div className='mb-4 mx-4' style={{ maxWidth: 'calc(100vw - 2rem)' }}>
+					<Card>
+						<div className='d-flex flex-column justify-center'>
+							<Doughnut data={donutChartData} />
+						</div>
+					</Card>
+				</div>
+			</div>
+			{portfolioSnapshot && tempData.length > 4 && (
+				<div className='order-3 flex-1 mx-4' style={{ maxWidth: 'calc(100vw - 3rem)' }}>
+					<Card>
+						<div style={{ height: '300px' }}>
+							<Line data={timelineChartData} options={options} />
+						</div>
+					</Card>
+				</div>
+			)}
+		</>
 	)
 }
 
