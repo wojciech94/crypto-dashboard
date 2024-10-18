@@ -1,6 +1,7 @@
 import './App.css'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { LogsContext } from './contexts/LogsContext'
 import { FavouritesContext } from './contexts/FavouritesContext'
 import { PortfolioContext } from './contexts/PortfolioContext'
 import { fetchByMarketCap, fetchDataWithContracts } from './utils/coingeckoApi'
@@ -34,6 +35,7 @@ function App() {
 	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
 	const [portfolioSnapshot, setPortfolioSnapshot] = useState(null)
+	const [logs, setLogs] = useState([])
 	const [alerts, setAlerts] = useState(JSON.parse(localStorage.getItem('priceAlerts')) || [])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
@@ -65,12 +67,12 @@ function App() {
 		}
 	}, [activeDropdown])
 
-	//check alerts 
+	//check alerts
 	useEffect(() => {
 		let intervalId
 		if (alerts && alerts.length > 0) {
 			const checkPriceAlerts = async () => {
-				await priceAlertsCheck(alerts, setAlerts, setNewToast)
+				await priceAlertsCheck(alerts, setAlerts, setNewToast, setLogs)
 			}
 			checkPriceAlerts()
 			intervalId = setInterval(checkPriceAlerts, 3 * 60 * 1000)
@@ -115,7 +117,7 @@ function App() {
 
 	const fetchBalanceHandler = useCallback(
 		async wData => {
-			await fetchBalanceData(wData, address, setIsLoading, setWalletData, setNewToast, settings.alertsVis)
+			await fetchBalanceData(wData, address, setIsLoading, setWalletData, setNewToast,setLogs, settings.alertsVis)
 		},
 		[(isLoading, walletData, address)]
 	)
@@ -162,8 +164,7 @@ function App() {
 
 	const handleAddTransaction = useCallback(
 		t => {
-			console.log(t)
-			addTransactionData(t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, settings.alertsVis)
+			addTransactionData(t, setTransactions, setPortfolioAssets, setNewToast, setLogs, settings.alertsVis)
 		},
 		[portfolioAssets]
 	)
@@ -178,7 +179,8 @@ function App() {
 
 	return (
 		<FavouritesContext.Provider value={[favourites, favouriteIds, handleSetFavourites]}>
-			<PortfolioContext.Provider value={[portfolio, portfolioIds, handleSetPortfolio, portfolioAssets, portfolioSnapshot]}>
+			<PortfolioContext.Provider
+				value={[portfolio, portfolioIds, handleSetPortfolio, portfolioAssets, portfolioSnapshot]}>
 				<AlertsContext.Provider value={[alerts, setAlerts]}>
 					<ModalContext.Provider value={[activeModal, setActiveModal]}>
 						<ToastsContext.Provider value={[newToast, handleSetToast]}>
@@ -186,11 +188,13 @@ function App() {
 								<WalletContext.Provider value={walletContextMemo}>
 									<div className='wrapper'>
 										<Navigation />
-										<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
-											<div className='content'>
-												<Outlet></Outlet>
-											</div>
-										</DropdownContext.Provider>
+										<LogsContext.Provider value={[logs, setLogs]}>
+											<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
+												<div className='content'>
+													<Outlet></Outlet>
+												</div>
+											</DropdownContext.Provider>
+										</LogsContext.Provider>
 									</div>
 									<Modal />
 									<Toasts newToast={newToast} />

@@ -890,6 +890,26 @@ button:hover:disabled {
 	padding-left: 1rem;
 }
 
+.pb-0 {
+	padding-bottom: 0;
+}
+
+.pb-1 {
+	padding-bottom: 0.25rem;
+}
+
+.pb-2 {
+	padding-bottom: 0.5rem;
+}
+
+.pb-3 {
+	padding-bottom: 0.75rem;
+}
+
+.pb-4 {
+	padding-bottom: 1rem;
+}
+
 .m-0 {
 	margin: 0;
 }

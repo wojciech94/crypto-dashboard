@@ -8,14 +8,16 @@ export function Wallets() {
 	const [, , , , , wallets] = useContext(WalletContext)
 	const [, setActiveModal] = useContext(ModalContext)
 
+	const handleSetActiveModal = () => {
+		setActiveModal({ name: 'wallet', title: 'Add wallet' })
+	}
+
 	return (
 		<div>
 			{wallets && wallets.length ? (
 				<>
 					<div className='d-flex justify-end mb-4 mx-4'>
-						<button
-							className='btn btn-primary text-semibold'
-							onClick={() => setActiveModal({ name: 'wallet', title: 'Add wallet' })}>
+						<button className='btn btn-primary text-semibold' onClick={handleSetActiveModal}>
 							Add wallet
 						</button>
 					</div>
@@ -25,9 +27,7 @@ export function Wallets() {
 				<Alert variant='primary'>
 					<div>
 						<span>You don't have any wallets yet. </span>
-						<button
-							onClick={() => setActiveModal({ name: 'wallet', title: 'Add wallet' })}
-							className='btn btn-link text-bold text-start text-underline'>
+						<button onClick={handleSetActiveModal} className='btn btn-link text-bold text-start text-underline'>
 							Add your first wallet.
 						</button>
 					</div>

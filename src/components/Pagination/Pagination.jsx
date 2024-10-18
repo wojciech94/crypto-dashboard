@@ -63,7 +63,7 @@ export function Pagination({ totalItems, itemsPerPage, currentPage, onPageChange
 				)}
 				<button
 					className='d-flex flex-center btn btn-light-secondary btn-icon'
-					disabled={currentPage === maxPage}
+					disabled={currentPage >= maxPage}
 					onClick={() => onPageChange(currentPage + 1)}>
 					<ChevronRight size={14} />
 				</button>

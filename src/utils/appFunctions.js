@@ -26,7 +26,7 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 			if (newBalance >= 0) {
 				let updatedAssets = portfolioAssets.map(a => {
 					if (a.name === currencyAsset.name) {
-						return { id: t.id, name: a.name, balance: newBalance, value: newBalance }
+						return { id: a.id, name: a.name, balance: newBalance, value: newBalance }
 					} else if (asset && asset.name === a.name) {
 						return { id: t.id, name: a.name, balance: a.balance + t.quantity, value: asset.value + t.value }
 					}
@@ -82,8 +82,8 @@ export const calculatePortfolioAssets = async (setPortfolioAssets, setPortfolioS
 		const updatedPrices = Object.values(portfolioAssets)
 			.filter(e => cryptoPrices.hasOwnProperty(e.id))
 			.map(e => {
-				const price = cryptoPrices[e.name]['usd']
-				return { name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
+				const price = cryptoPrices[e.id]['usd']
+				return { id: e.id, name: e.name, balance: e.balance, value: Number(ToFixed(e.balance * price, 2)) }
 			})
 		localStorage.setItem('portfolioAssets', JSON.stringify(updatedPrices))
 		setPortfolioAssets(updatedPrices)
@@ -94,6 +94,7 @@ export const calculatePortfolioAssets = async (setPortfolioAssets, setPortfolioS
 }
 
 const updatePortfolioSnapshot = (portfolioAssets, setPortfolioSnapshot) => {
+	console.log('update portfolio snapshot')
 	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
 	const portfolioTimeline = JSON.parse(localStorage.getItem('portfolioTimeline')) || []
 	const date = new Date().toLocaleDateString('en-GB', {
@@ -115,7 +116,15 @@ const updatePortfolioSnapshot = (portfolioAssets, setPortfolioSnapshot) => {
 	setPortfolioSnapshot(portfolioTimeline)
 }
 
-export const fetchBalanceData = async (data, address, setIsLoading, setWalletData, setNewToast, toastDuration) => {
+export const fetchBalanceData = async (
+	data,
+	address,
+	setIsLoading,
+	setWalletData,
+	setNewToast,
+	setLogs,
+	toastDuration
+) => {
 	setIsLoading(true)
 	const [dataEth, dataArb, dataOptimism] = await Promise.all([
 		fetchBalanceForData(data, address, 'ethereum'),
@@ -138,6 +147,12 @@ export const fetchBalanceData = async (data, address, setIsLoading, setWalletDat
 			type: 'success',
 			duration: toastDuration,
 		})
+		const balanceVal = filteredData.reduce((acc, el) => acc + el.value, 0)
+		const logData = {
+			message: `Wallet balance has been fetched. Address: ${address}, Balance: ${balanceVal}`,
+			date: new Date().toLocaleString(),
+		}
+		setLogs(prevLogs => [logData, ...prevLogs])
 	}
 	setIsLoading(false)
 }
@@ -204,7 +219,7 @@ export const setWalletsData = async (action, data, wallets, setWallets) => {
 	setWallets(updatedWallets)
 }
 
-export const addTransactionData = (t, setTransactions, portfolioAssets, setPortfolioAssets, setNewToast, duration) => {
+export const addTransactionData = (t, setTransactions, setPortfolioAssets, setNewToast, setLogs, duration) => {
 	setTransactions(prevT => {
 		const updatedTransactions = [...prevT, t]
 		localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
@@ -217,6 +232,12 @@ export const addTransactionData = (t, setTransactions, portfolioAssets, setPortf
 		return newPortfolio
 	})
 
+	const logData = {
+		message: `New transaction has been added: Asset: ${t.name}, Transaction type: ${t.type}, Quantity: ${t.quantity}, Price: ${t.price} $`,
+		date: new Date().toLocaleString(),
+	}
+
+	setLogs(prevLogs => [logData, ...prevLogs])
 	setNewToast({
 		title: 'You have added a new transaction.',
 		subTitle: `Asset: ${t.name}, Transaction type: ${t.type}
@@ -227,7 +248,7 @@ export const addTransactionData = (t, setTransactions, portfolioAssets, setPortf
 	})
 }
 
-export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
+export const priceAlertsCheck = async (alerts, setAlerts, setNewToast, setLogs) => {
 	const prepareToasts = async toasts => {
 		for (const toast of toasts) {
 			const toastObject = {
@@ -239,6 +260,11 @@ export const priceAlertsCheck = async (alerts, setAlerts, setNewToast) => {
 				duration: 20,
 			}
 			setNewToast(toastObject)
+			const alertObj = {
+				message: `Price alert has been met: Asset: ${toast.asset}, Price: ${toast.price}, Trigger: ${toast.trigger}`,
+				date: new Date().toLocaleString(),
+			}
+			setLogs(prevLogs => [alertObj, ...prevLogs])
 			await new Promise(resolve => setTimeout(resolve, 5000))
 		}
 	}

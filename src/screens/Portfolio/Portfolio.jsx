@@ -104,28 +104,6 @@ function CoinsPortfolio({ portfolio }) {
 }
 
 function PortfolioBalances() {
-	const tempData = [
-		{ day: '15/10/2024', value: 1048 },
-		{ day: '16/10/2024', value: 941 },
-		{ day: '17/10/2024', value: 1175 },
-		{ day: '18/10/2024', value: 845 },
-		{ day: '19/10/2024', value: 1135 },
-		{ day: '20/10/2024', value: 1181 },
-		{ day: '21/10/2024', value: 858 },
-		{ day: '22/10/2024', value: 900 },
-		{ day: '23/10/2024', value: 1192 },
-		{ day: '24/10/2024', value: 953 },
-		{ day: '25/10/2024', value: 1000 },
-		{ day: '26/10/2024', value: 1147 },
-		{ day: '27/10/2024', value: 1200 },
-		{ day: '28/10/2024', value: 1083 },
-		{ day: '29/10/2024', value: 1144 },
-		{ day: '30/10/2024', value: 1146 },
-		{ day: '31/10/2024', value: 1024 },
-		{ day: '01/11/2024', value: 895 },
-		{ day: '02/11/2024', value: 940 },
-		{ day: '03/11/2024', value: 969 },
-	]
 	const [, , , portfolioAssets, portfolioSnapshot] = useContext(PortfolioContext)
 	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
 	const generateChartData = () => {
@@ -147,8 +125,8 @@ function PortfolioBalances() {
 		return { labels, datasets }
 	}
 	const generateTimelineData = () => {
-		const labels = tempData.map(d => d.day)
-		const values = tempData.map(d => d.value)
+		const labels = portfolioSnapshot.map(d => d.day)
+		const values = portfolioSnapshot.map(d => d.value)
 		const datasets = [
 			{
 				data: values,
@@ -221,7 +199,7 @@ function PortfolioBalances() {
 					</Card>
 				</div>
 			</div>
-			{portfolioSnapshot && tempData.length > 4 && (
+			{portfolioSnapshot && portfolioSnapshot.length > 4 && (
 				<div className='order-3 flex-1 mx-4' style={{ maxWidth: 'calc(100vw - 3rem)' }}>
 					<Card>
 						<div style={{ height: '300px' }}>

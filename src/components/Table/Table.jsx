@@ -17,6 +17,7 @@ import { ToastsContext } from '../../contexts/ToastsContext'
 import { capitalize } from '../../utils/stringUtils'
 import { Pagination } from '../Pagination/Pagination'
 import { usePagination } from '../../hooks/usePagination'
+import { LogsContext } from '../../contexts/LogsContext'
 
 export function Table({ data, dropdownKey, isFavouriteAction, isTransactionAction }) {
 	const [, favouriteIds, handleSetFavourites] = useContext(FavouritesContext)
@@ -186,6 +187,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 }
 
 export function WalletTable() {
+	const [, setLogs] = useContext(LogsContext)
 	const [, , , address, handleSetAddress, wallets, handleSetWallets] = useContext(WalletContext)
 	const [, setActiveModal] = useContext(ModalContext)
 	const [, handleSetToast] = useContext(ToastsContext)
@@ -203,6 +205,10 @@ export function WalletTable() {
 
 	const onAddressChange = address => {
 		handleSetAddress(address)
+		setLogs(prevLogs => [
+			{ message: `You changed your default wallet to ${address}`, date: new Date().toLocaleString() },
+			...prevLogs,
+		])
 		handleSetToast({
 			title: 'You changed your default wallet',
 			subTitle: 'Synchronize new wallet balance in portfolio tab',
