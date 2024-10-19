@@ -187,7 +187,7 @@ export function Table({ data, dropdownKey, isFavouriteAction, isTransactionActio
 }
 
 export function WalletTable() {
-	const [, setLogs] = useContext(LogsContext)
+	const [, handleSetLogs] = useContext(LogsContext)
 	const [, , , address, handleSetAddress, wallets, handleSetWallets] = useContext(WalletContext)
 	const [, setActiveModal] = useContext(ModalContext)
 	const [, handleSetToast] = useContext(ToastsContext)
@@ -205,10 +205,8 @@ export function WalletTable() {
 
 	const onAddressChange = address => {
 		handleSetAddress(address)
-		setLogs(prevLogs => [
-			{ message: `You changed your default wallet to ${address}`, date: new Date().toLocaleString() },
-			...prevLogs,
-		])
+		const logsObj = { message: `You changed your default wallet to ${address}`, date: new Date().toLocaleString() }
+		handleSetLogs(logsObj)
 		handleSetToast({
 			title: 'You changed your default wallet',
 			subTitle: 'Synchronize new wallet balance in portfolio tab',

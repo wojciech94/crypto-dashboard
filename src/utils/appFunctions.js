@@ -48,7 +48,7 @@ export const updatePortfolioAssets = (t, portfolioAssets) => {
 					return { id: t.id, name: a.name, balance: asset.balance - t.quantity, value: a.value - t.value }
 				} else if (currencyAsset && a.name === currencyAsset.name) {
 					return {
-						id: t.id,
+						id: currencyAsset.id,
 						name: currencyAsset.name,
 						balance: currencyAsset.balance + t.value,
 						value: currencyAsset.balance + t.value,
@@ -94,7 +94,6 @@ export const calculatePortfolioAssets = async (setPortfolioAssets, setPortfolioS
 }
 
 const updatePortfolioSnapshot = (portfolioAssets, setPortfolioSnapshot) => {
-	console.log('update portfolio snapshot')
 	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
 	const portfolioTimeline = JSON.parse(localStorage.getItem('portfolioTimeline')) || []
 	const date = new Date().toLocaleDateString('en-GB', {
@@ -122,7 +121,7 @@ export const fetchBalanceData = async (
 	setIsLoading,
 	setWalletData,
 	setNewToast,
-	setLogs,
+	handleSetLogs,
 	toastDuration
 ) => {
 	setIsLoading(true)
@@ -149,10 +148,11 @@ export const fetchBalanceData = async (
 		})
 		const balanceVal = filteredData.reduce((acc, el) => acc + el.value, 0)
 		const logData = {
-			message: `Wallet balance has been fetched. Address: ${address}, Balance: ${balanceVal}`,
+			message: 'Wallet balance has been fetched.',
+			additionalData: `Address: ${address}, Balance: ${balanceVal}`,
 			date: new Date().toLocaleString(),
 		}
-		setLogs(prevLogs => [logData, ...prevLogs])
+		handleSetLogs(logData)
 	}
 	setIsLoading(false)
 }
@@ -219,7 +219,7 @@ export const setWalletsData = async (action, data, wallets, setWallets) => {
 	setWallets(updatedWallets)
 }
 
-export const addTransactionData = (t, setTransactions, setPortfolioAssets, setNewToast, setLogs, duration) => {
+export const addTransactionData = (t, setTransactions, setPortfolioAssets, setNewToast, handleSetLogs, duration) => {
 	setTransactions(prevT => {
 		const updatedTransactions = [...prevT, t]
 		localStorage.setItem('transactions', JSON.stringify(updatedTransactions))
@@ -233,11 +233,12 @@ export const addTransactionData = (t, setTransactions, setPortfolioAssets, setNe
 	})
 
 	const logData = {
-		message: `New transaction has been added: Asset: ${t.name}, Transaction type: ${t.type}, Quantity: ${t.quantity}, Price: ${t.price} $`,
+		message: 'New transaction has been added',
+		additionalData: `Asset: ${t.name}, Transaction type: ${t.type}, Quantity: ${t.quantity}, Price: ${t.price} $`,
 		date: new Date().toLocaleString(),
 	}
 
-	setLogs(prevLogs => [logData, ...prevLogs])
+	handleSetLogs(logData)
 	setNewToast({
 		title: 'You have added a new transaction.',
 		subTitle: `Asset: ${t.name}, Transaction type: ${t.type}
@@ -248,7 +249,7 @@ export const addTransactionData = (t, setTransactions, setPortfolioAssets, setNe
 	})
 }
 
-export const priceAlertsCheck = async (alerts, setAlerts, setNewToast, setLogs) => {
+export const priceAlertsCheck = async (alerts, setAlerts, setNewToast, handleSetLogs) => {
 	const prepareToasts = async toasts => {
 		for (const toast of toasts) {
 			const toastObject = {
@@ -261,10 +262,11 @@ export const priceAlertsCheck = async (alerts, setAlerts, setNewToast, setLogs) 
 			}
 			setNewToast(toastObject)
 			const alertObj = {
-				message: `Price alert has been met: Asset: ${toast.asset}, Price: ${toast.price}, Trigger: ${toast.trigger}`,
+				message: 'Price alert has been met',
+				additionalData: `Asset: ${toast.asset}, Price: ${toast.price}, Trigger: ${toast.trigger}`,
 				date: new Date().toLocaleString(),
 			}
-			setLogs(prevLogs => [alertObj, ...prevLogs])
+			handleSetLogs(alertObj)
 			await new Promise(resolve => setTimeout(resolve, 5000))
 		}
 	}

@@ -479,7 +479,11 @@ export function Settings() {
 										{filteredLogs.map((l, id) => {
 											return (
 												<div key={id} className='d-flex justify-between gap-4 text-start border-bottom pb-3'>
-													<div className='flex-1'>{l.message}</div>
+													<div>
+														<div className='flex-1'>{l.message}</div>
+														{l.additionalData && <div className='text-muted fs-sm'>{l.additionalData}</div>}
+													</div>
+
 													<div>{l.date}</div>
 												</div>
 											)

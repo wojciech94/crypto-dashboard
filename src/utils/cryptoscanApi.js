@@ -43,7 +43,6 @@ export const fetchEtherBalance = async (address, network = 'ethereum') => {
 const fetchContractBalanceForAddress = async (contract, address, network = 'ethereum') => {
 	try {
 		const url = getTokenBalanceForNetworkUrl(contract, address, network)
-		console.log(url)
 
 		const response = await fetch(url)
 		const data = await response.json()
@@ -82,7 +81,6 @@ export const fetchBalanceForData = async (coinsData, address, network) => {
 			})
 		)
 		results.push(...batchResult)
-		// console.log(batchResult)
 		await new Promise(resolve => setTimeout(resolve, 1000))
 	}
 	const eb = await fetchEtherBalance(address, network)

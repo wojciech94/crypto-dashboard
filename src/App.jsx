@@ -35,7 +35,7 @@ function App() {
 	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
 	const [portfolioSnapshot, setPortfolioSnapshot] = useState(null)
-	const [logs, setLogs] = useState([])
+	const [logs, setLogs] = useState(JSON.parse(localStorage.getItem('logs')) || [])
 	const [alerts, setAlerts] = useState(JSON.parse(localStorage.getItem('priceAlerts')) || [])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])
 	const [address, setAddress] = useState(JSON.parse(localStorage.getItem('address')) || '')
@@ -72,7 +72,7 @@ function App() {
 		let intervalId
 		if (alerts && alerts.length > 0) {
 			const checkPriceAlerts = async () => {
-				await priceAlertsCheck(alerts, setAlerts, setNewToast, setLogs)
+				await priceAlertsCheck(alerts, setAlerts, setNewToast, handleSetLogs)
 			}
 			checkPriceAlerts()
 			intervalId = setInterval(checkPriceAlerts, 3 * 60 * 1000)
@@ -117,7 +117,7 @@ function App() {
 
 	const fetchBalanceHandler = useCallback(
 		async wData => {
-			await fetchBalanceData(wData, address, setIsLoading, setWalletData, setNewToast,setLogs, settings.alertsVis)
+			await fetchBalanceData(wData, address, setIsLoading, setWalletData, setNewToast,handleSetLogs, settings.alertsVis)
 		},
 		[(isLoading, walletData, address)]
 	)
@@ -164,12 +164,18 @@ function App() {
 
 	const handleAddTransaction = useCallback(
 		t => {
-			addTransactionData(t, setTransactions, setPortfolioAssets, setNewToast, setLogs, settings.alertsVis)
+			addTransactionData(t, setTransactions, setPortfolioAssets, setNewToast, handleSetLogs, settings.alertsVis)
 		},
 		[portfolioAssets]
 	)
 
 	const handleSetToast = useCallback(alert => setNewToast(alert), [newToast])
+
+	const handleSetLogs = useCallback((logData) => setLogs(prevLogs => {
+		const data = [logData, ...prevLogs]
+		localStorage.setItem('logs', JSON.stringify(data))
+		return data
+	}))
 
 	//kazda tablica w contextProviderze powoduje tworzenie nowej referencji wiec musi byc zawarta w useMemo!!!!
 	const walletContextMemo = useMemo(
@@ -188,7 +194,7 @@ function App() {
 								<WalletContext.Provider value={walletContextMemo}>
 									<div className='wrapper'>
 										<Navigation />
-										<LogsContext.Provider value={[logs, setLogs]}>
+										<LogsContext.Provider value={[logs, handleSetLogs]}>
 											<DropdownContext.Provider value={[activeDropdown, setActiveDropdown]}>
 												<div className='content'>
 													<Outlet></Outlet>

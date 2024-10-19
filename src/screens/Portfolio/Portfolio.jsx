@@ -183,10 +183,10 @@ function PortfolioBalances() {
 					</tbody>
 					{portfolioAssets && portfolioAssets.length > 0 && (
 						<tfoot>
-							<tr>
-								<td className='text-uppercase text-muted'>Total value</td>
-								<td></td>
-								<td>{ToFixed(totalBalance, 2)} $</td>
+							<tr className='l-spacing-sm'>
+								<th className='text-uppercase text-muted'>Total value</th>
+								<th></th>
+								<th>{ToFixed(totalBalance, 2)} $</th>
 							</tr>
 						</tfoot>
 					)}
