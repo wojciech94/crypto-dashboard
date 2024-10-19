@@ -589,6 +589,17 @@ a:hover {
 	padding: 0;
 }
 
+.btn-tab {
+	padding: 8px 16px;
+	font-size: 0.9rem;
+	background-color: var(--light);
+}
+
+.btn-tab.active,
+.btn-tab:hover {
+	background-color: var(--primary);
+}
+
 .btn-icon {
 	padding: 4px;
 }

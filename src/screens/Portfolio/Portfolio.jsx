@@ -90,7 +90,7 @@ function CoinsPortfolio({ portfolio }) {
 			{portfolio && portfolio.length > 0 ? (
 				<Table data={portfolio} dropdownKey='portfolio' isFavouriteAction isTransactionAction />
 			) : (
-				<div className='py-4'>
+				<div className='py-4 mx-4'>
 					<Alert variant='primary' className={'text-start column gap-2'}>
 						<div className='text-bold fs-lg'>You don't have any coins in your portfolio.</div>
 						<div className='text-muted'>
@@ -106,6 +106,7 @@ function CoinsPortfolio({ portfolio }) {
 function PortfolioBalances() {
 	const [, , , portfolioAssets, portfolioSnapshot] = useContext(PortfolioContext)
 	const totalBalance = portfolioAssets.reduce((acc, p) => acc + p.value, 0)
+
 	const generateChartData = () => {
 		const data = portfolioAssets.slice(0, 5)
 		const labels = data.map(p => p.name)
@@ -148,7 +149,7 @@ function PortfolioBalances() {
 
 	if (!portfolioAssets || portfolioAssets.length === 0) {
 		return (
-			<div className='py-4'>
+			<div className='py-4 mx-4'>
 				<Alert variant={'primary'} className='d-flex column gap-2 text-start'>
 					<div className='text-bold fs-lg'>You don't have any assets in your portfolio yet.</div>
 					<div className='text-muted'>You need to add some transactions by the 'Add transaction' button.</div>

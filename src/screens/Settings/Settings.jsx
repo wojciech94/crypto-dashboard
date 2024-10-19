@@ -26,20 +26,21 @@ export function Settings() {
 	return (
 		<div className='d-flex gap-10'>
 			<div className='d-flex flex-1 column gap-3 overflow-auto m-4'>
-				<div className='d-flex gap-4'>
+				<div className='d-flex gap-4 mb-4'>
 					<button
 						onClick={() => setActiveTab('settings')}
-						className={`btn btn-link ${activeTab === 'settings' ? 'active' : ''}`}>
+						className={`btn btn-tab ${activeTab === 'settings' ? 'active' : ''}`}>
 						Settings
 					</button>
 					<button
 						onClick={() => setActiveTab('logs')}
-						className={`btn btn-link ${activeTab === 'logs' ? 'active' : ''}`}>
+						className={`btn btn-tab ${activeTab === 'logs' ? 'active' : ''}`}>
 						Logs
 					</button>
 				</div>
-				<Card>
-					{activeTab === 'settings' ? (
+
+				{activeTab === 'settings' ? (
+					<Card>
 						<div className='d-flex column gap-4 p-4'>
 							<div className='col-4 text-end text-bold l-spacing-lg'>General</div>
 							<div className='d-flex align-center mb-4'>
@@ -467,11 +468,12 @@ export function Settings() {
 								</div>
 							</div>
 						</div>
-					) : (
-						<>
-							<div className='d-flex column gap-4 p-4'>
-								{filteredLogs && filteredLogs.length > 0 ? (
-									<div className='d-flex column gap-4'>
+					</Card>
+				) : (
+					<>
+						<div className='d-flex column gap-4'>
+							{filteredLogs && filteredLogs.length > 0 ? (
+									<div className='d-flex column gap-4 p-4'>
 										<div className='d-flex justify-between gap-4 pb-3 border-bottom'>
 											<div className='text-muted'>Message</div>
 											<div className='text-muted'>Time</div>
@@ -489,22 +491,21 @@ export function Settings() {
 											)
 										})}
 									</div>
-								) : (
-									<Alert>The list of your logs is empty!</Alert>
-								)}
-							</div>
-							{filteredLogs && filteredLogs.length > 0 && (
-								<Pagination
-									totalItems={logs.length}
-									itemsPerPage={itemsPerPage}
-									currentPage={currentPage}
-									onPageChange={setCurrentPage}
-									onItemsPerPageChange={setItemsPerPage}
-								/>
+							) : (
+								<Alert>The list of your logs is empty!</Alert>
 							)}
-						</>
-					)}
-				</Card>
+						</div>
+						{filteredLogs && filteredLogs.length > 0 && (
+							<Pagination
+								totalItems={logs.length}
+								itemsPerPage={itemsPerPage}
+								currentPage={currentPage}
+								onPageChange={setCurrentPage}
+								onItemsPerPageChange={setItemsPerPage}
+							/>
+						)}
+					</>
+				)}
 			</div>
 		</div>
 	)

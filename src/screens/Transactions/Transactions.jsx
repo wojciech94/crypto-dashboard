@@ -9,7 +9,7 @@ export function Transactions() {
 
 	if (!transactions || transactions.length === 0) {
 		return (
-			<Alert variant={'primary'}>
+			<Alert variant={'primary'} className='mx-4'>
 				<div className='d-flex column gap-3 text-start'>
 					<div className='text-bold fs-lg'>Your transactions list is empty!</div>
 					<div>

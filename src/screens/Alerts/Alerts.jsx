@@ -72,7 +72,7 @@ export function Alerts() {
 					</tbody>
 				</table>
 			) : (
-				<Alert variant={'primary'}>
+				<Alert variant={'primary'} className='mx-4'>
 					<div className='d-flex column gap-2 text-start'>
 						<div className='text-bold fs-lg'>List of your price alerts is empty.</div>
 						<div className='text-muted'>Add an alert to recive notifications.</div>

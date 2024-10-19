@@ -34,7 +34,7 @@ function App() {
 	const [walletData, setWalletData] = useState([])
 	const [newToast, setNewToast] = useState(null)
 	const [isLoading, setIsLoading] = useState(false)
-	const [portfolioSnapshot, setPortfolioSnapshot] = useState(null)
+	const [portfolioSnapshot, setPortfolioSnapshot] = useState([])
 	const [logs, setLogs] = useState(JSON.parse(localStorage.getItem('logs')) || [])
 	const [alerts, setAlerts] = useState(JSON.parse(localStorage.getItem('priceAlerts')) || [])
 	const [wallets, setWallets] = useState(JSON.parse(localStorage.getItem('wallets')) || [])

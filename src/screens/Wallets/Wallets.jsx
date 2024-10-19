@@ -13,7 +13,7 @@ export function Wallets() {
 	}
 
 	return (
-		<div>
+		<>
 			{wallets && wallets.length ? (
 				<>
 					<div className='d-flex justify-end mb-4 mx-4'>
@@ -24,15 +24,15 @@ export function Wallets() {
 					<WalletTable wallets={wallets} />
 				</>
 			) : (
-				<Alert variant='primary'>
-					<div>
-						<span>You don't have any wallets yet. </span>
+				<Alert variant='primary' className='mx-4'>
+					<span>
+						You don't have any wallets yet.{' '}
 						<button onClick={handleSetActiveModal} className='btn btn-link text-bold text-start text-underline'>
 							Add your first wallet.
 						</button>
-					</div>
+					</span>
 				</Alert>
 			)}
-		</div>
+		</>
 	)
 }
