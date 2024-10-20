@@ -2,8 +2,9 @@
 
 1. [Description](#description)
 2. [Website](#website)
-3. [Installation guide](#installation-guide)
-4. [Features](#features)
+3. [Features](#features)
+4. [User guide](#user-guide)
+5. [Installation guide](#installation-guide)
 
 # Description
 
@@ -11,6 +12,19 @@ Crypto-dashboard is a comprehensive platform that showcases cryptocurrency panel
 
 # Website
 [CryptoDashboard](https://wk-crypto-dashboard.netlify.app)
+
+# Features
+   - Managing favorites coins list
+   - Managing portfolio (manual creation of portfolio list)
+   - Managing transactions (creating transactions for coins in portfolio!)
+   - Portfolio chart (based on transactions)
+   - Managing wallets addresses
+   - Fetching wallet portfolio (Add any erc20 wallet address in Wallets tab)
+   - Managing price alerts
+   - Settings modifications
+
+# User guide
+The user guide is available at /docs/user-guide.md
 
 # Installation Guide
 
@@ -64,13 +78,3 @@ Crypto-dashboard is a comprehensive platform that showcases cryptocurrency panel
    - **Ensure that Node.js and npm are installed** on your system. You can download Node.js from [nodejs.org](https://nodejs.org/).
    - For **new integrations**, instructions on adding a new network integration will be provided.
    - If you encounter any problems, report them by opening an issue in the repository.
-
-# Features
-   - Managing favorites coins list
-   - Managing portfolio (manual creation of portfolio list)
-   - Managing transactions (creating transactions for coins in portfolio!)
-   - Portfolio chart (based on transactions)
-   - Managing wallets addresses
-   - Fetching wallet portfolio (Add any erc20 wallet address in Wallets tab)
-   - Managing price alerts
-   - Settings modifications
